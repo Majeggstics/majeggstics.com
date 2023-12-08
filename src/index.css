@@ -1,0 +1,24 @@
+body {
+  max-width: 90%;
+  margin: auto;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+table {
+  border: 1px solid black;
+}
+
+table th,
+table td {
+  text-align: left;
+  vertical-align: top;
+  border: 1px solid black;
+}
+
+img {
+  object-fit: contain;
+  max-width: 75vw;
+}

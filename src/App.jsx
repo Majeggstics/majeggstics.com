@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import './App.css'
 
 function App() {
@@ -21,7 +22,11 @@ function App() {
           </p>
           <br />
           <p>
-            <a href="https://discord.gg/egginc">Egg Inc. discord</a>
+            <a href="https://discord.gg/egginc" target='_blank' rel="noreferrer">Egg Inc. discord</a>
+          </p>
+
+          <p>
+            <Link to="/guide">Guide</Link>
           </p>
         </div>
       </section>
