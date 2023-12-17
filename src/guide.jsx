@@ -289,8 +289,58 @@ export default function Guide() {
               </li>
             </ul>
           </li>
-
+          <li>
+            Use bot commands channels instead of discussion channels to send commands:
+            <ul>
+              <li>Utilities &gt; #bot-commands</li>
+              <li>Wonky &gt; #public-wonky-commands</li>
+              <li>Majeggstics &gt; # wonky-spam</li>
+            </ul>
+          </li>
+          <li>
+            Don’t try to break bots, and be patient when bots are down.
+          </li>
+          <li>
+            Keep spam in Off Topic &gt; #spam.
+          </li>
+          <li>
+            Direct Messages (DM)
+            <ul>
+              <li>Majeggstics is privileged to have threads for all of our co-ops - ping members in your thread instead of sending a DM or sending tokens in-game. </li>
+              <li>Use Majeggstics and server channels to ask general questions instead of sending DMs to other players, tokens, or server staff. </li>
+              <li>If you see inappropriate chat in Majeggstics channels, or glitching in our co-ops, you can react with the :flag_white: emoji to notify Majeggstics Tokens. Wonky will automatically remove your reaction to protect your privacy, and Tokens will get a copy of the message. </li>
+              <li>Follow instructions in Utilities &gt; #ticket-tool for help from server staff (unwanted/inappropriate DMs, glitching in non-Majeggstic co-ops, etc)</li>
+            </ul>
+          </li>
         </ul>
+      </section>
+      <section>
+        <h2>Useful Links</h2>
+        <ul>
+          <li>Server #Rules</li>
+          <li>Ciria’s Useful Links Pin in #the_majeggstics</li>
+          <li>Ciria’s Amazing Infographics Thread in #the_majeggstics</li>
+          <li>#artichat - Artifacts, crafting XP, ship drops, material farming, sets</li>
+          <li>#tips-and-tricks - Prestige strategies, fuel guides, diamond trophy guide, Royal Physique’s Epic Research calculator</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Joining Majeggstics</h2>
+        <p>Ready to get started?</p>
+        <p>Open the game and find your EID: Open the ‘9 dots’ menu, touch ‘Help’, then ‘Data Loss Issue’. This will open an email, and you can copy your EID from the subject line. You’ll receive a confirmation DM from Wonky, the bot who helps run our co-ops, and your EID will be deleted from the chat to protect your privacy.</p>
+        <p>By sending the /join command, you are agreeing to follow Majeggstics rules. </p>
+        <p>
+          <img src={howToJoinTheMajeggstics} alt="How to join the Mageggstics" />
+        </p>
+        <p>
+          Welcome to the Majeggstics, we’re happy to have you!
+        </p>
+        <p>
+          If Majeggstics won’t be a good fit for you, DM @megadanger and ask to be removed from the group. Check the staff list in #mj-announcements to find our current member manager.
+        </p>
+        <p>
+          The public “#Co-Op Recruitment” section can help you find co-ops, or you can look for other open groups that may fit your goals and needs better.
+        </p>
       </section>
     </main>
   )
