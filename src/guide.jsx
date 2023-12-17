@@ -107,21 +107,31 @@ export default function Guide() {
 
         <ul>
           <li>Our co-ops are set to private to ensure that everyone participating meets our expectations. Do not share your co-op code or set the co-op to public - this can result in Majeggstics getting kicked from our co-ops and makes extra work for tokens.
-            <ul><li>
-              The toggle needs to stay to the left for the co-op to remain private.</li></ul>
+            <ul>
+              <li>
+                The toggle needs to stay to the left for the co-op to remain private.
+              </li>
+            </ul>
           </li>
 
-          <li>Notify an available token immediately if there is an error with your registration (ex: wrong grade, registered in multiple co-ops) or if you registered and teams have been made but you were not assigned to a co-op.</li>
-
-          <ul><li>There is currently a known bug when joining co-ops - you appear joined on your device, but not on the Egg Inc servers. Please confirm your game is in sync with the server by checking the eicoop link in your co-op thread <em>before boosting.</em></li></ul>
-
-          <li>Wonky groups members together to ensure we have balanced teams. You must join the co-op you are assigned to. If you:</li>
+          <li>
+            Notify an available token immediately if there is an error with your registration (ex: wrong grade, registered in multiple co-ops) or if you registered and teams have been made but you were not assigned to a co-op.
+          </li>
 
           <ul>
-            <li>Join your co-op later than 5 hours after start, you will receive one strike.</li>
-            <li>Do not join your co-op before the 24-hour check, you will receive two strikes.</li>
-            <li>Join a Majeggstics co-op without being assigned by Wonky or a token, you will be removed from Majeggstics.</li>
+            <li>
+              There is currently a known bug when joining co-ops - you appear joined on your device, but not on the Egg Inc servers. Please confirm your game is in sync with the server by checking the eicoop link in your co-op thread <em>before boosting.</em>
+            </li>
           </ul>
+
+          <li>
+            Wonky groups members together to ensure we have balanced teams. You must join the co-op you are assigned to. If you:
+            <ul>
+              <li>Join your co-op later than 5 hours after start, you will receive one strike.</li>
+              <li>Do not join your co-op before the 24-hour check, you will receive two strikes.</li>
+              <li>Join a Majeggstics co-op without being assigned by Wonky or a token, you will be removed from Majeggstics.</li>
+            </ul>
+          </li>
 
           <li>Tokens monitor many co-op threads and can't respond to every message. If you need help, make sure to ask in #the_majeggstics or your grade's Majeggstic channel to make sure an available token sees your message. Don't be afraid to interrupt off-topic chat - our priority is helping your co-op complete successfully.</li>
         </ul>
@@ -162,27 +172,27 @@ export default function Guide() {
             <li>
               Spamming individual tokens or token dumping is not allowed.
             </li>
-            <li>
-              <img src={inGameContractInfoPage} alt="In-game contract info page with highlighted farm sharing button and CB ready icon circled" />
-              <span>
-                [ID: In-game contract info page with highlighted farm sharing button and CB ready icon circled]
-              </span>
-            </li>
-            <br />
-            <li>
-              <img src={farmReadyToReceiveCBs} alt="A friend’s farm ready to receive CBs" />
-              <span>
-                [ID: A friend’s farm ready to receive CBs]
-              </span>
-            </li>
-            <br />
-            <li>
-              <img src={farmAfterSendingCBsWithTimer} alt="A friend’s farm immediately after sending CBs showing the cooldown timer" />
-              <span>
-                [ID: A friend’s farm immediately after sending CBs showing the cooldown timer]
-              </span>
-            </li>
           </ul>
+          <li>
+            <img src={inGameContractInfoPage} alt="In-game contract info page with highlighted farm sharing button and CB ready icon circled" />
+            <span>
+              [ID: In-game contract info page with highlighted farm sharing button and CB ready icon circled]
+            </span>
+          </li>
+          <br />
+          <li>
+            <img src={farmReadyToReceiveCBs} alt="A friend’s farm ready to receive CBs" />
+            <span>
+              [ID: A friend’s farm ready to receive CBs]
+            </span>
+          </li>
+          <br />
+          <li>
+            <img src={farmAfterSendingCBsWithTimer} alt="A friend’s farm immediately after sending CBs showing the cooldown timer" />
+            <span>
+              [ID: A friend’s farm immediately after sending CBs showing the cooldown timer]
+            </span>
+          </li>
         </ul>
       </section>
       <section>
@@ -208,30 +218,40 @@ export default function Guide() {
         </ul>
       </section>
       <section>
-        <h2>Post-boosting
+        <h2>
+          Post-boosting
         </h2>
         <ul>
-          <li>Tachyon Deflectors boost your co-op mates' laying rates - since Majeggstics aim for equal contributions, a deflector will benefit your co-op overall more than any artifact that only works on your individual farm. </li>
-          <li>Metronome and artifacts with tachyon stones boost egg laying rate. </li>
-          <li>Compass and artifacts with quantum stones increase shipping rate. </li>
-          <li>Check in regularly and don’t let your chickens fall asleep!
+          <li>
+            Tachyon Deflectors boost your co-op mates' laying rates - since Majeggstics aim for equal contributions, a deflector will benefit your co-op overall more than any artifact that only works on your individual farm.
+          </li>
+          <li>
+            Metronome and artifacts with tachyon stones boost egg laying rate.
+          </li>
+          <li>
+            Compass and artifacts with quantum stones increase shipping rate.
+          </li>
+          <li>
+            Check in regularly and don’t let your chickens fall asleep!
             <ul>
-              <li>The game does not update automatically. You must open your co-op farm and sync with the server for us to see your earnings before minimums are checked. Please check-in 15 minutes before your minimum check and confirm your lay rate using the eicoop link in your thread to avoid getting a strike. </li>
+              <li>
+                The game does not update automatically. You must open your co-op farm and sync with the server for us to see your earnings before minimums are checked. Please check-in 15 minutes before your minimum check and confirm your lay rate using the eicoop link in your thread to avoid getting a strike.
+              </li>
             </ul>
-            <li>
-              Contact a token:
-              <ul>
-                <li>
-                  If you see glitching in your group. Glitching is not allowed in Majeggstics co-ops.
-                </li>
-                <li>
-                  Enforcing minimum is the responsibility of tokens. Do not ping low performing members yourself, allow tokens to contact them and offer support.
-                </li>
-                <li>
-                  Removing members from our contracts is not allowed. If you remove Majeggstics players from our co-op without specific instructions from a token, you will be removed from Majeggstics.
-                </li>
-              </ul>
-            </li>
+          </li>
+          <li>
+            Contact a token:
+            <ul>
+              <li>
+                If you see glitching in your group. Glitching is not allowed in Majeggstics co-ops.
+              </li>
+              <li>
+                Enforcing minimum is the responsibility of tokens. Do not ping low performing members yourself, allow tokens to contact them and offer support.
+              </li>
+              <li>
+                Removing members from our contracts is not allowed. If you remove Majeggstics players from our co-op without specific instructions from a token, you will be removed from Majeggstics.
+              </li>
+            </ul>
           </li>
         </ul>
       </section>
@@ -342,6 +362,6 @@ export default function Guide() {
           The public “#Co-Op Recruitment” section can help you find co-ops, or you can look for other open groups that may fit your goals and needs better.
         </p>
       </section>
-    </main>
+    </main >
   )
 }
