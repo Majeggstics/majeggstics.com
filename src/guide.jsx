@@ -1,3 +1,5 @@
+import Typography from '@mui/material/Typography';
+
 import newContractIcon from './assets/guide/newContractIcon.jpg';
 import inGameContractInfoPage from './assets/guide/inGameContractInfoPage.png';
 import farmReadyToReceiveCBs from './assets/guide/farmReadyToReceiveCBs.png';
@@ -6,46 +8,46 @@ import howToJoinTheMajeggstics from './assets/guide/howToJoinTheMajeggstics.png'
 
 export default function Guide() {
   return (
-    <main>
+    <main id="guide">
       <section>
-        <h1>
+        <Typography variant="h2" gutterBottom>
           Majeggstics Guide & Rule Book!
-        </h1>
-        <p>Welcome to The Majeggstics, where No Farmer is Left Behind!</p>
-        <p>
+        </Typography>
+        <Typography variant="body1" gutterBottom>Welcome to The Majeggstics, where <em>No Farmer is Left Behind!</em></Typography>
+        <Typography variant="body1" gutterBottom>
           Majeggstics is a worldwide group of Egg Inc. players with the common goal of making sure every player can complete every contract, by optimizing play strategies and making fair contributions to our co-ops.
-        </p>
+        </Typography>
       </section>
       <section>
-        <h2>Minimum rules</h2>
-        <p>
+        <Typography variant="h4" gutterBottom>Minimum rules</Typography>
+        <Typography variant="body1" gutterBottom>
           The Majeggstics are a team - we expect everyone to contribute to our co-ops. When you register for a contract, you are agreeing to meet the minimum contribution for that contract.
-        </p>
-        <p className="bold">
+        </Typography>
+        <Typography variant="body1" gutterBottom>
           The minimum egg laying rate for each contract is posted in #MJ-Announcements. Minimum is measured at 12 and 24 hours after contract start.
-        </p>
-        <p>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
           The 12 hour minimum is lower than the 24 hour minimum. If you meet the 12 hour minimum, you have passed! If you don’t meet the 12 hour minimum, you still have not failed, but you must meet the 24 hour minimum to pass.
-        </p>
-        <p>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
           You will receive a strike for joining your contract later than 5 hours after start, and an additional strike if you have not joined by the 24 hour check. (Strikes may also be given for inappropriate behavior in chat, and server staff are notified when server rules are broken.)
-        </p>
-        <p>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
           Tokens are the human players who manage the Majeggstics - we recruit new members, help people play the game more efficiently, start and add people to co-op groups, and confirm everyone has met the minimum required laying rate for each contract.
-        </p>
-        <p>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
           A token will communicate with you if you receive a strike. Strikes are recorded. After four strikes, you will be removed from Majeggstics. Strikes are only counted for the last 20 contracts you complete - after that, strikes are erased.
-        </p>
-        <p>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
           After a strike, a token will create a private thread in #the_majeggstics to talk to you about what happened, and make sure you are supported to be successful in the future. If you’re concerned you won’t be successful, you can send mj-support anywhere in Majeggstics channels and a support Token will help you out. It can take time to respond, so ask for help using mj-support early on!
-        </p>
-        <p>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
           Remember that the Majeggstic’s goal is to see everyone succeed. Minimums are meant to help you, not hurt. If you’re struggling to meet minimum or need help with a contract, ask for advice in #the_majeggstics or your grade’s Majeggstics channel. The group would be thrilled to help, and everyone will have the chance to learn along with you!
-        </p>
+        </Typography>
       </section>
       <section>
-        <h2>Registering for a Contract
-        </h2>
+        <Typography variant="h4" gutterBottom>Registering for a Contract
+        </Typography>
         <table>
           <thead>
             <tr>
@@ -78,12 +80,12 @@ export default function Guide() {
           </tbody>
         </table>
         <br />
-        <p>
+        <Typography variant="body1" gutterBottom>
           <img src={newContractIcon} alt="New Contract Icon" />
           <span>
             [Image Description: New Contract Icon]
           </span>
-        </p>
+        </Typography>
         <ul>
           <li>
             Monday has a new contract for everyone. The first Monday of each month has a new Prophecy Egg (PE) contract.
@@ -95,15 +97,15 @@ export default function Guide() {
             If you want to be pinged when contracts are released, go to #optional-roles and select the “Contracts” role.
           </li>
         </ul>
-        <p>
+        <Typography variant="body1" gutterBottom>
           When a new contract is released, Wonky, our beloved bot, will generate a registration post in #mj-announcements. Select a time slot - we start contracts at 3 times - +1, +6, and +12 hours after the contract release. Register for the time slot that&apos;s most convenient for your schedule. You must join your co-op and start your farm within 5 hours of your start time. It is your responsibility to register early and join your co-op.
-        </p>
-        <p>Registration for each time slot is finalized when Wonky creates co-ops. We recommend you sign up at least 15 minutes early, as co-ops may be created up to 5 minutes early because of the size of our group. If co-ops are late, be patient with initiators. </p>
-        <p>Late registrations may be accepted depending on initiator availability and available spaces in our co-ops. If you are unable to register for a contract with Majeggstics, you can join a public co-op in the &quot;Co-Op Recruitment&quot; section and join us for the next contract! </p>
+        </Typography>
+        <Typography variant="body1" gutterBottom>Registration for each time slot is finalized when Wonky creates co-ops. We recommend you sign up at least 15 minutes early, as co-ops may be created up to 5 minutes early because of the size of our group. If co-ops are late, be patient with initiators. </Typography>
+        <Typography variant="body1" gutterBottom>Late registrations may be accepted depending on initiator availability and available spaces in our co-ops. If you are unable to register for a contract with Majeggstics, you can join a public co-op in the &quot;Co-Op Recruitment&quot; section and join us for the next contract! </Typography>
       </section>
       <section>
-        <h2>Joining your Co-op</h2>
-        <p>Ping! Pong! Wonky generated your co-op and started a thread in your grade’s channel. Check your DMs from Wonky for the contract code. If you’re the first person, double-check your contract code, then start the co-op immediately. Do not wait in the lobby.</p>
+        <Typography variant="h4" gutterBottom>Joining your Co-op</Typography>
+        <Typography variant="body1" gutterBottom>Ping! Pong! Wonky generated your co-op and started a thread in your grade’s channel. Check your DMs from Wonky for the contract code. If you’re the first person, double-check your contract code, then start the co-op immediately. Do not wait in the lobby.</Typography>
 
         <ul>
           <li>Our co-ops are set to private to ensure that everyone participating meets our expectations. Do not share your co-op code or set the co-op to public - this can result in Majeggstics getting kicked from our co-ops and makes extra work for tokens.
@@ -137,7 +139,7 @@ export default function Guide() {
         </ul>
       </section>
       <section>
-        <h2>Start and grow your contract farm</h2>
+        <Typography variant="h4" gutterBottom>Start and grow your contract farm</Typography>
         <ul>
           <li>Finish common research, buy habs, and buy transport.
             <ul>
@@ -196,9 +198,9 @@ export default function Guide() {
         </ul>
       </section>
       <section>
-        <h2>
+        <Typography variant="h4" gutterBottom>
           Boosting
-        </h2>
+        </Typography>
         <ul>
           <li>
             Use GomCalc, Forks’ Egg Inc Tools, and Hashtru’s Contract Boost Calculator to help determine the best boost combination for your goals - these will vary widely depending on the contract, number of players in your group, your EB, and artifacts.
@@ -218,9 +220,9 @@ export default function Guide() {
         </ul>
       </section>
       <section>
-        <h2>
+        <Typography variant="h4" gutterBottom>
           Post-boosting
-        </h2>
+        </Typography>
         <ul>
           <li>
             Tachyon Deflectors boost your co-op mates' laying rates - since Majeggstics aim for equal contributions, a deflector will benefit your co-op overall more than any artifact that only works on your individual farm.
@@ -256,16 +258,16 @@ export default function Guide() {
         </ul>
       </section>
       <section>
-        <h2>Completion</h2>
+        <Typography variant="h4" gutterBottom>Completion</Typography>
         <ul>
           <li>Check in ASAP after the contract has finished so that your contract score can be calculated. </li>
         </ul>
       </section>
       <section>
-        <h2>Taking Breaks & Leaving</h2>
-        <p>
+        <Typography variant="h4" gutterBottom>Taking Breaks & Leaving</Typography>
+        <Typography variant="body1" gutterBottom>
           We’re here to help you be successful with contracts, but we understand that sometimes you need a break.
-        </p>
+        </Typography>
         <ul>
           <li>Not registering - you can skip registering for contracts with us whenever you like with no penalties.
           </li>
@@ -278,8 +280,8 @@ export default function Guide() {
         </ul>
       </section>
       <section>
-        <h2>Code of Conduct</h2>
-        <p>Is it a privilege for Majeggstics to have access to private channels and Wonky in the Egg, Inc. server. Because of our special status, we have high expectations for your behavior in our channels and around the server.</p>
+        <Typography variant="h4" gutterBottom>Code of Conduct</Typography>
+        <Typography variant="body1" gutterBottom>Is it a privilege for Majeggstics to have access to private channels and Wonky in the Egg, Inc. server. Because of our special status, we have high expectations for your behavior in our channels and around the server.</Typography>
         <ul>
           <li>Follow server #rules. Majeggstics members and channels must follow the Egg, Inc. server rules. Violating server rules will lead to removal from Majeggstics and the Egg, Inc. server. </li>
           <li>Keep chat in Majeggstics kind and appropriate for all, and be a good representative of Majeggstics in public channels. </li>
@@ -335,7 +337,7 @@ export default function Guide() {
         </ul>
       </section>
       <section>
-        <h2>Useful Links</h2>
+        <Typography variant="h4" gutterBottom>Useful Links</Typography>
         <ul>
           <li>Server #Rules</li>
           <li>Ciria’s Useful Links Pin in #the_majeggstics</li>
@@ -345,22 +347,22 @@ export default function Guide() {
         </ul>
       </section>
       <section>
-        <h2>Joining Majeggstics</h2>
-        <p>Ready to get started?</p>
-        <p>Open the game and find your EID: Open the ‘9 dots’ menu, touch ‘Help’, then ‘Data Loss Issue’. This will open an email, and you can copy your EID from the subject line. You’ll receive a confirmation DM from Wonky, the bot who helps run our co-ops, and your EID will be deleted from the chat to protect your privacy.</p>
-        <p>By sending the /join command, you are agreeing to follow Majeggstics rules. </p>
-        <p>
+        <Typography variant="h4" gutterBottom>Joining Majeggstics</Typography>
+        <Typography variant="body1" gutterBottom>Ready to get started?</Typography>
+        <Typography variant="body1" gutterBottom>Open the game and find your EID: Open the ‘9 dots’ menu, touch ‘Help’, then ‘Data Loss Issue’. This will open an email, and you can copy your EID from the subject line. You’ll receive a confirmation DM from Wonky, the bot who helps run our co-ops, and your EID will be deleted from the chat to protect your privacy.</Typography>
+        <Typography variant="body1" gutterBottom>By sending the /join command, you are agreeing to follow Majeggstics rules. </Typography>
+        <Typography variant="body1" gutterBottom>
           <img src={howToJoinTheMajeggstics} alt="How to join the Mageggstics" />
-        </p>
-        <p>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
           Welcome to the Majeggstics, we’re happy to have you!
-        </p>
-        <p>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
           If Majeggstics won’t be a good fit for you, DM @megadanger and ask to be removed from the group. Check the staff list in #mj-announcements to find our current member manager.
-        </p>
-        <p>
+        </Typography>
+        <Typography variant="body1" gutterBottom>
           The public “#Co-Op Recruitment” section can help you find co-ops, or you can look for other open groups that may fit your goals and needs better.
-        </p>
+        </Typography>
       </section>
     </main >
   )
