@@ -15,7 +15,7 @@ export default function Guide() {
         </Typography>
         <Typography variant="body1" gutterBottom>Welcome to The Majeggstics, where <em>No Farmer is Left Behind!</em></Typography>
         <Typography variant="body1" gutterBottom>
-          Majeggstics is a worldwide group of Egg Inc. players with the common goal of making sure every player can complete every contract, by optimizing play strategies and making fair contributions to our co-ops.
+          Majeggstics is a worldwide group of Egg Inc. players with the common goal of making sure <em>every</em> player can complete <em>every</em> contract, by optimizing play strategies and making fair contributions to our co-ops.
         </Typography>
       </section>
       <section>
@@ -24,7 +24,7 @@ export default function Guide() {
           The Majeggstics are a team - we expect everyone to contribute to our co-ops. When you register for a contract, you are agreeing to meet the minimum contribution for that contract.
         </Typography>
         <Typography variant="body1" gutterBottom>
-          The minimum egg laying rate for each contract is posted in #MJ-Announcements. Minimum is measured at 12 and 24 hours after contract start.
+          <b>The minimum egg laying rate for each contract is posted in #mj-announcements. Minimum is measured at 12 and 24 hours after contract start.</b>
         </Typography>
         <Typography variant="body1" gutterBottom>
           The 12 hour minimum is lower than the 24 hour minimum. If you meet the 12 hour minimum, you have passed! If you don’t meet the 12 hour minimum, you still have not failed, but you must meet the 24 hour minimum to pass.
@@ -39,7 +39,7 @@ export default function Guide() {
           A token will communicate with you if you receive a strike. Strikes are recorded. After four strikes, you will be removed from Majeggstics. Strikes are only counted for the last 20 contracts you complete - after that, strikes are erased.
         </Typography>
         <Typography variant="body1" gutterBottom>
-          After a strike, a token will create a private thread in #the_majeggstics to talk to you about what happened, and make sure you are supported to be successful in the future. If you’re concerned you won’t be successful, you can send mj-support anywhere in Majeggstics channels and a support Token will help you out. It can take time to respond, so ask for help using mj-support early on!
+          After a strike, a token will create a <b>private thread</b> in #the_majeggstics to talk to you about what happened, and make sure you are supported to be successful in the future. If you’re concerned you won’t be successful, you can send <em>mj-support</em> anywhere in Majeggstics channels and a support Token will help you out. It can take time to respond, so ask for help using <em>mj-support</em> early on!
         </Typography>
         <Typography variant="body1" gutterBottom>
           Remember that the Majeggstic’s goal is to see everyone succeed. Minimums are meant to help you, not hurt. If you’re struggling to meet minimum or need help with a contract, ask for advice in #the_majeggstics or your grade’s Majeggstics channel. The group would be thrilled to help, and everyone will have the chance to learn along with you!
@@ -59,7 +59,7 @@ export default function Guide() {
             <tr>
               <td>UTC 0 (Coordinated Universal Time)
               </td>
-              <td>16:00 (5 PM)</td>
+              <td>16:00 (4 PM)</td>
             </tr>
             <tr>
               <td>PT -8 (Pacific Time, NA)
@@ -71,6 +71,12 @@ export default function Guide() {
               <td>ET -5 (Eastern Time, NA)
               </td>
               <td>12:00 (12 PM)
+              </td>
+            </tr>
+            <tr>
+              <td>AEST +10 (Australian Eastern Time)
+              </td>
+              <td>02:00 (2 AM)
               </td>
             </tr>
             <tr>
@@ -108,7 +114,7 @@ export default function Guide() {
         <Typography variant="body1" gutterBottom>Ping! Pong! Wonky generated your co-op and started a thread in your grade’s channel. Check your DMs from Wonky for the contract code. If you’re the first person, double-check your contract code, then start the co-op immediately. Do not wait in the lobby.</Typography>
 
         <ul>
-          <li>Our co-ops are set to private to ensure that everyone participating meets our expectations. Do not share your co-op code or set the co-op to public - this can result in Majeggstics getting kicked from our co-ops and makes extra work for tokens.
+          <li>Our co-ops are set to <b>private</b> to ensure that everyone participating meets our expectations. Do not share your co-op code or set the co-op to public - this can result in Majeggstics getting kicked from our co-ops and makes extra work for tokens.
             <ul>
               <li>
                 The toggle needs to stay to the left for the co-op to remain private.
@@ -148,9 +154,9 @@ export default function Guide() {
               <li>Puzzle cubes will lower research costs - use your income-boosting artifacts, then switch your puzzle cube on while you’re buying. If you need to save more, swap the cube out for a better income artifact.</li></ul>
           </li>
 
-          <li>Equip your best Ship in a Bottle (SIAB) to help your co-op mates earn more money. Your SIAB is worth more to the team than any artifact you can equip for yourself. Tachyon deflectors are not useful until after teammates have boosted, so equip an extra artifact for yourself until then.</li>
+          <li>Equip your best <b>Ship in a Bottle (SIAB)</b> to help your co-op mates earn more money. Your SIAB is worth more to the team than any artifact you can equip for yourself. Tachyon deflectors are not useful until after teammates have boosted, so equip an extra artifact for yourself until then.</li>
 
-          <li>Soul Mirror a higher EB player if you can’t finish your common research or buy large enough habs/transport for your intended boosts.
+          <li><b>Soul Mirror</b> a higher EB player if you can’t finish your common research or buy large enough habs/transport for your intended boosts.
             <ul>
               <li>
                 The person in your contract with the highest EB will have a soul mirror icon next to their name in your Discord thread.
@@ -162,10 +168,10 @@ export default function Guide() {
               <li>Use Bird Feed and Yon Calculator to maximize your earnings, no matter your mirror’s EB.</li>
             </ul>
           </li>
-          <li>Send Chicken Boxes every 3 hours to help your co-op mates grow their farms.
+          <li>Send <b>Chicken Boxes</b> every 3 hours to help your co-op mates grow their farms.
           </li>
           <li>
-            Request or send tokens to other co-op members upon request.
+            Request or send <b>tokens</b> to other co-op members upon request.
           </li>
           <ul>
             <li>
@@ -203,19 +209,19 @@ export default function Guide() {
         </Typography>
         <ul>
           <li>
-            Use GomCalc, Forks’ Egg Inc Tools, and Hashtru’s Contract Boost Calculator to help determine the best boost combination for your goals - these will vary widely depending on the contract, number of players in your group, your EB, and artifacts.
+            Use <a href='https://docs.google.com/spreadsheets/d/1qeqmgsn3Bsqbs2AfQ6kLZcNpsELEyiIrfo95IBKXWBg/edit#gid=36558563' target='_blank' rel="noreferrer"> GomCalc ↗</a>, <a href='https://saladfork.github.io/egg-inc-tools/' target='_blank' rel="noreferrer">SaladForks’ Egg Inc Tools ↗</a>, and <a href='https://hashtru.netlify.app/contractboost/' target='_blank' rel="noreferrer">Hashtru’s Contract Boost Calculator ↗</a> to help determine the best boost combination for your goals - these will vary widely depending on the contract, number of players in your group, your EB, and artifacts.
             <ul>
-              <li>Most players can use a Legendary Tachyon Prism & Epic Boost Beacon to completely fill habs. </li>
-              <li>Players with Tier 4 Artifacts can often use two Epic Tachyon Prisms (together or separately) to fill habs over 50%. </li>
+              <li>Most players can use a <b>Legendary Tachyon Prism & Epic Boost Beacon</b> to completely fill habs. </li>
+              <li>Players with Tier 4 Artifacts can often use <b>two Epic Tachyon Prisms</b> (together or separately) to fill habs over 50%. </li>
               <li>Advanced artifact players with powerful dilithium and life sets can often hablock with a single Epic Tachyon and a few chicken runs post-boost. A powerful tachyon artifact set can result in shipping locking. </li>
               <li>Consider the number of people in your contract and the impact deflectors will have on your laying rate - choose more GE efficient boosts in larger co-ops.</li>
             </ul>
           </li>
           <li>
-            Before boosting, equip artifacts with dilithium stones to increase your boost time.
+            Before boosting, equip artifacts with <b>dilithium stones</b> to increase your boost time.
           </li>
           <li>
-            Immediately after starting your boosts, switch to your best monocle, chalice, and artifacts with life stones. Leave the farm to take advantage of the Internal Hatchery Calm Epic Research. If needed, equip a gusset to increase hab space.
+            Immediately after starting your boosts, switch to your <b>best monocle, chalice, and artifacts with life stones</b>. Leave the farm to take advantage of the Internal Hatchery Calm Epic Research. If needed, equip a <b>gusset</b> to increase hab space.
           </li>
         </ul>
       </section>
@@ -225,16 +231,16 @@ export default function Guide() {
         </Typography>
         <ul>
           <li>
-            Tachyon Deflectors boost your co-op mates' laying rates - since Majeggstics aim for equal contributions, a deflector will benefit your co-op overall more than any artifact that only works on your individual farm.
+            <b>Tachyon Deflectors</b> boost your co-op mates' laying rates - since Majeggstics aim for equal contributions, a deflector will benefit your co-op overall more than any artifact that only works on your individual farm.
           </li>
           <li>
-            Metronome and artifacts with tachyon stones boost egg laying rate.
+            <b>Metronome</b> and artifacts with <b>tachyon stones</b> boost egg laying rate.
           </li>
           <li>
-            Compass and artifacts with quantum stones increase shipping rate.
+            <b>Compass</b> and artifacts with <b>quantum stones</b> increase shipping rate.
           </li>
           <li>
-            Check in regularly and don’t let your chickens fall asleep!
+            <b>Check in regularly</b> and don’t let your chickens fall asleep!
             <ul>
               <li>
                 The game does not update automatically. You must open your co-op farm and sync with the server for us to see your earnings before minimums are checked. Please check-in 15 minutes before your minimum check and confirm your lay rate using the eicoop link in your thread to avoid getting a strike.
@@ -242,7 +248,7 @@ export default function Guide() {
             </ul>
           </li>
           <li>
-            Contact a token:
+            <b>Contact a token:</b>
             <ul>
               <li>
                 If you see glitching in your group. Glitching is not allowed in Majeggstics co-ops.
@@ -269,13 +275,13 @@ export default function Guide() {
           We’re here to help you be successful with contracts, but we understand that sometimes you need a break.
         </Typography>
         <ul>
-          <li>Not registering - you can skip registering for contracts with us whenever you like with no penalties.
+          <li><b>Not registering</b> - you can skip registering for contracts with us whenever you like with no penalties.
           </li>
           <li>
-            Leaving the group - if you’re not enjoying being a Majeggstic, want to join another Wonky group, or are retiring from the game, ping our Member Manager and ask to be removed from Majeggstics.
+            <b>Leaving the group</b> - if you’re not enjoying being a Majeggstic, want to join another Wonky group, or are retiring from the game, ping our Member Manager and ask to be removed from Majeggstics.
           </li>
           <li>
-            Staying to socialize - If you quit playing but enjoy the community, you can stay in the group. You don’t have to play Egg Inc, and we enjoy having friends!
+            <b>Staying to socialize</b> - If you quit playing but enjoy the community, you can stay in the group. You don’t have to play Egg Inc, and we enjoy having friends!
           </li>
         </ul>
       </section>
@@ -283,15 +289,15 @@ export default function Guide() {
         <Typography variant="h4" gutterBottom>Code of Conduct</Typography>
         <Typography variant="body1" gutterBottom>Is it a privilege for Majeggstics to have access to private channels and Wonky in the Egg, Inc. server. Because of our special status, we have high expectations for your behavior in our channels and around the server.</Typography>
         <ul>
-          <li>Follow server #rules. Majeggstics members and channels must follow the Egg, Inc. server rules. Violating server rules will lead to removal from Majeggstics and the Egg, Inc. server. </li>
+          <li><b><a href='https://discord.com/channels/455380663013736479/972559672814993418/972560766957924442' target='_blank' rel="noreferrer">Follow server #rules ↗</a>. Majeggstics members and channels must follow the Egg, Inc. server rules. Violating server rules will lead to removal from Majeggstics and the Egg, Inc. server.</b></li>
           <li>Keep chat in Majeggstics kind and appropriate for all, and be a good representative of Majeggstics in public channels. </li>
           <li>Respect Majeggstics tokens when asked to change your behavior. </li>
           <li>Current events and politics can only be discussed in Off-Topic &gt;#current-events. </li>
           <li>Majeggstics is a friendly and caring group of people, but we are limited in the support we can provide. If you need to chat about mental health, check out:
             <ul>
-              <li>7 Cups of Tea: Free 24/7 chat by trained volunteers. </li>
-              <li>Dialectical Behaviour Therapy: Free, anonymous, independent skills and tools to help manage big feelings. </li>
-              <li>Project Lets: Community-support based mental health care, by and for folks with lived experience of mental illness/madness, Disability, trauma, & neurodivergence. </li>
+              <li><a href='https://www.7cups.com/' target='_blank' rel="noreferrer">7 Cups of Tea ↗</a>: Free 24/7 chat by trained volunteers. </li>
+              <li><a href='https://dialecticalbehaviortherapy.com/' target='_blank' rel="noreferrer">Dialectical Behaviour Therapy ↗</a>: Free, anonymous, independent skills and tools to help manage big feelings. </li>
+              <li><a href='https://projectlets.org' target='_blank' rel="noreferrer">Project Lets ↗</a>: Community-support based mental health care, by and for folks with lived experience of mental illness/madness, Disability, trauma, & neurodivergence. </li>
             </ul>
           </li>
           <li>
@@ -339,29 +345,29 @@ export default function Guide() {
       <section>
         <Typography variant="h4" gutterBottom>Useful Links</Typography>
         <ul>
-          <li>Server #Rules</li>
-          <li>Ciria’s Useful Links Pin in #the_majeggstics</li>
-          <li>Ciria’s Amazing Infographics Thread in #the_majeggstics</li>
-          <li>#artichat - Artifacts, crafting XP, ship drops, material farming, sets</li>
-          <li>#tips-and-tricks - Prestige strategies, fuel guides, diamond trophy guide, Royal Physique’s Epic Research calculator</li>
+          <li><a href='https://discord.com/channels/455380663013736479/972559672814993418/972560766957924442' target='_blank' rel="noreferrer">Server #rules ↗</a></li>
+          <li><a href='https://discord.com/chttps://discord.com/channels/455380663013736479/807641608538292254/1121583305410740314hannels/455380663013736479/807641608538292254/1121583305410740314' target='_blank' rel="noreferrer">Ciria’s Useful Links Pin in #the_majeggstics ↗</a></li>
+          <li><a href='https://discord.com/channels/455380663013736479/1121015323005554808' target='_blank' rel="noreferrer">Ciria’s Amazing Infographics Thread in #the_majeggstics ↗</a></li>
+          <li><a href='https://discord.com/channels/455380663013736479/801187025742331996' target='_blank' rel="noreferrer">#artichat ↗</a> - Artifacts, crafting XP, ship drops, material farming, sets</li>
+          <li><a href='https://discord.com/channels/455380663013736479/455385659079917569' target='_blank' rel="noreferrer">#tips-and-tricks ↗</a> - Prestige strategies, fuel guides, diamond trophy guide, Royal Physique’s Epic Research calculator</li>
         </ul>
       </section>
       <section>
         <Typography variant="h4" gutterBottom>Joining Majeggstics</Typography>
         <Typography variant="body1" gutterBottom>Ready to get started?</Typography>
-        <Typography variant="body1" gutterBottom>Open the game and find your EID: Open the ‘9 dots’ menu, touch ‘Help’, then ‘Data Loss Issue’. This will open an email, and you can copy your EID from the subject line. You’ll receive a confirmation DM from Wonky, the bot who helps run our co-ops, and your EID will be deleted from the chat to protect your privacy.</Typography>
+        <Typography variant="body1" gutterBottom>Open the game and find your <b>EID</b>: Open the ‘9 dots’ menu, touch ‘Help’, then ‘Data Loss Issue’. This will open an email, and you can copy your EID from the subject line. You’ll receive a confirmation DM from Wonky, the bot who helps run our co-ops, and your EID will be deleted from the chat to protect your privacy.</Typography>
         <Typography variant="body1" gutterBottom>By sending the /join command, you are agreeing to follow Majeggstics rules. </Typography>
         <Typography variant="body1" gutterBottom>
           <img src={howToJoinTheMajeggstics} alt="How to join the Mageggstics" />
         </Typography>
         <Typography variant="body1" gutterBottom>
-          Welcome to the Majeggstics, we’re happy to have you!
+          <b> Welcome to the Majeggstics, we’re happy to have you!</b>
         </Typography>
         <Typography variant="body1" gutterBottom>
-          If Majeggstics won’t be a good fit for you, DM @megadanger and ask to be removed from the group. Check the staff list in #mj-announcements to find our current member manager.
+          <b>If Majeggstics won’t be a good fit for you, DM @megadanger and ask to be removed from the group. Check the staff list in #mj-announcements to find our current member manager.</b>
         </Typography>
         <Typography variant="body1" gutterBottom>
-          The public “#Co-Op Recruitment” section can help you find co-ops, or you can look for other open groups that may fit your goals and needs better.
+          <b>The public “#Co-Op Recruitment” section can help you find co-ops, or you can look for other open groups that may fit your goals and needs better.</b>
         </Typography>
       </section>
     </main >
