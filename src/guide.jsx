@@ -181,27 +181,28 @@ export default function Guide() {
               Spamming individual tokens or token dumping is not allowed.
             </li>
           </ul>
-          <li>
-            <img src={inGameContractInfoPage} alt="In-game contract info page with highlighted farm sharing button and CB ready icon circled" />
-            <span>
-              [ID: In-game contract info page with highlighted farm sharing button and CB ready icon circled]
-            </span>
-          </li>
-          <br />
-          <li>
-            <img src={farmReadyToReceiveCBs} alt="A friend’s farm ready to receive CBs" />
-            <span>
-              [ID: A friend’s farm ready to receive CBs]
-            </span>
-          </li>
-          <br />
-          <li>
-            <img src={farmAfterSendingCBsWithTimer} alt="A friend’s farm immediately after sending CBs showing the cooldown timer" />
-            <span>
-              [ID: A friend’s farm immediately after sending CBs showing the cooldown timer]
-            </span>
-          </li>
         </ul>
+        <p>
+          <img src={inGameContractInfoPage} alt="In-game contract info page with highlighted farm sharing button and CB ready icon circled" />
+          <br />
+          <span>
+            [ID: In-game contract info page with highlighted farm sharing button and CB ready icon circled]
+          </span>
+        </p>
+        <p>
+          <img src={farmReadyToReceiveCBs} alt="A friend’s farm ready to receive CBs" />
+          <br />
+          <span>
+            [ID: A friend’s farm ready to receive CBs]
+          </span>
+        </p>
+        <p>
+          <img src={farmAfterSendingCBsWithTimer} alt="A friend’s farm immediately after sending CBs showing the cooldown timer" />
+          <br />
+          <span>
+            [ID: A friend’s farm immediately after sending CBs showing the cooldown timer]
+          </span>
+        </p>
       </section>
       <section>
         <Typography variant="h4" gutterBottom>
