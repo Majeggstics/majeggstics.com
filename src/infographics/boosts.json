@@ -1,0 +1,272 @@
+[
+    {
+        "id": 1,
+        "name": "Quantum Warming Bulb",
+        "geCost": 10,
+        "tokenCost": 0,
+        "duration": "10 minutes",
+        "unlock": "0 Soul Eggs",
+        "description": "Unlimited hatchery for 10 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Quantum_Warming_Bulb.png"
+    },
+    {
+        "id": 2,
+        "name": "Dilithium Warming Bulb",
+        "geCost": 1000,
+        "tokenCost": 0,
+        "duration": "10 minutes",
+        "unlock": "100K Soul Eggs",
+        "description": "Automatic unlimited hatchery for 10 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Dilithium_Warming_Bulb.png"
+    },
+    {
+        "id": 3,
+        "name": "Jimbo's Excellent Bird Feed",
+        "geCost": 50,
+        "tokenCost": 0,
+        "duration": "20 minutes",
+        "unlock": "0 Soul Eggs",
+        "description": "3x earnings for 20 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Jimbos_Excellent_Bird_Feed_short.png"
+    },
+    {
+        "id": 4,
+        "name": "Jimbo's Excellent Bird Feed",
+        "geCost": null,
+        "tokenCost": 1,
+        "duration": "4 hours",
+        "unlock": "0 Soul Eggs",
+        "description": "3x earnings for 4 hours",
+        "image": "/src/assets/gameResources/boosts/Boosts_Jimbos_Excellent_Bird_Feed_long.png"
+    },
+    {
+        "id": 5,
+        "name": "Jimbo's Premium Bird Feed",
+        "geCost": 150,
+        "tokenCost": 1,
+        "duration": "15 minutes",
+        "unlock": "0 Soul Eggs",
+        "description": "10x earnings for 15 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Jimbos_Premium_Bird_Feed_short.png"
+    },
+    {
+        "id": 6,
+        "name": "Jimbo's Premium Bird Feed",
+        "geCost": 750,
+        "tokenCost": 1,
+        "duration": "3 hours",
+        "unlock": "1 Soul Eggs",
+        "description": "10x earnings for 3 hours",
+        "image": "/src/assets/gameResources/boosts/Boosts_Jimbos_Premium_Bird_Feed_long.png"
+    },
+    {
+        "id": 7,
+        "name": "Jimbo's Best Bird Feed",
+        "geCost": 2500,
+        "tokenCost": 2,
+        "duration": "10 minutes",
+        "unlock": "100 Soul Eggs",
+        "description": "50x earnings for 10 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Jimbos_Best_Bird_Feed_short.png"
+    },
+    {
+        "id": 8,
+        "name": "Jimbo's Best Bird Feed",
+        "geCost": 7500,
+        "tokenCost": 3,
+        "duration": "2 hours",
+        "unlock": "100 Soul Eggs",
+        "description": "50x earnings for 2 hours",
+        "image": "/src/assets/gameResources/boosts/Boosts_Jimbos_Best_Bird_Feed_long.png"
+    },
+    {
+        "id": 10,
+        "name": "Tachyon Prism",
+        "geCost": 50,
+        "tokenCost": 0,
+        "duration": "10 minutes",
+        "unlock": "0 Soul Eggs",
+        "description": "10x internal hatchery for 10 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Tachyon_Prism.png"
+    },
+    {
+        "id": 11,
+        "name": "Large Tachyon Prism",
+        "geCost": 500,
+        "tokenCost": 0,
+        "duration": "4 hours",
+        "unlock": "0 Soul Eggs",
+        "description": "10x internal hatchery for 4 hours",
+        "image": "/src/assets/gameResources/boosts/Boosts_Large_Tachyon_Prism.png"
+    },
+    {
+        "id": 12,
+        "name": "Powerful Tachyon Prism",
+        "geCost": 1000,
+        "tokenCost": 2,
+        "duration": "10 minutes",
+        "unlock": "0 Soul Eggs",
+        "description": "100x internal hatchery for 10 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Powerful_Tachyon_Prism.png"
+    },
+    {
+        "id": 13,
+        "name": "Epic Tachyon Prism",
+        "geCost": 5000,
+        "tokenCost": 2,
+        "duration": "2 hours",
+        "unlock": "100 Soul Eggs",
+        "description": "100x internal hatchery for 2 hours",
+        "image": "/src/assets/gameResources/boosts/Boosts_Epic_Tachyon_Prism.png"
+    },
+    {
+        "id": 14,
+        "name": "Legendary Tachyon Prism",
+        "geCost": 12000,
+        "tokenCost": 4,
+        "duration": "10 minutes",
+        "unlock": "2500 Soul Eggs",
+        "description": "1000x internal hatchery for 10 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Legendary_Tachyon_Prism.png"
+    },
+    {
+        "id": 15,
+        "name": "Supreme Tachyon Prism",
+        "geCost": 25000,
+        "tokenCost": 4,
+        "duration": "1 hour",
+        "unlock": "100K Soul Eggs",
+        "description": "1000x internal hatchery for 1 hour",
+        "image": "/src/assets/gameResources/boosts/Boosts_Supreme_Tachyon_Prism.png"
+    },
+    {
+        "id": 16,
+        "name": "Boost Beacon",
+        "geCost": 1000,
+        "tokenCost": 1,
+        "duration": "30 minutes",
+        "unlock": "1000 Soul Eggs",
+        "description": "2x all active boosts for 30 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Boost_Beacon.png"
+    },
+    {
+        "id": 17,
+        "name": "Epic Boost Beacon",
+        "geCost": 8000,
+        "tokenCost": 4,
+        "duration": "10 minutes",
+        "unlock": "100K Soul Eggs",
+        "description": "10x all active boosts for 10 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Epic_Boost_Beacon.png"
+    },
+    {
+        "id": 18,
+        "name": "Large Boost Beacon",
+        "geCost": 15000,
+        "tokenCost": 3,
+        "duration": "1 hour",
+        "unlock": "500K Soul Eggs",
+        "description": "5x all active boosts for 1 hour",
+        "image": "/src/assets/gameResources/boosts/Boosts_Large_Boost_Beacon.png"
+    },
+    {
+        "id": 19,
+        "name": "Legendary Boost Beacon",
+        "geCost": 50000,
+        "tokenCost": 8,
+        "duration": "10 minutes",
+        "unlock": "100M Soul Eggs",
+        "description": "50x all active boosts for 10 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Legendary_Boost_Beacon.png"
+    },
+    {
+        "id": 20,
+        "name": "Soul Beacon",
+        "geCost": 200,
+        "tokenCost": null,
+        "duration": "30 minutes",
+        "unlock": "10000 Soul Eggs",
+        "description": "5x Soul Eggs for 30 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Soul_Beacon.png"
+    },
+    {
+        "id": 21,
+        "name": "Epic Soul Beacon",
+        "geCost": 1000,
+        "tokenCost": null,
+        "duration": "20 minutes",
+        "unlock": "1M Soul Eggs",
+        "description": "50x Soul Eggs for 20 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Epic_Soul_Beacon.png"
+    },
+    {
+        "id": 22,
+        "name": "Legendary Soul Beacon",
+        "geCost": 10000,
+        "tokenCost": null,
+        "duration": "10 minutes",
+        "unlock": "10B Soul Eggs",
+        "description": "500x Soul Eggs for 10 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Legendary_Soul_Beacon.png"
+    },
+    {
+        "id": 23,
+        "name": "Subsidy Application",
+        "geCost": 200,
+        "tokenCost": 1,
+        "duration": "instant",
+        "unlock": "0 Soul Eggs",
+        "description": "+10% of Farm Value",
+        "image": "/src/assets/gameResources/boosts/Boosts_Subsidy_Application.png"
+    },
+    {
+        "id": 24,
+        "name": "Blank Check",
+        "geCost": 750,
+        "tokenCost": 1,
+        "duration": "instant",
+        "unlock": "100K Soul Eggs",
+        "description": "+1000% of Farm Value",
+        "image": "/src/assets/gameResources/boosts/Boosts_Blank_Check.png"
+    },
+    {
+        "id": 25,
+        "name": "Money Printer",
+        "geCost": 2500,
+        "tokenCost": 2,
+        "duration": "instant",
+        "unlock": "5M Soul Eggs",
+        "description": "+500% of Farm Value",
+        "image": "/src/assets/gameResources/boosts/Boosts_Money_Printer.png"
+    },
+    {
+        "id": 26,
+        "name": "Soul Mirror",
+        "geCost": 100,
+        "tokenCost": 1,
+        "duration": "10 minutes",
+        "unlock": "1000 Soul Eggs",
+        "description": "Activates Soul Mirror for 10 minutes",
+        "image": "/src/assets/gameResources/boosts/Boosts_Soul_Mirror.png"
+    },
+    {
+        "id": 27,
+        "name": "Epic Soul Mirror",
+        "geCost": 500,
+        "tokenCost": 2,
+        "duration": "1 hour",
+        "unlock": "1000 Soul Eggs",
+        "description": "Activates Soul Mirror for 1 hour",
+        "image": "/src/assets/gameResources/boosts/Boosts_Epic_Soul_Mirror.png"
+    },
+    {
+        "id": 28,
+        "name": "Legendary Soul Mirror",
+        "geCost": 2000,
+        "tokenCost": 3,
+        "duration": "24 hours",
+        "unlock": "10000 Soul Eggs",
+        "description": "Activates Soul Mirror for 24 hours",
+        "image": "/src/assets/gameResources/boosts/Boosts_Legendary_Soul_Mirror.png"
+    }
+]
