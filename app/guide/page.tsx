@@ -145,7 +145,7 @@ export default function Guide() {
                         </ul>
                     </li>
 
-                    <li>Tokens monitor many co-op threads and can't respond to every message. If you need help, make sure to ask in #the_majeggstics or your grade's Majeggstic channel to make sure an available token sees your message. Don't be afraid to interrupt off-topic chat - our priority is helping your co-op complete successfully.</li>
+                    <li>Tokens monitor many co-op threads and can&apos;t respond to every message. If you need help, make sure to ask in #the_majeggstics or your grade&apos;s Majeggstic channel to make sure an available token sees your message. Don&apos;t be afraid to interrupt off-topic chat - our priority is helping your co-op complete successfully.</li>
                 </ul>
             </section>
             <section>
@@ -153,7 +153,7 @@ export default function Guide() {
                 <ul>
                     <li>Finish common research, buy habs, and buy transport.
                         <ul>
-                            <li>Use artifacts that increase income like Demeter's Necklace, Tungsten Ankh, Book of Basan; and artifacts that hold Shell Stones, Soul Stones, and Prophecy Stones.</li>
+                            <li>Use artifacts that increase income like Demeter&apos;s Necklace, Tungsten Ankh, Book of Basan; and artifacts that hold Shell Stones, Soul Stones, and Prophecy Stones.</li>
 
                             <li>Puzzle cubes will lower research costs - use your income-boosting artifacts, then switch your puzzle cube on while you’re buying. If you need to save more, swap the cube out for a better income artifact.</li></ul>
                     </li>
@@ -236,7 +236,7 @@ export default function Guide() {
                 </Typography>
                 <ul>
                     <li>
-                        <b>Tachyon Deflectors</b> boost your co-op mates' laying rates - since Majeggstics aim for equal contributions, a deflector will benefit your co-op overall more than any artifact that only works on your individual farm.
+                        <b>Tachyon Deflectors</b> boost your co-op mates&apos; laying rates - since Majeggstics aim for equal contributions, a deflector will benefit your co-op overall more than any artifact that only works on your individual farm.
                     </li>
                     <li>
                         <b>Metronome</b> and artifacts with <b>tachyon stones</b> boost egg laying rate.
