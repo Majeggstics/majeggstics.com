@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@builder.io/dev-tools": "^0.2.13",
+    "@builder.io/react": "^3.2.4",
+    "@builder.io/sdk": "^2.2.2",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
