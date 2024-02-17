@@ -11,7 +11,7 @@ import styles from './styles.module.css';
 
 export default function ContractBoostCalculator() {
   const [formState, setFormState] = useState(() => {
-    const savedFormState = localStorage.getItem('formState');
+    const savedFormState = typeof window !== 'undefined' ? localStorage.getItem('formState') : null;
     return savedFormState ? JSON.parse(savedFormState) : formInitialState;
   });
 
@@ -34,7 +34,7 @@ export default function ContractBoostCalculator() {
     const { name, value } = event.target;
     console.log('handleChange', { name, value });
 
-    setFormState((prevState) => ({
+    setFormState((prevState: any) => ({
       ...prevState,
       [name]: value,
     }));
@@ -112,7 +112,7 @@ export default function ContractBoostCalculator() {
                     </div>
                     <div className={styles.inputContainer}>
                       <label htmlFor="ihr">
-                        IHR (You probably don't need to change this)
+                        IHR (You probably don&apos;t need to change this)
                       </label>
                       <CustomNumberInput name='ihr' value={formState.ihr} handleChange={handleChange} />
                     </div>
@@ -190,7 +190,7 @@ export default function ContractBoostCalculator() {
           </div>
         </section>
         <section className={styles.footerSection}>
-          <p>Heavily inspired by <a href="https://hashtru.netlify.app/contractboost" target="_blank">hashtru's Contract Boost Calculator</a></p>
+          <p>Heavily inspired by <a href="https://hashtru.netlify.app/contractboost" target="_blank">hashtru&apos;s Contract Boost Calculator</a></p>
         </section>
       </main>
     </Tooltip.Provider>
@@ -380,8 +380,3 @@ const boostSetPresets = [
     baseBoostTime: 60,
   },
 ];
-
-// Works only for simple objects with no nested objects
-const isEqual = (obj1: any, obj2: any) => {
-  return Object.entries(obj1).every(([key, value]) => obj2[key] === value);
-}
