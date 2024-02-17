@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as Accordion from '@radix-ui/react-accordion';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
@@ -10,15 +10,27 @@ import { CustomNumberInput, CustomSelectInput } from './components/CustomInput';
 import styles from './styles.module.css';
 
 export default function ContractBoostCalculator() {
+  const resultsSectionRef = useRef<HTMLDivElement | null>(null);
+
   const [formState, setFormState] = useState(() => {
     const savedFormState = typeof window !== 'undefined' ? localStorage.getItem('formState') : null;
     return savedFormState ? JSON.parse(savedFormState) : formInitialState;
   });
 
+  const [selectedBoostPreset, setSelectedBoostPreset] = useState('1');
+
   useEffect(() => {
     console.log('formState changed', { formState });
     localStorage.setItem('formState', JSON.stringify(formState));
   }, [formState]);
+
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     if (resultsSectionRef.current) {
+  //       resultsSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+  //     }
+  //   }, 100);
+  // }, [selectedBoostPreset]);
 
   const improvedIhr = formState.ihr * formState.chalice * formState.tachPrismMultiplier * formState.boostBeaconMultiplier * (Math.pow(1.02, formState.t2LifeStonesCount) * Math.pow(1.03, formState.t3LifeStonesCount) * Math.pow(1.04, formState.t4LifeStonesCount));
 
@@ -44,6 +56,10 @@ export default function ContractBoostCalculator() {
     const preset = boostSetPresets.find((preset) => preset.id === presetId);
     console.log('handleBoostPresetClick', { presetId }, preset);
 
+    if (resultsSectionRef.current) {
+      resultsSectionRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+
     if (preset) {
       setFormState((prevState: any) => ({
         ...prevState,
@@ -51,6 +67,7 @@ export default function ContractBoostCalculator() {
         boostBeaconMultiplier: preset.boostBeaconMultiplier,
         baseBoostTime: preset.baseBoostTime,
       }));
+      setSelectedBoostPreset(presetId);
     }
   }
 
@@ -178,7 +195,7 @@ export default function ContractBoostCalculator() {
         </section>
         <section>
           <h3>Results</h3>
-          <div>
+          <div ref={resultsSectionRef}>
             {/* Improved IHR is incorrect */}
             {/* <p>Improved IHR: {Math.round(improvedIhr)?.toLocaleString()} Min/Hab</p> */}
             <p>Improved Tachyon boost time: {Math.floor(improvedBoostTime)} mins {Math.floor(improvedBoostTime * 60 % 60)} seconds </p>

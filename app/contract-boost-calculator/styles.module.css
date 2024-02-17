@@ -81,6 +81,17 @@
     margin-bottom: 50px;
 }
 
+@media screen and (max-width: 768px) {
+    .stonesInputsContainer>div>div {
+        display: grid;
+        row-gap: 1rem;
+        grid-template-columns: repeat(2, auto);
+        justify-content: start;
+        align-items: center;
+    }
+
+}
+
 /* Accordion styles obtained from https://www.radix-ui.com/primitives/docs/components/accordion */
 
 .AccordionChevron {
