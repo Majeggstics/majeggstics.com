@@ -28,6 +28,9 @@ export default function Home() {
           <p>
             <Link href="/guide">Guide</Link>
           </p>
+          <p>
+            <Link href="/contract-boost-calculator">Contract Boost Calculator</Link>
+          </p>
         </div>
       </section>
     </main>
