@@ -40,6 +40,20 @@ export default function ContractBoostCalculator() {
     }));
   }
 
+  function handleBoostPresetClick(presetId: string) {
+    const preset = boostSetPresets.find((preset) => preset.id === presetId);
+    console.log('handleBoostPresetClick', { presetId }, preset);
+
+    if (preset) {
+      setFormState((prevState: any) => ({
+        ...prevState,
+        tachPrismMultiplier: preset.tachPrismMultiplier,
+        boostBeaconMultiplier: preset.boostBeaconMultiplier,
+        baseBoostTime: preset.baseBoostTime,
+      }));
+    }
+  }
+
   return (
     <Tooltip.Provider delayDuration={10}>
       <main className={styles.main}>
@@ -58,7 +72,7 @@ export default function ContractBoostCalculator() {
           <h4>Boost Set Presets</h4>
           <div className={styles.boostBtnContainer}>
             {boostSetPresets.map((preset) => (
-              <button key={preset.id} className={styles.boostBtn} title={preset.description}>{preset.name}</button>
+              <button key={preset.id} className={styles.boostBtn} title={preset.description} onClick={() => handleBoostPresetClick(preset.id)}>{preset.name}</button>
             ))}
           </div>
           <div className={styles.boostAndArtifactInputsContainer}>
@@ -172,7 +186,7 @@ export default function ContractBoostCalculator() {
             <p>Population (offline): {Math.round(population)?.toLocaleString()} chickens</p>
             <p>Max hab space: {Math.round(habSpace)?.toLocaleString()}</p>
             <p>Maxed habs? {population > habSpace ? 'Yes ✔' : 'No ❌'}</p>
-            <p><b>Time to max. habs: </b>{population > habSpace ? `${Math.floor(timeToMaxHabsInSeconds / 60)} mins ${Math.floor(timeToMaxHabsInSeconds % 60)} seconds` : `Habs won't be full at the end of the boost`}</p>
+            {population > habSpace ? <p><b>Time to max. habs: </b>{`${Math.floor(timeToMaxHabsInSeconds / 60)} mins ${Math.floor(timeToMaxHabsInSeconds % 60)} seconds`}</p> : null}
           </div>
         </section>
         <section className={styles.footerSection}>
@@ -320,32 +334,50 @@ const boostSetPresets = [
   {
     id: '1',
     name: '8 token',
-    description: '8 token boost set - 1000x legendary (10 mins) tachyon prism and 10x boost beacon'
+    description: '8 token boost set - 1000x legendary (10 mins) tachyon prism and 10x boost beacon',
+    tachPrismMultiplier: 1000,
+    boostBeaconMultiplier: 10,
+    baseBoostTime: 10,
   },
   {
     id: '2',
     name: '6 token (dubson)',
-    description: '6 token boost set - 1000x legendary (10 mins) tachyon prism and two of the 2x (30 mins) boost beacon'
+    description: '6 token boost set - 1000x legendary (10 mins) tachyon prism and two of the 2x (30 mins) boost beacon',
+    tachPrismMultiplier: 1000,
+    boostBeaconMultiplier: 4,
+    baseBoostTime: 10,
   },
   {
     id: '3',
     name: '6 token (dubson supreme)',
-    description: '6 token boost set - 1000x supreme (1 hour) tachyon prism and two of the 2x (30 mins) boost beacon'
+    description: '6 token boost set - 1000x supreme (1 hour) tachyon prism and two of the 2x (30 mins) boost beacon',
+    tachPrismMultiplier: 1000,
+    boostBeaconMultiplier: 4,
+    baseBoostTime: 60,
   },
   {
     id: '4',
     name: '5 token (benson supreme)',
-    description: '6 token boost set - 1000x supreme (1 hour) prism and two of the 2x boost beacon'
+    description: '6 token boost set - 1000x supreme (1 hour) prism and one of the 2x boost beacon',
+    tachPrismMultiplier: 1000,
+    boostBeaconMultiplier: 2,
+    baseBoostTime: 60,
   },
   {
     id: '5',
     name: '4 token (epic)',
-    description: '4 token boost set - Two 100x epic prism'
+    description: '4 token boost set - Two 100x epic (2 hour) prism',
+    tachPrismMultiplier: 200,
+    boostBeaconMultiplier: 1,
+    baseBoostTime: 120,
   },
   {
     id: '6',
     name: '4 token (supreme)',
-    description: '4 token boost - 1hour 1000x legendary supreme prism'
+    description: '4 token boost - 1000x legendary (1 hour) supreme prism',
+    tachPrismMultiplier: 1000,
+    boostBeaconMultiplier: 1,
+    baseBoostTime: 60,
   },
 ];
 
