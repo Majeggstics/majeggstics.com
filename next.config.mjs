@@ -15,6 +15,8 @@ const nextConfig = BuilderDevTools()({
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },
+  reactStrictMode: true,
+  output: 'export',
 });
 
 export default nextConfig;
