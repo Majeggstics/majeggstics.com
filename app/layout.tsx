@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import "./globals.css";
+import ScrollToTop from "@/components/ScrollToTop/ScrollToTop";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <AppRouterCacheProvider>
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          {children}
+          <ScrollToTop />
+        </body>
       </AppRouterCacheProvider>
     </html>
   );

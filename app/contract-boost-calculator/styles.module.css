@@ -34,6 +34,11 @@
     transform: scale(0.85);
 }
 
+.activeBoostBtn {
+    background-color: dodgerblue;
+    color: #fff;
+}
+
 .boostAndArtifactInputsContainer {
     display: flex;
     flex-direction: column;
@@ -52,7 +57,7 @@
 }
 
 .inputContainer input,
-.stonesInputsContainer input,
+.stonesInputsContainer select,
 .inputContainer select {
     border-radius: 10px;
     border: 1px solid #000;
@@ -71,8 +76,8 @@
     gap: .25rem;
 }
 
-.stonesInputsContainer input[type="number"] {
-    width: 50px;
+.stonesInputsContainer select {
+    width: 60px;
     margin: 0 16px 0 8px;
 }
 

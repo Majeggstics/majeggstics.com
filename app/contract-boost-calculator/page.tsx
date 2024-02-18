@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import * as Accordion from '@radix-ui/react-accordion';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
@@ -10,8 +10,6 @@ import { CustomNumberInput, CustomSelectInput } from './components/CustomInput';
 import styles from './styles.module.css';
 
 export default function ContractBoostCalculator() {
-  const resultsSectionRef = useRef<HTMLDivElement | null>(null);
-
   const [formState, setFormState] = useState(() => {
     const savedFormState = typeof window !== 'undefined' ? localStorage.getItem('formState') : null;
     return savedFormState ? JSON.parse(savedFormState) : formInitialState;
@@ -32,14 +30,6 @@ export default function ContractBoostCalculator() {
     console.log('formState changed', { formState });
     localStorage.setItem('formState', JSON.stringify(formState));
   }, [formState]);
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     if (resultsSectionRef.current) {
-  //       resultsSectionRef.current.scrollIntoView({ behavior: 'smooth' });
-  //     }
-  //   }, 100);
-  // }, [selectedBoostPreset]);
 
   const improvedIhr = formState.ihr * formState.chalice * formState.tachPrismMultiplier * formState.boostBeaconMultiplier * (Math.pow(1.02, formState.t2LifeStonesCount) * Math.pow(1.03, formState.t3LifeStonesCount) * Math.pow(1.04, formState.t4LifeStonesCount));
 
@@ -65,10 +55,6 @@ export default function ContractBoostCalculator() {
     const preset = boostSetPresets.find((preset) => preset.id === presetId);
     console.log('handleBoostPresetClick', { presetId }, preset);
 
-    if (resultsSectionRef.current) {
-      resultsSectionRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-
     if (preset) {
       setFormState((prevState: any) => ({
         ...prevState,
@@ -78,6 +64,10 @@ export default function ContractBoostCalculator() {
       }));
       setSelectedBoostPreset(presetId);
     }
+
+    setTimeout(() => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 500);
   }
 
   return (
@@ -98,7 +88,7 @@ export default function ContractBoostCalculator() {
           <h4>Boost Set Presets</h4>
           <div className={styles.boostBtnContainer}>
             {boostSetPresets.map((preset) => (
-              <button key={preset.id} className={styles.boostBtn} title={preset.description} onClick={() => handleBoostPresetClick(preset.id)}>{preset.name}</button>
+              <button key={preset.id} className={`${styles.boostBtn} ${preset.id === selectedBoostPreset ? styles.activeBoostBtn : ''}`} title={preset.description} onClick={() => handleBoostPresetClick(preset.id)}>{preset.name}</button>
             ))}
           </div>
           <div className={styles.boostAndArtifactInputsContainer}>
@@ -116,19 +106,28 @@ export default function ContractBoostCalculator() {
                       <label htmlFor="tachPrismMultiplier">
                         Tachyon Prism Multiplier (Multiple of these will stack additively)
                       </label>
-                      <CustomNumberInput name='tachPrismMultiplier' value={formState.tachPrismMultiplier} handleChange={handleChange} />
+                      <CustomNumberInput name='tachPrismMultiplier' value={formState.tachPrismMultiplier} handleChange={(event: ChangeEvent<HTMLInputElement>) => {
+                        handleChange(event);
+                        setSelectedBoostPreset('');
+                      }} />
                     </div>
                     <div className={styles.inputContainer}>
                       <label htmlFor="boostBeaconMultiplier">
                         Boost Beacon Multiplier (Multiple of these will stack additively)
                       </label>
-                      <CustomNumberInput name='boostBeaconMultiplier' value={formState.boostBeaconMultiplier} handleChange={handleChange} />
+                      <CustomNumberInput name='boostBeaconMultiplier' value={formState.boostBeaconMultiplier} handleChange={(event: ChangeEvent<HTMLInputElement>) => {
+                        handleChange(event);
+                        setSelectedBoostPreset('');
+                      }} />
                     </div>
                     <div className={styles.inputContainer}>
                       <label htmlFor="baseBoostTime">
                         Base Boost Time (minutes)
                       </label>
-                      <CustomNumberInput name='baseBoostTime' value={formState.baseBoostTime} handleChange={handleChange} />
+                      <CustomNumberInput name='baseBoostTime' value={formState.baseBoostTime} handleChange={(event: ChangeEvent<HTMLInputElement>) => {
+                        handleChange(event);
+                        setSelectedBoostPreset('');
+                      }} />
                     </div>
                     <div className={styles.inputContainer}>
                       <label htmlFor="boostEventDurationMultiplier">
@@ -172,15 +171,15 @@ export default function ContractBoostCalculator() {
                 <label htmlFor="t2LifeStonesCount">
                   T2
                 </label>
-                <CustomNumberInput name='t2LifeStonesCount' value={formState.t2LifeStonesCount} handleChange={handleChange} />
+                <CustomSelectInput name='t2LifeStonesCount' value={formState.t2LifeStonesCount} handleChange={handleChange} options={stonesCountOptions} />
                 <label htmlFor="t3LifeStonesCount">
                   T3
                 </label>
-                <CustomNumberInput name='t3LifeStonesCount' value={formState.t3LifeStonesCount} handleChange={handleChange} />
+                <CustomSelectInput name='t3LifeStonesCount' value={formState.t3LifeStonesCount} handleChange={handleChange} options={stonesCountOptions} />
                 <label htmlFor="t4LifeStonesCount">
                   T4
                 </label>
-                <CustomNumberInput name='t4LifeStonesCount' value={formState.t4LifeStonesCount} handleChange={handleChange} />
+                <CustomSelectInput name='t4LifeStonesCount' value={formState.t4LifeStonesCount} handleChange={handleChange} options={stonesCountOptions} />
               </div>
             </div>
             <div>
@@ -189,24 +188,25 @@ export default function ContractBoostCalculator() {
                 <label htmlFor="t2DiliStonesCount">
                   T2
                 </label>
-                <CustomNumberInput name='t2DiliStonesCount' value={formState.t2DiliStonesCount} handleChange={handleChange} />
+                <CustomSelectInput name='t2DiliStonesCount' value={formState.t2DiliStonesCount} handleChange={handleChange} options={stonesCountOptions} />
                 <label htmlFor="t3DiliStonesCount">
                   T3
                 </label>
-                <CustomNumberInput name='t3DiliStonesCount' value={formState.t3DiliStonesCount} handleChange={handleChange} />
+                <CustomSelectInput name='t3DiliStonesCount' value={formState.t3DiliStonesCount} handleChange={handleChange} options={stonesCountOptions} />
                 <label htmlFor="t4DiliStonesCount">
                   T4
                 </label>
-                <CustomNumberInput name='t4DiliStonesCount' value={formState.t4DiliStonesCount} handleChange={handleChange} />
+                <CustomSelectInput name='t4DiliStonesCount' value={formState.t4DiliStonesCount} handleChange={handleChange} options={stonesCountOptions} />
               </div>
             </div>
           </div>
         </section>
         <section>
           <h3>Results</h3>
-          <div ref={resultsSectionRef}>
+          <div>
             {/* Improved IHR is incorrect */}
             {/* <p>Improved IHR: {Math.round(improvedIhr)?.toLocaleString()} Min/Hab</p> */}
+            <p>Selected boost preset: {selectedBoostPreset ? boostSetPresets.find((preset) => preset.id === selectedBoostPreset)?.description : 'You are using a custom boost setup'}</p>
             <p>Improved Tachyon boost time: {Math.floor(improvedBoostTime)} mins {Math.floor(improvedBoostTime * 60 % 60)} seconds </p>
             <p>Population (online): {(Math.round(population / 3))?.toLocaleString()} chickens</p>
             <p>Population (offline): {Math.round(population)?.toLocaleString()} chickens</p>
@@ -339,6 +339,61 @@ const gussetOptions = [
   },
 ];
 
+const stonesCountOptions = [
+  {
+    value: 0,
+    text: "0",
+  },
+  {
+    value: 1,
+    text: "1",
+  },
+  {
+    value: 2,
+    text: "2",
+  },
+  {
+    value: 3,
+    text: "3",
+  },
+  {
+    value: 4,
+    text: "4",
+  },
+  {
+    value: 5,
+    text: "5",
+  },
+  {
+    value: 6,
+    text: "6",
+  },
+  {
+    value: 7,
+    text: "7",
+  },
+  {
+    value: 8,
+    text: "8",
+  },
+  {
+    value: 9,
+    text: "9",
+  },
+  {
+    value: 10,
+    text: "10",
+  },
+  {
+    value: 11,
+    text: "11",
+  },
+  {
+    value: 12,
+    text: "12",
+  },
+];
+
 const formInitialState = {
   tachPrismMultiplier: 1000,
   boostBeaconMultiplier: 10,
@@ -348,12 +403,12 @@ const formInitialState = {
   monocle: monocleOptions[0].value,
   chalice: chaliceOptions[0].value,
   gusset: gussetOptions[0].value,
-  t2LifeStonesCount: 0,
-  t3LifeStonesCount: 0,
-  t4LifeStonesCount: 0,
-  t2DiliStonesCount: 0,
-  t3DiliStonesCount: 0,
-  t4DiliStonesCount: 0,
+  t2LifeStonesCount: stonesCountOptions[0].value,
+  t3LifeStonesCount: stonesCountOptions[0].value,
+  t4LifeStonesCount: stonesCountOptions[0].value,
+  t2DiliStonesCount: stonesCountOptions[0].value,
+  t3DiliStonesCount: stonesCountOptions[0].value,
+  t4DiliStonesCount: stonesCountOptions[0].value,
 };
 
 const boostSetPresets = [
@@ -367,42 +422,50 @@ const boostSetPresets = [
   },
   {
     id: '2',
-    name: '6 token (dubson)',
-    description: '6 token boost set - 1000x legendary (10 mins) tachyon prism and two of the 2x (30 mins) boost beacon',
+    name: '6 token (Dubson)',
+    description: '6 token (Dubson) boost set - 1000x legendary (10 mins) tachyon prism and two of the 2x (30 mins) boost beacon',
     tachPrismMultiplier: 1000,
     boostBeaconMultiplier: 4,
     baseBoostTime: 10,
   },
   {
     id: '3',
-    name: '6 token (dubson supreme)',
-    description: '6 token boost set - 1000x supreme (1 hour) tachyon prism and two of the 2x (30 mins) boost beacon',
+    name: '6 token (Dubson supreme)',
+    description: '6 token (Dubson supreme) boost set - 1000x supreme (1 hour) tachyon prism and two of the 2x (30 mins) boost beacon',
     tachPrismMultiplier: 1000,
     boostBeaconMultiplier: 4,
     baseBoostTime: 60,
   },
   {
     id: '4',
-    name: '5 token (benson supreme)',
-    description: '6 token boost set - 1000x supreme (1 hour) prism and one of the 2x boost beacon',
+    name: '5 token (Benson supreme)',
+    description: '5 token (Benson supreme) boost set - 1000x supreme (1 hour) prism and one of the 2x boost beacon',
     tachPrismMultiplier: 1000,
     boostBeaconMultiplier: 2,
     baseBoostTime: 60,
   },
   {
     id: '5',
-    name: '4 token (epic)',
-    description: '4 token boost set - Two 100x epic (2 hour) prism',
+    name: '4 token (Epic)',
+    description: '4 token (Epic) boost set - Two 100x epic (2 hour) tachyon prisms',
     tachPrismMultiplier: 200,
     boostBeaconMultiplier: 1,
     baseBoostTime: 120,
   },
   {
     id: '6',
-    name: '4 token (supreme)',
-    description: '4 token boost - 1000x legendary (1 hour) supreme prism',
+    name: '4 token (Supreme)',
+    description: '4 token (Supreme) boost - 1000x supreme (1 hour) prism',
     tachPrismMultiplier: 1000,
     boostBeaconMultiplier: 1,
     baseBoostTime: 60,
+  },
+  {
+    id: '7',
+    name: '0 token (five large)',
+    description: '0 token (five large tach prisms) boost set - five 10x large (4 hour) tachyon prisms',
+    tachPrismMultiplier: 5 * 10,
+    boostBeaconMultiplier: 1,
+    baseBoostTime: 4 * 60,
   },
 ];
