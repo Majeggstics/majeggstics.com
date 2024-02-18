@@ -20,6 +20,15 @@ export default function ContractBoostCalculator() {
   const [selectedBoostPreset, setSelectedBoostPreset] = useState('1');
 
   useEffect(() => {
+    // Set the page title on initial load
+    // This is a workaround for the fact that we can't use metadata in client components
+    const document = typeof window !== 'undefined' ? window.document : null;
+    if (document) {
+      document.title = 'Contract Boost Calculator | Majeggstics';
+    }
+  }, []);
+
+  useEffect(() => {
     console.log('formState changed', { formState });
     localStorage.setItem('formState', JSON.stringify(formState));
   }, [formState]);
