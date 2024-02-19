@@ -1,11 +1,4 @@
-import Image from 'next/image';
 import Typography from '@mui/material/Typography';
-
-import newContractIcon from './images/newContractIcon.jpg';
-import inGameContractInfoPage from './images/inGameContractInfoPage.png';
-import farmReadyToReceiveCBs from './images/farmReadyToReceiveCBs.png';
-import farmAfterSendingCBsWithTimer from './images/farmAfterSendingCBsWithTimer.png';
-import howToJoinTheMajeggstics from './images/howToJoinTheMajeggstics.png';
 
 export default function Guide() {
     return (
@@ -88,8 +81,8 @@ export default function Guide() {
                 </table>
                 <br />
                 <Typography variant="body1" gutterBottom>
-                    <Image
-                        src={newContractIcon}
+                    <img
+                        src="./images/newContractIcon.jpg"
                         alt="New Contract Icon"
                     />
                     <span>
@@ -187,21 +180,21 @@ export default function Guide() {
                     </ul>
                 </ul>
                 <p>
-                    <Image className="responsive-image" src={inGameContractInfoPage} alt="In-game contract info page with highlighted farm sharing button and CB ready icon circled" />
+                    <img className="responsive-image" src='./images/inGameContractInfoPage.png' alt="In-game contract info page with highlighted farm sharing button and CB ready icon circled" />
                     <br />
                     <span>
                         [ID: In-game contract info page with highlighted farm sharing button and CB ready icon circled]
                     </span>
                 </p>
                 <p>
-                    <Image className="responsive-image" src={farmReadyToReceiveCBs} alt="A friend’s farm ready to receive CBs" />
+                    <img className="responsive-image" src='./images/farmReadyToReceiveCBs.png' alt="A friend’s farm ready to receive CBs" />
                     <br />
                     <span>
                         [ID: A friend’s farm ready to receive CBs]
                     </span>
                 </p>
                 <p>
-                    <Image className="responsive-image" src={farmAfterSendingCBsWithTimer} alt="A friend’s farm immediately after sending CBs showing the cooldown timer" />
+                    <img className="responsive-image" src='./images/farmAfterSendingCBsWithTimer.png' alt="A friend’s farm immediately after sending CBs showing the cooldown timer" />
                     <br />
                     <span>
                         [ID: A friend’s farm immediately after sending CBs showing the cooldown timer]
@@ -363,7 +356,7 @@ export default function Guide() {
                 <Typography variant="body1" gutterBottom>Open the game and find your <b>EID</b>: Open the ‘9 dots’ menu, touch ‘Help’, then ‘Data Loss Issue’. This will open an email, and you can copy your EID from the subject line. You’ll receive a confirmation DM from Wonky, the bot who helps run our co-ops, and your EID will be deleted from the chat to protect your privacy.</Typography>
                 <Typography variant="body1" gutterBottom>By sending the /join command, you are agreeing to follow Majeggstics rules. </Typography>
                 <Typography variant="body1" gutterBottom>
-                    <Image className="responsive-image" src={howToJoinTheMajeggstics} alt="How to join the Mageggstics" />
+                    <img className="responsive-image" src="./images/howToJoinTheMajeggstics.png" alt="How to join the Mageggstics" />
                 </Typography>
                 <Typography variant="body1" gutterBottom>
                     <b> Welcome to the Majeggstics, we’re happy to have you!</b>

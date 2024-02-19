@@ -244,7 +244,7 @@ const monocleOptions = [
     text: "T3",
   },
   {
-    value: 1.15,
+    value: 1.20,
     text: "T4",
   },
   {
