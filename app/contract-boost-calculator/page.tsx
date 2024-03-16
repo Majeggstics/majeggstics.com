@@ -45,7 +45,7 @@ export default function ContractBoostCalculator() {
     if (selectedIGN) {
       setFormState((prevState: any) => ({
         ...prevState,
-        IGN: selectedIGN?.userName,
+        IGN: (selectedIGN as { userName: string }).userName,
       }));
     }
   }, [equippedArtifactsByIGN]);
@@ -139,7 +139,8 @@ export default function ContractBoostCalculator() {
       return artifact.spec.name === artifactId
     });
     // console.log('artifactData', artifactData);
-    const artifactAsText = artifactData ? "T" + (artifactData.spec.level + 1) + artifactRarityOptions[artifactData?.spec.rarity] : '';
+
+    const artifactAsText = artifactData ? "T" + (artifactData.spec.level + 1) + artifactRarityOptions[artifactData?.spec?.rarity] : '';
 
     return artifactAsText;
   }
@@ -594,7 +595,7 @@ const boostSetPresets = [
   },
 ];
 
-const artifactRarityOptions = {
+const artifactRarityOptions: any = {
   0: '',
   1: 'R',
   2: 'E',
