@@ -1,11 +1,11 @@
 "use client";
 
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import * as Accordion from '@radix-ui/react-accordion';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 
-import { CustomNumberInput, CustomSelectInput } from './components/CustomInput';
+import CustomTextInput, { CustomNumberInput, CustomSelectInput } from './components/CustomInput';
 
 import styles from './styles.module.css';
 
@@ -15,7 +15,11 @@ export default function ContractBoostCalculator() {
     return savedFormState ? JSON.parse(savedFormState) : formInitialState;
   });
 
+  const [equippedArtifactsByIGN, setEquippedArtifactsByIGN] = useState([]);
+  const [equippedArtifactsListForSelectedIGN, setEquippedArtifactsListForSelectedIGN] = useState({} as any);
+
   const [selectedBoostPreset, setSelectedBoostPreset] = useState('1');
+  const [availableIGNOptions, setAvailableIGNOptions] = useState([{ text: 'Select an option', value: '' }]);
 
   useEffect(() => {
     // Set the page title on initial load
@@ -27,9 +31,57 @@ export default function ContractBoostCalculator() {
   }, []);
 
   useEffect(() => {
-    console.log('formState changed', { formState });
+    // console.log('formState changed', { formState });
     localStorage.setItem('formState', JSON.stringify(formState));
   }, [formState]);
+
+  useEffect(() => {
+    setEquippedArtifactsListForSelectedIGN(equippedArtifactsByIGN.find((contributor: any) => contributor.userName === formState.IGN));
+  }, [equippedArtifactsByIGN, formState.IGN]);
+
+  useEffect(() => {
+    const selectedIGN = equippedArtifactsByIGN.find((contributor: any) => contributor.isSelectedIGN);
+    // console.log('selectedIGN', selectedIGN);
+    if (selectedIGN) {
+      setFormState((prevState: any) => ({
+        ...prevState,
+        IGN: selectedIGN?.userName,
+      }));
+    }
+  }, [equippedArtifactsByIGN]);
+
+  useEffect(() => {
+    // <p>Monocle: {getEquippedArtifactById(28)}</p>
+    //         <p>Chalice: {getEquippedArtifactById(9)}</p>
+    //         <p>Gusset: {getEquippedArtifactById(8)}</p>
+    const monocleText = getEquippedArtifactById(28);
+    const monocleOptionValue = monocleOptions.find((option) => option.text === monocleText)?.value;
+
+    const chaliceText = getEquippedArtifactById(9);
+    const chaliceOptionValue = chaliceOptions.find((option) => option.text === chaliceText)?.value;
+
+    const gussetText = getEquippedArtifactById(8);
+    const gussetOptionValue = gussetOptions.find((option) => option.text === gussetText)?.value;
+
+    const stonesList = equippedArtifactsListForSelectedIGN?.equippedArtifactsList?.map((artifact: any) => artifact.stonesList).flat();
+    // console.log('stonesList', stonesList);
+
+    // Life stone is 38
+    const t2LifeStonesCount = stonesList?.filter((stone: any) => stone.name === 38 && stone.level === 0).length;
+    const t3LifeStonesCount = stonesList?.filter((stone: any) => stone.name === 38 && stone.level === 1).length;
+    const t4LifeStonesCount = stonesList?.filter((stone: any) => stone.name === 38 && stone.level === 2).length;
+
+    setFormState((prevState: any) => ({
+      ...prevState,
+      // update the form state with the equipped artifacts only if they come back from the API
+      monocle: monocleOptionValue ? monocleOptionValue : prevState.monocle,
+      chalice: chaliceOptionValue ? chaliceOptionValue : prevState.chalice,
+      gusset: gussetOptionValue ? gussetOptionValue : prevState.gusset,
+      t2LifeStonesCount: t2LifeStonesCount ? t2LifeStonesCount : prevState.t2LifeStonesCount,
+      t3LifeStonesCount: t3LifeStonesCount ? t3LifeStonesCount : prevState.t2LifeStonesCount,
+      t4LifeStonesCount: t4LifeStonesCount ? t4LifeStonesCount : prevState.t2LifeStonesCount,
+    }));
+  }, [equippedArtifactsListForSelectedIGN]);
 
   const improvedIhr = formState.ihr * formState.chalice * formState.tachPrismMultiplier * formState.boostBeaconMultiplier * (Math.pow(1.02, formState.t2LifeStonesCount) * Math.pow(1.03, formState.t3LifeStonesCount) * Math.pow(1.04, formState.t4LifeStonesCount));
 
@@ -43,7 +95,7 @@ export default function ContractBoostCalculator() {
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = event.target;
-    console.log('handleChange', { name, value });
+    // console.log('handleChange', { name, value });
 
     setFormState((prevState: any) => ({
       ...prevState,
@@ -53,7 +105,7 @@ export default function ContractBoostCalculator() {
 
   function handleBoostPresetClick(presetId: string) {
     const preset = boostSetPresets.find((preset) => preset.id === presetId);
-    console.log('handleBoostPresetClick', { presetId }, preset);
+    // console.log('handleBoostPresetClick', { presetId }, preset);
 
     if (preset) {
       setFormState((prevState: any) => ({
@@ -68,6 +120,28 @@ export default function ContractBoostCalculator() {
     setTimeout(() => {
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }, 500);
+  }
+
+  async function handleGetCoopDataClick() {
+    // console.log('handleGetCoopDataClick');
+    const coopData = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/coopData?EID=${formState.EID}&contract=${formState.contract}&coop=${formState.coop}`).then((res) => res.json());
+    // console.log('coopData', coopData);
+    setEquippedArtifactsByIGN(coopData);
+
+    const availableIGNOptionsData = coopData.map((contributor: any) => ({ value: contributor.userName, text: contributor.userName }));
+    // console.log('availableIGNs', availableIGNOptionsData);
+    setAvailableIGNOptions([{ text: 'Select an option', value: '' }, ...availableIGNOptionsData]);
+  }
+
+  function getEquippedArtifactById(artifactId: number) {
+    const artifactData = equippedArtifactsListForSelectedIGN?.equippedArtifactsList?.find((artifact: any) => {
+      // console.log('artifact', artifact);
+      return artifact.spec.name === artifactId
+    });
+    // console.log('artifactData', artifactData);
+    const artifactAsText = artifactData ? "T" + (artifactData.spec.level + 1) + artifactRarityOptions[artifactData?.spec.rarity] : '';
+
+    return artifactAsText;
   }
 
   return (
@@ -85,6 +159,52 @@ export default function ContractBoostCalculator() {
           <h3>
             Inputs
           </h3>
+          <div>
+            <div className={styles.inputContainer}>
+              <label htmlFor="EID">
+                EID (Optional)
+              </label>
+              <CustomTextInput name='EID' value={formState.EID} handleChange={(event: ChangeEvent<HTMLInputElement>) => {
+                handleChange(event);
+              }} />
+            </div>
+            <div className={styles.inputContainer}>
+              <label htmlFor="contract">
+                Contract code
+              </label>
+              <CustomTextInput name='contract' value={formState.contract} handleChange={(event: ChangeEvent<HTMLInputElement>) => {
+                handleChange(event);
+              }} /></div>
+            <div className={styles.inputContainer}>
+              <label htmlFor="coop">
+                Coop code
+              </label>
+              <CustomTextInput name='coop' value={formState.coop} handleChange={(event: ChangeEvent<HTMLInputElement>) => {
+                handleChange(event);
+              }} />
+            </div>
+
+            <div>
+              <button className={`${styles.boostBtn} ${true ? styles.activeBoostBtn : ''}`} onClick={() => handleGetCoopDataClick()}>Get coop Data</button>
+            </div>
+          </div>
+
+          <div className={styles.inputContainer} style={{ marginTop: '2rem' }}>
+            <label htmlFor="coop">
+              Select your IGN (Automatically selected if you entered your EID)
+            </label>
+            <CustomSelectInput name='IGN' options={availableIGNOptions} value={formState.IGN} handleChange={handleChange} />
+          </div>
+
+          {/* {formState.IGN ? (*/}
+          <div>
+            <h4>Equipped artifacts for {formState.IGN}</h4>
+            <p>Monocle: {getEquippedArtifactById(28)}</p>
+            <p>Chalice: {getEquippedArtifactById(9)}</p>
+            <p>Gusset: {getEquippedArtifactById(8)}</p>
+          </div>
+          {/*) : null} */}
+
           <h4>Boost Set Presets</h4>
           <div className={styles.boostBtnContainer}>
             {boostSetPresets.map((preset) => (
@@ -395,6 +515,10 @@ const stonesCountOptions = [
 ];
 
 const formInitialState = {
+  EID: '',
+  contract: '',
+  coop: '',
+  IGN: '',
   tachPrismMultiplier: 1000,
   boostBeaconMultiplier: 10,
   baseBoostTime: 10,
@@ -469,3 +593,10 @@ const boostSetPresets = [
     baseBoostTime: 4 * 60,
   },
 ];
+
+const artifactRarityOptions = {
+  0: '',
+  1: 'R',
+  2: 'E',
+  3: 'L',
+}
