@@ -5,7 +5,7 @@ import * as Accordion from '@radix-ui/react-accordion';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 
-import CustomTextInput, { CustomNumberInput, CustomSelectInput } from './components/CustomInput';
+import CustomTextInput, { CustomNumberInput, CustomSelectInput } from '../../components/CustomInput';
 
 import styles from './styles.module.css';
 
