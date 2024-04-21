@@ -329,6 +329,8 @@ export default function ContractBoostCalculator() {
             {/* <p>Improved IHR: {Math.round(improvedIhr)?.toLocaleString()} Min/Hab</p> */}
             <p>Selected boost preset: {selectedBoostPreset ? boostSetPresets.find((preset) => preset.id === selectedBoostPreset)?.description : 'You are using a custom boost setup'}</p>
             <p>Improved Tachyon boost time: {Math.floor(improvedBoostTime)} mins {Math.floor(improvedBoostTime * 60 % 60)} seconds </p>
+            <p>Golden Egg cost (buying singles): {selectedBoostPreset ? boostSetPresets.find((preset) => preset.id === selectedBoostPreset)?.baseGeCost : 'You are using a custom boost setup'} </p>
+            <p>Golden Egg cost (buying in 5s): {selectedBoostPreset ? boostSetPresets.find((preset) => preset.id === selectedBoostPreset)?.discountGeCost : 'You are using a custom boost setup'} </p>
             <p>Population (online): {(Math.round(population / 3))?.toLocaleString()} chickens</p>
             <p>Population (offline): {Math.round(population)?.toLocaleString()} chickens</p>
             <p>Max hab space: {Math.round(habSpace)?.toLocaleString()}</p>
@@ -544,6 +546,8 @@ const boostSetPresets = [
     tachPrismMultiplier: 1000,
     boostBeaconMultiplier: 10,
     baseBoostTime: 10,
+    baseGeCost: 12000 + 8000,
+    discountGeCost: (12000 + 8000) * 0.8,
   },
   {
     id: '2',
@@ -552,6 +556,8 @@ const boostSetPresets = [
     tachPrismMultiplier: 1000,
     boostBeaconMultiplier: 4,
     baseBoostTime: 10,
+    baseGeCost: 12000 + 1000 * 2,
+    discountGeCost: (12000 + 1000 * 2) * 0.8,
   },
   {
     id: '3',
@@ -560,6 +566,8 @@ const boostSetPresets = [
     tachPrismMultiplier: 1000,
     boostBeaconMultiplier: 4,
     baseBoostTime: 60,
+    baseGeCost: 25000 + 1000 * 2,
+    discountGeCost: (25000 + 1000 * 2) * 0.8,
   },
   {
     id: '4',
@@ -568,6 +576,8 @@ const boostSetPresets = [
     tachPrismMultiplier: 1000,
     boostBeaconMultiplier: 2,
     baseBoostTime: 60,
+    baseGeCost: 25000 + 1000,
+    discountGeCost: (25000 + 1000) * 0.8,
   },
   {
     id: '5',
@@ -576,6 +586,8 @@ const boostSetPresets = [
     tachPrismMultiplier: 200,
     boostBeaconMultiplier: 1,
     baseBoostTime: 120,
+    baseGeCost: 5000 * 2,
+    discountGeCost: (5000 * 2) * 0.8,
   },
   {
     id: '6',
@@ -584,6 +596,8 @@ const boostSetPresets = [
     tachPrismMultiplier: 1000,
     boostBeaconMultiplier: 1,
     baseBoostTime: 60,
+    baseGeCost: 25000,
+    discountGeCost: 25000 * 0.8,
   },
   {
     id: '7',
@@ -592,6 +606,8 @@ const boostSetPresets = [
     tachPrismMultiplier: 5 * 10,
     boostBeaconMultiplier: 1,
     baseBoostTime: 4 * 60,
+    baseGeCost: '2500 (always buy in a group of 5!)',
+    discountGeCost: 2000,
   },
 ];
 
