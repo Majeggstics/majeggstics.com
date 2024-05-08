@@ -78,8 +78,8 @@ export default function ContractBoostCalculator() {
       chalice: chaliceOptionValue ? chaliceOptionValue : prevState.chalice,
       gusset: gussetOptionValue ? gussetOptionValue : prevState.gusset,
       t2LifeStonesCount: t2LifeStonesCount ? t2LifeStonesCount : prevState.t2LifeStonesCount,
-      t3LifeStonesCount: t3LifeStonesCount ? t3LifeStonesCount : prevState.t2LifeStonesCount,
-      t4LifeStonesCount: t4LifeStonesCount ? t4LifeStonesCount : prevState.t2LifeStonesCount,
+      t3LifeStonesCount: t3LifeStonesCount ? t3LifeStonesCount : prevState.t3LifeStonesCount,
+      t4LifeStonesCount: t4LifeStonesCount ? t4LifeStonesCount : prevState.t4LifeStonesCount,
     }));
   }, [equippedArtifactsListForSelectedIGN]);
 
