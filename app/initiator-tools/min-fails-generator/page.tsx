@@ -38,15 +38,15 @@ export default function MinFailsGeneratorPage() {
   };
 
   const twentyFourHourNotins = notInMessage?.slice()?.split('\n')
-  ?.filter(elem => elem?.toLowerCase().includes('missing'))
-  ?.map(elem => elem?.replace("* ", "")?.replace(" is missing.", "")?.concat(", failure to join after 24 hours"));
-  
+    ?.filter(elem => elem?.toLowerCase().includes('missing'))
+    ?.map(elem => elem?.replace("* ", "")?.replace(" is missing.", "")?.concat(", failure to join after 24 hours"));
+
   console.log('twentyFourHourNotins', twentyFourHourNotins);
 
   const coopsInDanger = notInMessage?.slice()?.split('\n')
-  ?.filter(elem => elem?.toLowerCase().includes(':warning'))
+    ?.filter(elem => elem?.toLowerCase().includes(':warning'))
   // ?.map(elem => elem?.replace("* ", "")?.replace(" is missing.", "")?.concat(", failure to join after 24 hours"));
-  
+
   console.log('coopsInDanger', coopsInDanger);
 
   const contractNameWithTimeslot = ":egg_supermaterial: Heat Shield " + "+" + coopTimeslot;
@@ -83,7 +83,7 @@ export default function MinFailsGeneratorPage() {
         </p>
       </div>
 
-      <div style={{margin: '4rem 0'}}>
+      <div style={{ margin: '4rem 0' }}>
         <h2>{contractNameWithTimeslot} 24 hour notins</h2>
         {twentyFourHourNotins?.length > 0 ? twentyFourHourNotins?.map((elem, index) => (
           <p key={index}>{elem}</p>
@@ -103,14 +103,24 @@ export default function MinFailsGeneratorPage() {
 
       <div>
         <h2>{contractNameWithTimeslot} Minimum fails</h2>
-        {fails.map((elem, index) => {
+        <p>
+          <button onClick={() => copy("## " + contractNameWithTimeslot + " Minimum fails")}>Copy heading to Clipboard</button>
+        </p>
+        {fails?.length > 0 ? fails.map((elem, index) => {
           return (
-            <div key={index} style={{marginBottom: '3rem'}}>
+            <div key={index} style={{ marginBottom: '3rem' }}>
               <p>{copiedElements[index] ? '✅' : '❌'} {elem}</p>
               <button onClick={() => copyToClipboard(elem, index)}>Copy to Clipboard</button>
             </div>
           )
-        })}
+        }) : (
+          <div>
+            <p>No fails</p>
+            <p>
+              <button onClick={() => copy("No fails")}>Copy to Clipboard</button>
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )
