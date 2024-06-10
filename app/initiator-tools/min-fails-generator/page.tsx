@@ -68,7 +68,7 @@ export default function MinFailsGeneratorPage() {
       <div>
         <h2>{contractNameWithTimeslot} Coops in danger ⚠️</h2>
         {coopsInDanger?.length > 0 ? coopsInDanger?.map((elem, index) => (
-          <p>{elem}</p>
+          <p key={index}>{elem}</p>
         )) : <p>No coops in danger</p>}
         <p>
           <button onClick={() => {
@@ -86,7 +86,7 @@ export default function MinFailsGeneratorPage() {
       <div style={{margin: '4rem 0'}}>
         <h2>{contractNameWithTimeslot} 24 hour notins</h2>
         {twentyFourHourNotins?.length > 0 ? twentyFourHourNotins?.map((elem, index) => (
-          <p>{elem}</p>
+          <p key={index}>{elem}</p>
         )) : <p>No 24 hour notins</p>}
         <p>
           <button onClick={() => {
