@@ -9,6 +9,7 @@ import { CustomSelectInput } from '@/components/CustomInput';
 export default function MinFailsGeneratorPage() {
   const [notInMessage, setNotInMessage] = useState('');
   const [coopTimeslot, setCoopTimeslot] = useState('1');
+  const [contract, setContract] = useState(contractOptions?.[0]?.value);
 
   // console.log('notInMessage', notInMessage);
   // Get the content of the textarea
@@ -49,7 +50,7 @@ export default function MinFailsGeneratorPage() {
 
   console.log('coopsInDanger', coopsInDanger);
 
-  const contractNameWithTimeslot = ":egg_supermaterial: Heat Shield " + "+" + coopTimeslot;
+  const contractNameWithTimeslot = contract + " +" + coopTimeslot;
 
   return (
     <div style={{ margin: '2rem 1rem' }}>
@@ -57,7 +58,12 @@ export default function MinFailsGeneratorPage() {
       <h1>Minimum Fails Generator</h1>
       <p style={{ display: 'flex', flexDirection: 'column' }}>
         <label htmlFor="coopTimeslot">Boarding group</label>
-        <CustomSelectInput name='coopTimeslot' options={timeSlotOptions} value={coopTimeslot} handleChange={(event: any) => setCoopTimeslot(event.target.value)} style={{ width: '100px', marginTop: '1rem' }} />
+        <CustomSelectInput name='coopTimeslot' options={timeSlotOptions} value={coopTimeslot} handleChange={(event: any) => setCoopTimeslot(event.target.value)} style={{ width: '100px', height: '2rem', marginTop: '1rem' }} />
+      </p>
+
+      <p style={{ display: 'flex', flexDirection: 'column' }}>
+        <label htmlFor="contract">Contract</label>
+        <CustomSelectInput name='contract' options={contractOptions} value={contract} handleChange={(event: any) => setContract(event.target.value)} style={{ width: '200px', height: '2rem', marginTop: '1rem' }} />
       </p>
 
       <p style={{ display: 'flex', flexDirection: 'column' }}>
@@ -131,3 +137,14 @@ const timeSlotOptions = [
   { value: '6', text: '+6' },
   { value: '12', text: '+12' },
 ]
+
+const contractOptions = [
+  {
+    value: ':egg_tachyon: Leap Year Festival',
+    text: 'Leap Year Festival'
+  },
+  {
+    value: ':egg_rocketfuel: Moon Rockets',
+    text: 'Moon Rockets'
+  },
+];
