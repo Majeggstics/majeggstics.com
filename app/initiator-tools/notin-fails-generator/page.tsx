@@ -72,11 +72,7 @@ const timeSlotOptions = [
 
 const contractOptions = [
   {
-    value: ':egg_tachyon: Leap Year Festival',
-    text: 'Leap Year Festival'
-  },
-  {
-    value: ':egg_rocketfuel: Moon Rockets',
-    text: 'Moon Rockets'
-  },
+    value: ':egg_medical: Dad Recovery',
+    text: 'Dad Recovery'
+  }
 ];
