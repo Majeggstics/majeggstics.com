@@ -27,7 +27,7 @@ export default function NotInFailsGeneratorPage() {
 
   // console.log({ failedFarmers });
 
-  const failsOutput = contract + " +" + coopTimeslot  + " notins\n" + failedFarmers.map(elem => elem + ", failure to join after 5 hours").join("\n");
+  const failsOutput = "## " + contract + " +" + coopTimeslot  + " notins\n" + failedFarmers.map(elem => elem + ", failure to join after 5 hours").join("\n");
 
   return (
     <div style={{ margin: '2rem 1rem' }}>
