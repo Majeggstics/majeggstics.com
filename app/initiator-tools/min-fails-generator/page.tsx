@@ -17,7 +17,7 @@ export default function MinFailsGeneratorPage() {
   // Split the content into an array of lines
   const fails = notInMessage?.slice().split('\n')
     ?.filter(elem => elem?.toLowerCase().includes('spent'))
-    ?.map(elem => elem?.replace("<:b_icon_token:1123683788258549861>", ":b_icon_token:")?.replace("<:clock:1123686591412576357>", ":clock:")?.replace("* ", ""));
+    ?.map(elem => elem?.replace("<:b_icon_token:1123683788258549861>", ":b_icon_token:")?.replace("<:clock:1123686591412576357>", ":clock:")?.replace("* ", "- "));
 
   // console.log({ fails });
 
