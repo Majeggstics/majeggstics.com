@@ -140,11 +140,15 @@ const timeSlotOptions = [
 
 const contractOptions = [
   {
-    value: ':egg_quantum: Quantum Seating',
-    text: 'Quantum Seating'
+    value: ':egg_tachyon: Time Tourism',
+    text: 'Time Tourism'
   },
   {
-    value: ':egg_medical: Dad Recovery',
-    text: 'Dad Recovery'
+    value: ':egg_dilithium: Small Reactors',
+    text: 'Small Reactors'
+  },
+  {
+    value: ':egg_quantum: Quantum Seating',
+    text: 'Quantum Seating'
   },
 ];
