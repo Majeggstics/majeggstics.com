@@ -72,11 +72,11 @@ const timeSlotOptions = [
 
 const contractOptions = [
   {
-    value: ':egg_supermaterial: Preparations',
-    text: 'Preparations'
+    value: ':egg_supermaterial: Tummy Aches',
+    text: 'Tummy Aches'
   },
   {
-    value: ':egg_tachyon: Time Tourism',
-    text: 'Time Tourism'
+    value: ':egg_tachyon: Tachyon Deflector',
+    text: 'Tachyon Deflector'
   }
 ];
