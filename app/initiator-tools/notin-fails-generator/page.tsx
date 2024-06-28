@@ -72,7 +72,7 @@ const timeSlotOptions = [
 
 const contractOptions = [
   {
-    value: ':egg_supermaterial: Tummy Aches',
+    value: ':egg_medical: Tummy Aches',
     text: 'Tummy Aches'
   },
   {
