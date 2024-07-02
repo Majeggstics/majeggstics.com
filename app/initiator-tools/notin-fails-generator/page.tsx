@@ -72,8 +72,8 @@ const timeSlotOptions = [
 
 const contractOptions = [
   {
-    value: ':egg_medical: Tummy Aches',
-    text: 'Tummy Aches'
+    value: ':CRISPR_Egg: Brain Gain',
+    text: 'Brain Gain'
   },
   {
     value: ':egg_tachyon: Tachyon Deflector',
