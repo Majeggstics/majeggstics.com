@@ -140,11 +140,7 @@ const timeSlotOptions = [
 
 const contractOptions = [
   {
-    value: ':CRISPR_Egg: Brain Gain',
-    text: 'Brain Gain'
+    value: ':egg_firework: Paying Up',
+    text: 'Paying Up'
   },
-  {
-    value: ':egg_tachyon: Tachyon Deflector',
-    text: 'Tachyon Deflector'
-  }
 ];
