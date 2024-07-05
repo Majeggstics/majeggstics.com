@@ -140,7 +140,11 @@ const timeSlotOptions = [
 
 const contractOptions = [
   {
-    value: ':egg_firework: Paying Up',
-    text: 'Paying Up'
+    value: ':egg_medical: Tooth Saver',
+    text: 'Tooth Saver'
+  },
+  {
+    value: ':egg_crispr: Cancer Canceller',
+    text: 'Cancer Canceller'
   },
 ];
