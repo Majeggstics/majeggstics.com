@@ -72,11 +72,11 @@ const timeSlotOptions = [
 
 const contractOptions = [
   {
-    value: ':egg_medical: Tooth Saver',
-    text: 'Tooth Saver'
+    value: ':egg_rocketfuel: Summer Satellites',
+    text: 'Summer Satellites'
   },
-  {
-    value: ':egg_crispr: Cancer Canceller',
-    text: 'Cancer Canceller'
-  },
+  // {
+  //   value: ':egg_crispr: Cancer Canceller',
+  //   text: 'Cancer Canceller'
+  // },
 ];
