@@ -9,7 +9,7 @@ import { CustomSelectInput } from '@/components/CustomInput';
 export default function MinFailsGeneratorPage() {
   const [notInMessage, setNotInMessage] = useState('');
   const [coopTimeslot, setCoopTimeslot] = useState('1');
-  const [contract, setContract] = useState(contractOptions?.[0]?.value);
+  const [showIndividualMinFailMessages, setShowIndividualMinFailMessages] = useState(true);
 
   // console.log('notInMessage', notInMessage);
   // Get the content of the textarea
@@ -38,19 +38,31 @@ export default function MinFailsGeneratorPage() {
     }
   };
 
+  const contractEggRegex = /Minimum check for.*?<(:.*:).*>.*/;
+  const contractEggMatch = notInMessage?.match(contractEggRegex)
+  const contractEgg = contractEggMatch ? contractEggMatch[1].trim() : "";
+
+  // console.log('contractEgg', contractEgg);
+
+  const contractNameRegex = /Minimum check for.*?>(.*)/;
+  const contractNameMatch = notInMessage?.match(contractNameRegex)
+  const contractName = contractNameMatch ? contractNameMatch[1].trim() : "";
+
+  // console.log('contractName', contractName);
+
   const twentyFourHourNotins = notInMessage?.slice()?.split('\n')
     ?.filter(elem => elem?.toLowerCase().includes('missing'))
     ?.map(elem => elem?.replace("* ", "")?.replace(" is missing.", "")?.concat(", failure to join after 24 hours"));
 
-  console.log('twentyFourHourNotins', twentyFourHourNotins);
+  // console.log('twentyFourHourNotins', twentyFourHourNotins);
 
   const coopsInDanger = notInMessage?.slice()?.split('\n')
     ?.filter(elem => elem?.toLowerCase().includes(':warning'))
   // ?.map(elem => elem?.replace("* ", "")?.replace(" is missing.", "")?.concat(", failure to join after 24 hours"));
 
-  console.log('coopsInDanger', coopsInDanger);
+  // console.log('coopsInDanger', coopsInDanger);
 
-  const contractNameWithTimeslot = contract + " +" + coopTimeslot;
+  const contractNameWithTimeslot = contractEgg + " " + contractName + " +" + coopTimeslot;
 
   return (
     <div style={{ margin: '2rem 1rem' }}>
@@ -59,11 +71,6 @@ export default function MinFailsGeneratorPage() {
       <p style={{ display: 'flex', flexDirection: 'column' }}>
         <label htmlFor="coopTimeslot">Boarding group</label>
         <CustomSelectInput name='coopTimeslot' options={timeSlotOptions} value={coopTimeslot} handleChange={(event: any) => setCoopTimeslot(event.target.value)} style={{ width: '100px', height: '2rem', marginTop: '1rem' }} />
-      </p>
-
-      <p style={{ display: 'flex', flexDirection: 'column' }}>
-        <label htmlFor="contract">Contract</label>
-        <CustomSelectInput name='contract' options={contractOptions} value={contract} handleChange={(event: any) => setContract(event.target.value)} style={{ width: '200px', height: '2rem', marginTop: '1rem' }} />
       </p>
 
       <p style={{ display: 'flex', flexDirection: 'column' }}>
@@ -108,6 +115,12 @@ export default function MinFailsGeneratorPage() {
       </div>
 
       <div>
+        <button onClick={() => setShowIndividualMinFailMessages(prevState => !prevState)}>
+          Show minimum fails as {showIndividualMinFailMessages ? " a single message" : " multiple messages"}
+        </button>
+      </div>
+
+      {showIndividualMinFailMessages ? (<div>
         <h2>{contractNameWithTimeslot} Minimum fails</h2>
         <p>
           <button onClick={() => copy("## " + contractNameWithTimeslot + " Minimum fails")}>Copy heading to Clipboard</button>
@@ -127,7 +140,27 @@ export default function MinFailsGeneratorPage() {
             </p>
           </div>
         )}
-      </div>
+      </div>) : (
+        <div>
+          <h2>{contractNameWithTimeslot} Minimum fails</h2>
+          {fails?.length > 0 
+            ? fails?.map((elem, index) => (<p key={index}>{elem}</p>))            
+            : <p>No fails</p>}
+          <p>
+            <button onClick={() => {
+              let stringToBeCopied = "## " + contractNameWithTimeslot + " Minimum fails" + "\n";
+
+              stringToBeCopied = stringToBeCopied + fails.join("\n");
+
+              if(copy(stringToBeCopied)) {
+                notify('Message copied');
+              }
+            }}>
+              Copy to Clipboard
+            </button>
+          </p>
+        </div>
+      )}
     </div>
   )
 }
@@ -137,14 +170,3 @@ const timeSlotOptions = [
   { value: '6', text: '+6' },
   { value: '12', text: '+12' },
 ]
-
-const contractOptions = [
-  {
-    value: ':egg_rocketfuel: Summer Satellites',
-    text: 'Summer Satellites'
-  },
-  // {
-  //   value: ':egg_crispr: Cancer Canceller',
-  //   text: 'Cancer Canceller'
-  // },
-];
