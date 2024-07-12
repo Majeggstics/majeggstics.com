@@ -42,7 +42,7 @@ export default function MinFailsGeneratorPage() {
   const contractEggMatch = notInMessage?.match(contractEggRegex)
   const contractEgg = contractEggMatch ? contractEggMatch[1].trim() : "";
 
-  // console.log('contractEgg', contractEgg);
+  console.log('contractEgg', contractEgg);
 
   const contractNameRegex = /Minimum check for.*?>(.*)/;
   const contractNameMatch = notInMessage?.match(contractNameRegex)
