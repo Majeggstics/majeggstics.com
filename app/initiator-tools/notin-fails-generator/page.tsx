@@ -23,7 +23,8 @@ export default function NotInFailsGeneratorPage() {
   //console.log('contractName', contractName);
 
   const contract = `${contractEgg} ${contractName}`
-  console.log('contract', contract)
+  
+  // console.log('contract', contract)
   
 
   // console.log('notInMessage', notInMessage);
