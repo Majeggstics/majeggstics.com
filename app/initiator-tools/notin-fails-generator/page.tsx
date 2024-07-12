@@ -72,8 +72,8 @@ const timeSlotOptions = [
 
 const contractOptions = [
   {
-    value: ':egg_rocketfuel: Summer Satellites',
-    text: 'Summer Satellites'
+    value: ':egg_supermaterial: Lost Civilizations',
+    text: 'Lost Civilizations'
   },
   // {
   //   value: ':egg_crispr: Cancer Canceller',
