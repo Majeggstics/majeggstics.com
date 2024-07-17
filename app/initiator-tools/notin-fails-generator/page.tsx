@@ -9,7 +9,23 @@ import { CustomSelectInput } from '@/components/CustomInput';
 export default function NotInFailsGeneratorPage() {
   const [notInMessage, setNotInMessage] = useState('');
   const [coopTimeslot, setCoopTimeslot] = useState('1');
-  const [contract, setContract] = useState(contractOptions?.[0]?.value);
+
+  const contractEggRegex = /Not in\s<(:[^:]+:)[0-9]+>/;
+  const contractEggMatch = notInMessage?.match(contractEggRegex)
+  const contractEgg = contractEggMatch ? contractEggMatch[1].trim() : "";
+
+  // console.log('contractEgg', contractEgg);
+
+  const contractNameRegex = /Not in\s<:[^:]+:[0-9]+> \*\*(.+?)\*\*/;
+  const contractNameMatch = notInMessage?.match(contractNameRegex)
+  const contractName = contractNameMatch ? contractNameMatch[1].trim() : "";
+
+  //console.log('contractName', contractName);
+
+  const contract = `${contractEgg} ${contractName}`
+  
+  // console.log('contract', contract)
+  
 
   // console.log('notInMessage', notInMessage);
   // Get the content of the textarea
@@ -38,10 +54,6 @@ export default function NotInFailsGeneratorPage() {
         <CustomSelectInput name='coopTimeslot' options={timeSlotOptions} value={coopTimeslot} handleChange={(event: any) => setCoopTimeslot(event.target.value)} style={{ width: '100px', height: '2rem', marginTop: '1rem' }} />
       </p>
       
-      <p style={{ display: 'flex', flexDirection: 'column' }}>
-        <label htmlFor="contract">Contract</label>
-        <CustomSelectInput name='contract' options={contractOptions} value={contract} handleChange={(event: any) => setContract(event.target.value)} style={{ width: '200px', height: '2rem', marginTop: '1rem' }} />
-      </p>
 
       <p style={{ display: 'flex', flexDirection: 'column' }}>
         <label htmlFor="#notInMessage">Not in message from Wonky</label>
