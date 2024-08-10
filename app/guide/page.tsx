@@ -1,13 +1,30 @@
+"use client";
+
+import { useMemo } from 'react';
+import moment from 'moment-timezone';
 import Typography from '@mui/material/Typography';
 
 export default function Guide() {
+    const localTime = useMemo(() => {
+
+        // Define the time in Los Angeles time zone (Pacific Time)
+        const laTime = moment.tz('09:00', 'HH:mm', 'America/Los_Angeles');
+
+        // Convert the Los Angeles time to the user's local time zone
+        return laTime.clone().tz(moment.tz.guess()).format('h:mm A z');
+
+    }, []);
+
+
     return (
         <main id="guide">
             <section>
                 <Typography variant="h2" gutterBottom>
                     Majeggstics Guide & Rule Book!
                 </Typography>
-                <Typography variant="body1" gutterBottom>Welcome to The Majeggstics, where <em>No Farmer is Left Behind!</em></Typography>
+                <Typography variant="body1" gutterBottom>
+                    Welcome to The Majeggstics, where <em>No Farmer is Left Behind!</em>
+                </Typography>
                 <Typography variant="body1" gutterBottom>
                     Majeggstics is a worldwide group of Egg Inc. players with the common goal of making sure <em>every</em> player can complete <em>every</em> contract, by optimizing play strategies and making fair contributions to our co-ops.
                 </Typography>
@@ -40,54 +57,47 @@ export default function Guide() {
                 </Typography>
             </section>
             <section>
-                <Typography variant="h4" gutterBottom>Registering for a Contract
+                <Typography variant="h4" gutterBottom>
+                    Registering for a Contract
                 </Typography>
                 <table>
                     <thead>
                         <tr>
-                            <th colSpan={2}>Contracts are released 3 times a week at:
-                            </th>
+                            <th colSpan={2}>Contracts are released 3 times a week at:</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>UTC 0 (Coordinated Universal Time)
-                            </td>
+                            <td>Your Local Time (Converted from 9 AM PT)</td>
+                            <td>{localTime}</td>
+                        </tr>
+                        <tr>
+                            <td>UTC 0 (Coordinated Universal Time)</td>
                             <td>16:00 (4 PM)</td>
                         </tr>
                         <tr>
-                            <td>PT -8 (Pacific Time, NA)
-                            </td>
-                            <td>09:00 (9 AM)
-                            </td>
+                            <td>PT -8 (Pacific Time, NA)</td>
+                            <td>09:00 (9 AM)</td>
                         </tr>
                         <tr>
-                            <td>ET -5 (Eastern Time, NA)
-                            </td>
-                            <td>12:00 (12 PM)
-                            </td>
+                            <td>ET -5 (Eastern Time, NA)</td>
+                            <td>12:00 (12 PM)</td>
                         </tr>
                         <tr>
-                            <td>AEST +10 (Australian Eastern Time)
-                            </td>
-                            <td>02:00 (2 AM)
-                            </td>
+                            <td>AEST +10 (Australian Eastern Time)</td>
+                            <td>02:00 (2 AM)</td>
                         </tr>
                         <tr>
-                            <td colSpan={2}>Contract release times are affected by Daylight Savings Time in the US and may change throughout the year.
+                            <td colSpan={2}>
+                                Contract release times are affected by Daylight Savings Time in the US and may change throughout the year.
                             </td>
                         </tr>
                     </tbody>
                 </table>
                 <br />
                 <Typography variant="body1" gutterBottom>
-                    <img
-                        src="./images/newContractIcon.jpg"
-                        alt="New Contract Icon"
-                    />
-                    <span>
-                        [Image Description: New Contract Icon]
-                    </span>
+                    <img src="./images/newContractIcon.jpg" alt="New Contract Icon" />
+                    <span>[Image Description: New Contract Icon]</span>
                 </Typography>
                 <ul>
                     <li>
