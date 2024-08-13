@@ -5,59 +5,95 @@ import moment from 'moment-timezone';
 import copy from 'copy-to-clipboard';
 
 import ToastMessage, { notify } from '@/components/ToastMessage';
-import { CustomSelectInput } from '@/components/CustomInput';
 
 export default function NotInMessageGeneratorPage() {
-  const [coopTimeslot, setCoopTimeslot] = useState('1');
   const [notInMessage, setNotInMessage] = useState('');
 
-  const hour = 12 + parseInt(coopTimeslot) + 5;
+  const timeslotMap = {
+    ":one:": "+1",
+    ":two:": "+6",
+    ":three:": "+12",
+  };
 
-  const date = moment().tz("America/Toronto").hour(hour).minute(0).second(0);
+  const timeslotHeaderMap = {
+    "+1": "Timeslot 1",
+    "+6": "Timeslot 2",
+    "+12": "Timeslot 3",
+  };
 
-  // Convert to Unix timestamp
-  const now = date.unix();
+  const parseInput = (input) => {
+    const timeslotRegex = /Timeslot\s:([a-z]+)::\n((?:.|\n)+?)(?=(Timeslot\s:[a-z]+::|\(no pings were sent\)|$))/g;
+    const matches = [...input.matchAll(timeslotRegex)];
+    const timeslotGroups = matches.reduce((acc, match) => {
+        const emoji = `:${match[1]}:`;
+        const timeslot = timeslotMap[emoji] || "";
+        const content = match[2].trim().split('\n')
+            .map(line => {
+                // Updated regex to match the username in parentheses
+                const userMatch = line.match(/<@(\d+)> \(([^)]+)\)/);
+                return userMatch ? userMatch[2].trim() : null;
+            })
+            .filter(user => user !== null);
 
-  // Format it for Discord, <t:1711144800:t>
-  const discordTimestamp = `<t:${now}:t>`;
+        if (timeslot) {
+            acc[timeslot] = (acc[timeslot] || []).concat(content);
+        }
+        return acc;
+    }, {});
+    return timeslotGroups;
+  };
 
-  // console.log('notInMessage', notInMessage);
-  // Get the content of the textarea
-  const textareaContent = notInMessage;
+  const generateOutput = () => {
+    const timeslotGroups = parseInput(notInMessage);
+    const outputElements = [];
 
-  // Split the content into an array of lines
-  const lines = textareaContent.split('\n');
+    Object.entries(timeslotGroups).forEach(([timeslot, users], timeslotIndex) => {
+      const hourMap = { "+1": 18, "+6": 23, "+12": 5 };
+      const hour = hourMap[timeslot];
+      const date = moment().tz("America/Toronto").hour(hour).minute(0).second(0);
+      const now = date.unix();
+      const discordTimestamp = `<t:${now}:t>`;
 
-  console.log({ lines });
+      // Add a smaller header for each timeslot
+      const timeslotHeader = timeslotHeaderMap[timeslot] || `Timeslot ${timeslot}`;
 
-  const usersToBePinged = [];
-  for (let index = 0; index < lines.length; index++) {
-    const line = lines[index];
-    // console.log('line', line.split('):')?.[0]);
-    // console.log('line', line.split('):'));
+      outputElements.push(
+        <Fragment key={`header-${timeslotIndex}`}>
+          <h3>{timeslotHeader}</h3>
+        </Fragment>
+      );
 
-    // https://discord.com/channels/455380663013736479/1220779715225321523
-    if (line.split('):').length > 1) {
-      const user = line.split('):')[1].trim();
-      usersToBePinged.push(user);
-    }
-  }
-  console.log({ usersToBePinged });
+      users.forEach((userElem, userIndex) => {
+        const textToBeCopied = `${userElem}. Courtesy reminder to join your coop ASAP! You will receive a strike if you don’t join by ${timeslot} (${discordTimestamp} in your time zone).`;
+        const isCopied = copiedElements[timeslotIndex] && copiedElements[timeslotIndex][userIndex];
 
-  const [copiedElements, setCopiedElements] = useState<boolean[]>(Array(usersToBePinged.length).fill(false));
+        outputElements.push(
+          <Fragment key={`${timeslot}-${userIndex}`}>
+            <p>{isCopied ? '✅' : '❌'} {textToBeCopied}</p>
+            <button onClick={() => copyToClipboard(textToBeCopied, timeslotIndex, userIndex)}>Copy to Clipboard</button>
+          </Fragment>
+        );
+      });
+    });
 
-  const copyToClipboard = (text: string, index: number) => {
+    return outputElements;
+  };
+
+  const [copiedElements, setCopiedElements] = useState<{[key: number]: {[key: number]: boolean}}>({});
+
+  const copyToClipboard = (text, timeslotIndex, userIndex) => {
     const copyResult = copy(text);
 
     if (copyResult) {
-      console.log('Copied', copyResult);
       notify('Message copied');
 
-      setCopiedElements((prev) => {
-        const newCopiedElements = [...prev];
-        newCopiedElements[index] = true;
-        return newCopiedElements;
-      });
+      setCopiedElements((prev) => ({
+        ...prev,
+        [timeslotIndex]: {
+          ...prev[timeslotIndex],
+          [userIndex]: true,
+        },
+      }));
     }
   };
 
@@ -66,32 +102,18 @@ export default function NotInMessageGeneratorPage() {
       <ToastMessage />
       <h1>NotIn Message Generator</h1>
       <p style={{ display: 'flex', flexDirection: 'column' }}>
-        <label htmlFor="coopTimeslot">Boarding group</label>
-        <CustomSelectInput name='coopTimeslot' options={timeSlotOptions} value={coopTimeslot} handleChange={(event: any) => setCoopTimeslot(event.target.value)} style={{ width: '100px', marginTop: '1rem' }} />
-      </p>
-      <p style={{ display: 'flex', flexDirection: 'column' }}>
         <label htmlFor="#notInMessage">Not in message from Wonky</label>
-        <textarea name='notInMessage' id='notInMessage' value={notInMessage} onChange={(event) => setNotInMessage(event.target.value)} style={{ margin: '1rem 0' }} rows={10} />
+        <textarea
+          name='notInMessage'
+          id='notInMessage'
+          value={notInMessage}
+          onChange={(event) => setNotInMessage(event.target.value)}
+          style={{ margin: '1rem 0' }}
+          rows={10}
+        />
       </p>
-      <p>Current time: {now}</p>
-      <p>Current discordTimestamp: {discordTimestamp}</p>
 
-      {usersToBePinged.map((userElem, index) => {
-        const textToBeCopied = `${userElem}. Courtesy reminder to join your coop ASAP!  You will receive a strike if you don’t join by +${parseInt(coopTimeslot) + 5} (${discordTimestamp} in your time zone).`;
-
-        return (
-          <Fragment key={index}>
-            <p>{copiedElements[index] ? '✅' : '❌'} {textToBeCopied}</p>
-            <button onClick={() => copyToClipboard(textToBeCopied, index)}>Copy to Clipboard</button>
-          </Fragment>
-        )
-      })}
+      {generateOutput()}
     </div>
-  )
+  );
 }
-
-const timeSlotOptions = [
-  { value: '1', text: '+1' },
-  { value: '6', text: '+6' },
-  { value: '12', text: '+12' },
-]
