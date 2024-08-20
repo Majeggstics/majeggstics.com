@@ -25,22 +25,39 @@ export default function NotInMessageGeneratorPage() {
     const timeslotRegex = /Timeslot\s:([a-z]+)::\n((?:.|\n)+?)(?=(Timeslot\s:[a-z]+::|\(no pings were sent\)|$))/g;
     const matches = [...input.matchAll(timeslotRegex)];
     const timeslotGroups = matches.reduce((acc, match) => {
-        const emoji = `:${match[1]}:`;
-        const timeslot = timeslotMap[emoji] || "";
-        const content = match[2].trim().split('\n')
-            .map(line => {
-                // Updated regex to match the username in parentheses
-                const userMatch = line.match(/<@(\d+)> \(([^)]+)\)/);
-                return userMatch ? userMatch[2].trim() : null;
-            })
-            .filter(user => user !== null);
+      const emoji = `:${match[1]}:`;
+      const timeslot = timeslotMap[emoji] || "";
+      const content = match[2].trim().split('\n')
+        .map(line => {
+          // Extract thread URL and username
+          const threadMatch = line.match(/\[thread\]\(<([^>]+)>\)/);
+          const userMatch = line.match(/<@(\d+)> \(([^)]+)\)/);
+          if (userMatch) {
+            return {
+              user: userMatch[2].trim(),
+              threadUrl: threadMatch ? convertToDiscordUrl(threadMatch[1].trim()) : null
+            };
+          }
+          return null;
+        })
+        .filter(entry => entry !== null);
 
-        if (timeslot) {
-            acc[timeslot] = (acc[timeslot] || []).concat(content);
-        }
-        return acc;
+      if (timeslot) {
+        acc[timeslot] = (acc[timeslot] || []).concat(content);
+      }
+      return acc;
     }, {});
     return timeslotGroups;
+  };
+
+  const convertToDiscordUrl = (url) => {
+    const match = url.match(/discord.com\/channels\/(\d+)\/(\d+)/);
+    if (match) {
+      const [_, channelId, messageId] = match;
+      const discordUrl = `discord://-/channels/${channelId}/${messageId}`;
+      return discordUrl;
+    }
+    return url;
   };
 
   const generateOutput = () => {
@@ -59,17 +76,22 @@ export default function NotInMessageGeneratorPage() {
 
       outputElements.push(
         <Fragment key={`header-${timeslotIndex}`}>
-          <h3>{timeslotHeader}</h3>
+          <h4>{timeslotHeader}</h4> {/* Changed to h4 for smaller header */}
         </Fragment>
       );
 
-      users.forEach((userElem, userIndex) => {
-        const textToBeCopied = `${userElem}. Courtesy reminder to join your coop ASAP! You will receive a strike if you don’t join by ${timeslot} (${discordTimestamp} in your time zone).`;
+      users.forEach((userEntry, userIndex) => {
+        const { user, threadUrl } = userEntry;
+        const textToBeCopied = `${user}. Courtesy reminder to join your coop ASAP! You will receive a strike if you don’t join by ${timeslot} (${discordTimestamp} in your time zone).`;
         const isCopied = copiedElements[timeslotIndex] && copiedElements[timeslotIndex][userIndex];
 
         outputElements.push(
           <Fragment key={`${timeslot}-${userIndex}`}>
-            <p>{isCopied ? '✅' : '❌'} {textToBeCopied}</p>
+            <p>
+              {threadUrl && <a href={threadUrl} target="_blank" rel="noopener noreferrer">[Thread]</a>}
+              {isCopied ? ' ✅ ' : ' ❌ '}
+              {textToBeCopied}
+            </p>
             <button onClick={() => copyToClipboard(textToBeCopied, timeslotIndex, userIndex)}>Copy to Clipboard</button>
           </Fragment>
         );
