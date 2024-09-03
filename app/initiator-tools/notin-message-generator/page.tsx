@@ -1,3 +1,4 @@
+// Currently doesn't support Wonky's "(from timeslot xx)"
 "use client";
 
 import { Fragment, useState } from 'react';
@@ -24,29 +25,33 @@ export default function NotInMessageGeneratorPage() {
   const parseInput = (input) => {
     const timeslotRegex = /Timeslot\s:([a-z]+)::\n((?:.|\n)+?)(?=(Timeslot\s:[a-z]+::|\(no pings were sent\)|$))/g;
     const matches = [...input.matchAll(timeslotRegex)];
+    
     const timeslotGroups = matches.reduce((acc, match) => {
       const emoji = `:${match[1]}:`;
       const timeslot = timeslotMap[emoji] || "";
       const content = match[2].trim().split('\n')
         .map(line => {
-          // Extract thread URL and username
+          // Extract thread URL and all user mentions
           const threadMatch = line.match(/\[thread\]\(<([^>]+)>\)/);
-          const userMatch = line.match(/<@(\d+)> \(([^)]+)\)/);
-          if (userMatch) {
+          const userMatches = [...line.matchAll(/<@\d+> \(`[^)]+`\)/g)].concat();
+          
+          if (userMatches.length > 0) {
             return {
-              user: userMatch[2].trim(),
+              user: userMatches,
               threadUrl: threadMatch ? convertToDiscordUrl(threadMatch[1].trim()) : null
             };
           }
           return null;
         })
-        .filter(entry => entry !== null);
-
+        .filter(entry => entry !== null)
+        .flat(); // Flatten the array in case there are multiple users per line
+  
       if (timeslot) {
         acc[timeslot] = (acc[timeslot] || []).concat(content);
       }
       return acc;
     }, {});
+  
     return timeslotGroups;
   };
 
@@ -82,7 +87,7 @@ export default function NotInMessageGeneratorPage() {
 
       users.forEach((userEntry, userIndex) => {
         const { user, threadUrl } = userEntry;
-        const textToBeCopied = `${user}. Courtesy reminder to join your coop ASAP! You will receive a strike if you don’t join by ${timeslot} (${discordTimestamp} in your time zone).`;
+        const textToBeCopied = `${user}. Courtesy reminder to join your coop ASAP! You will receive a strike if you don’t join by +${parseInt(timeslot) + 5} (${discordTimestamp} in your time zone).`;
         const isCopied = copiedElements[timeslotIndex] && copiedElements[timeslotIndex][userIndex];
 
         outputElements.push(
