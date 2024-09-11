@@ -8,11 +8,22 @@ import { CustomSelectInput } from '@/components/CustomInput';
 
 export default function MinFailsGeneratorPage() {
   const [notInMessage, setNotInMessage] = useState('');
-  const [coopTimeslot, setCoopTimeslot] = useState('1');
   const [showIndividualMinFailMessages, setShowIndividualMinFailMessages] = useState(true);
+  const [nitroMode, setNitroMode] = useState(false);
 
+  const timeslotMap = {
+    "one": "1",
+    "two": "6",
+    "three": "12",
+  };
   // console.log('notInMessage', notInMessage);
   // Get the content of the textarea
+
+  const timeslotRegex = /Timeslot\s:([a-z]+):/g
+  const timeslotEmoji = [...notInMessage.matchAll(timeslotRegex)].map(match => match[1]);
+  const coopTimeslot = timeslotMap[timeslotEmoji]
+
+
 
   // Split the content into an array of lines
   const fails = notInMessage?.slice().split('\n')
@@ -62,17 +73,18 @@ export default function MinFailsGeneratorPage() {
 
   // console.log('coopsInDanger', coopsInDanger);
 
-  const contractNameWithTimeslot = contractEgg + " " + contractName + " +" + coopTimeslot;
+  const contractNameWithTimeslot = `${nitroMode ? contractEgg : ''} ${contractName} +${coopTimeslot}`;
 
   return (
     <div style={{ margin: '2rem 1rem' }}>
       <ToastMessage />
       <h1>Minimum Fails Generator</h1>
-      <p style={{ display: 'flex', flexDirection: 'column' }}>
-        <label htmlFor="coopTimeslot">Boarding group</label>
-        <CustomSelectInput name='coopTimeslot' options={timeSlotOptions} value={coopTimeslot} handleChange={(event: any) => setCoopTimeslot(event.target.value)} style={{ width: '100px', height: '2rem', marginTop: '1rem' }} />
-      </p>
 
+      <p style={{ display: 'flex', flexDirection: 'column'}}>
+        <button onClick={() => setNitroMode(!nitroMode)} style={{ width: 'fit-content' }}>
+          {nitroMode ? 'Nitro mode ON' : 'Nitro mode (include egg emoji in output)'}
+        </button>
+      </p>
       <p style={{ display: 'flex', flexDirection: 'column' }}>
         <label htmlFor="#notInMessage">Minimum check message from Wonky</label>
         <textarea name='notInMessage' id='notInMessage' value={notInMessage} onChange={(event) => setNotInMessage(event.target.value)} style={{ margin: '1rem 0' }} rows={10} />
