@@ -1,0 +1,32 @@
+{
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "always",
+    "source.organizeImports": "never",
+    "source.fixAll.eslint": "always"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.trimAutoWhitespace": false,
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact", "astro"],
+  "eslint.workingDirectories": [
+    {
+      "directory": "${workspaceFolder}"
+    }
+  ],
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "npm.packageManager": "pnpm",
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

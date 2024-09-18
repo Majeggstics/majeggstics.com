@@ -53,7 +53,7 @@ export default function NotInMessageGeneratorPage() {
         acc[timeslot] = (acc[timeslot] || ([] as Array<ThreadMatch>)).concat(content);
       }
       return acc;
-    }, {} as Record<string, Array<ThreadMatch>> });
+    }, {} as Record<string, Array<ThreadMatch>>);
   
     return timeslotGroups;
   };
