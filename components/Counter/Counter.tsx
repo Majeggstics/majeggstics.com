@@ -3,31 +3,31 @@ import React, { useState } from 'react';
 import styles from './styles.module.css';
 
 interface CounterProps {
-  readonly initialCount?: number;
+	readonly initialCount?: number;
 }
 
 function Counter({ initialCount = 99 }: CounterProps) {
-  const [count, setCount] = useState(initialCount);
+	const [count, setCount] = useState(initialCount);
 
-  const increment = () => {
-    setCount((prevCount) => prevCount + 1);
-  };
+	const increment = () => {
+		setCount((prevCount) => prevCount + 1);
+	};
 
-  const decrement = () => {
-    setCount((prevCount) => prevCount - 1);
-  };
+	const decrement = () => {
+		setCount((prevCount) => prevCount - 1);
+	};
 
-  return (
-    <div className={styles.counter}>
-      <button className={styles.btn} onClick={decrement} type="button">
-        -
-      </button>
-      <span className={styles.count}>{count}</span>
-      <button className={styles.btn} onClick={increment} type="button">
-        +
-      </button>
-    </div>
-  );
+	return (
+		<div className={styles.counter}>
+			<button className={styles.btn} onClick={decrement} type="button">
+				-
+			</button>
+			<span className={styles.count}>{count}</span>
+			<button className={styles.btn} onClick={increment} type="button">
+				+
+			</button>
+		</div>
+	);
 }
 
 export default Counter;
