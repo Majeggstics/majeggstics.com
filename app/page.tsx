@@ -7,6 +7,7 @@ interface Foobar {
 }
 
 export default function Home() {
+  const foo: Foobar = { foo: 1 }; // break shit
   return (
     <main>
       <h1>The Majeggstics</h1>
