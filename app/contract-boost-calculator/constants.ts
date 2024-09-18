@@ -225,7 +225,8 @@ export const boostSetPresets = [
 	{
 		id: '4',
 		name: '5 token (Benson supreme)',
-		description: '5 token (Benson supreme) boost set - 1000x supreme (1 hour) prism and one of the 2x boost beacon',
+		description:
+			'5 token (Benson supreme) boost set - 1000x supreme (1 hour) prism and one of the 2x boost beacon',
 		tachPrismMultiplier: 1_000,
 		boostBeaconMultiplier: 2,
 		baseBoostTime: 60,
@@ -255,7 +256,8 @@ export const boostSetPresets = [
 	{
 		id: '7',
 		name: '0 token (five large)',
-		description: '0 token (five large tach prisms) boost set - five 10x large (4 hour) tachyon prisms',
+		description:
+			'0 token (five large tach prisms) boost set - five 10x large (4 hour) tachyon prisms',
 		tachPrismMultiplier: 5 * 10,
 		boostBeaconMultiplier: 1,
 		baseBoostTime: 4 * 60,

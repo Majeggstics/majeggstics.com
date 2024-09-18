@@ -30,9 +30,11 @@ const typeScriptRuleset = merge(...typescript, {
 		},
 	},
 	rules: {
-		'@typescript-eslint/consistent-type-definitions': [2, 'interface'],
+		'@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
+		'@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
+		'@typescript-eslint/consistent-type-definitions': ['error', 'type'],
 		'@typescript-eslint/naming-convention': [
-			2,
+			'error',
 			{
 				selector: 'typeParameter',
 				format: ['PascalCase'],

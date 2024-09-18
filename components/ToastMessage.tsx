@@ -26,7 +26,12 @@ export function notify(message: string, type = 'default') {
 export default function ToastMessage() {
 	return (
 		<div>
-			<ToastContainer position="bottom-right" autoClose={3_000} hideProgressBar={false} newestOnTop />
+			<ToastContainer
+				position="bottom-right"
+				autoClose={3_000}
+				hideProgressBar={false}
+				newestOnTop
+			/>
 		</div>
 	);
 }

@@ -3,9 +3,12 @@
 import * as Accordion from '@radix-ui/react-accordion';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import type { ChangeEvent } from 'react';
-import CustomTextInput, { CustomNumberInput, CustomSelectInput } from '../../components/CustomInput';
+import CustomTextInput, {
+	CustomNumberInput,
+	CustomSelectInput,
+} from '../../components/CustomInput';
 import {
 	artifactRarityOptions,
 	BASE_MAX_HAB_SPACE,
@@ -25,10 +28,31 @@ export default function ContractBoostCalculator() {
 	});
 
 	const [equippedArtifactsByIGN, setEquippedArtifactsByIGN] = useState([]);
-	const [equippedArtifactsListForSelectedIGN, setEquippedArtifactsListForSelectedIGN] = useState({} as any);
+	const [equippedArtifactsListForSelectedIGN, setEquippedArtifactsListForSelectedIGN] = useState(
+		{} as any,
+	);
 
 	const [selectedBoostPreset, setSelectedBoostPreset] = useState('1');
-	const [availableIGNOptions, setAvailableIGNOptions] = useState([{ text: 'Select an option', value: '' }]);
+	const [availableIGNOptions, setAvailableIGNOptions] = useState([
+		{ text: 'Select an option', value: '' },
+	]);
+
+	const getEquippedArtifactById = useCallback(
+		(artifactId: number) => {
+			const artifactData = equippedArtifactsListForSelectedIGN?.equippedArtifactsList?.find(
+				(artifact: any) => {
+					// console.log('artifact', artifact);
+					return artifact.spec.name === artifactId;
+				},
+			);
+			// console.log('artifactData', artifactData);
+
+			return artifactData
+				? 'T' + (artifactData.spec.level + 1) + artifactRarityOptions[artifactData?.spec?.rarity]
+				: '';
+		},
+		[equippedArtifactsListForSelectedIGN],
+	);
 
 	useEffect(() => {
 		// Set the page title on initial load
@@ -55,7 +79,9 @@ export default function ContractBoostCalculator() {
 	useEffect(() => {
 		// because equippedArtifactsByIGN is not typed, it will throw some crap
 		// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-		const selectedIGN = equippedArtifactsByIGN.find((contributor: any) => contributor.isSelectedIGN);
+		const selectedIGN = equippedArtifactsByIGN.find(
+			(contributor: any) => contributor.isSelectedIGN,
+		);
 		// console.log('selectedIGN', selectedIGN);
 		if (selectedIGN) {
 			setFormState((prevState: any) => ({
@@ -84,9 +110,15 @@ export default function ContractBoostCalculator() {
 		// console.log('stonesList', stonesList);
 
 		// Life stone is 38
-		const t2LifeStonesCount = stonesList?.filter((stone: any) => stone.name === 38 && stone.level === 0).length;
-		const t3LifeStonesCount = stonesList?.filter((stone: any) => stone.name === 38 && stone.level === 1).length;
-		const t4LifeStonesCount = stonesList?.filter((stone: any) => stone.name === 38 && stone.level === 2).length;
+		const t2LifeStonesCount = stonesList?.filter(
+			(stone: any) => stone.name === 38 && stone.level === 0,
+		).length;
+		const t3LifeStonesCount = stonesList?.filter(
+			(stone: any) => stone.name === 38 && stone.level === 1,
+		).length;
+		const t4LifeStonesCount = stonesList?.filter(
+			(stone: any) => stone.name === 38 && stone.level === 2,
+		).length;
 
 		setFormState((prevState: any) => ({
 			...prevState,
@@ -98,19 +130,23 @@ export default function ContractBoostCalculator() {
 			t3LifeStonesCount: t3LifeStonesCount ? t3LifeStonesCount : prevState.t3LifeStonesCount,
 			t4LifeStonesCount: t4LifeStonesCount ? t4LifeStonesCount : prevState.t4LifeStonesCount,
 		}));
-	}, [equippedArtifactsListForSelectedIGN]);
+	}, [equippedArtifactsListForSelectedIGN, getEquippedArtifactById]);
 
 	const improvedIhr =
 		formState.ihr *
 		formState.chalice *
 		formState.tachPrismMultiplier *
 		formState.boostBeaconMultiplier *
-		(1.02 ** formState.t2LifeStonesCount * 1.03 ** formState.t3LifeStonesCount * 1.04 ** formState.t4LifeStonesCount);
+		(1.02 ** formState.t2LifeStonesCount *
+			1.03 ** formState.t3LifeStonesCount *
+			1.04 ** formState.t4LifeStonesCount);
 
 	const improvedBoostTime =
 		formState.baseBoostTime *
 		formState.boostEventDurationMultiplier *
-		(1.03 ** formState.t2DiliStonesCount * 1.06 ** formState.t3DiliStonesCount * 1.08 ** formState.t4DiliStonesCount);
+		(1.03 ** formState.t2DiliStonesCount *
+			1.06 ** formState.t3DiliStonesCount *
+			1.08 ** formState.t4DiliStonesCount);
 
 	const population = improvedIhr * improvedBoostTime * formState.monocle * 3 * 4;
 
@@ -161,16 +197,6 @@ export default function ContractBoostCalculator() {
 		}));
 		// console.log('availableIGNs', availableIGNOptionsData);
 		setAvailableIGNOptions([{ text: 'Select an option', value: '' }, ...availableIGNOptionsData]);
-	}
-
-	function getEquippedArtifactById(artifactId: number) {
-		const artifactData = equippedArtifactsListForSelectedIGN?.equippedArtifactsList?.find((artifact: any) => {
-			// console.log('artifact', artifact);
-			return artifact.spec.name === artifactId;
-		});
-		// console.log('artifactData', artifactData);
-
-		return artifactData ? 'T' + (artifactData.spec.level + 1) + artifactRarityOptions[artifactData?.spec?.rarity] : '';
 	}
 
 	return (
@@ -225,7 +251,9 @@ export default function ContractBoostCalculator() {
 					</div>
 
 					<div className={styles.inputContainer} style={{ marginTop: '2rem' }}>
-						<label htmlFor="coop">Select your IGN (Automatically selected if you entered your EID)</label>
+						<label htmlFor="coop">
+							Select your IGN (Automatically selected if you entered your EID)
+						</label>
 						<CustomSelectInput
 							name="IGN"
 							options={availableIGNOptions}
@@ -305,7 +333,9 @@ export default function ContractBoostCalculator() {
 											/>
 										</div>
 										<div className={styles.inputContainer}>
-											<label htmlFor="boostEventDurationMultiplier">Boost Event Duration Multiplier</label>
+											<label htmlFor="boostEventDurationMultiplier">
+												Boost Event Duration Multiplier
+											</label>
 											<CustomNumberInput
 												name="boostEventDurationMultiplier"
 												value={formState.boostEventDurationMultiplier}
@@ -314,7 +344,11 @@ export default function ContractBoostCalculator() {
 										</div>
 										<div className={styles.inputContainer}>
 											<label htmlFor="ihr">IHR (You probably don&apos;t need to change this)</label>
-											<CustomNumberInput name="ihr" value={formState.ihr} handleChange={handleChange} />
+											<CustomNumberInput
+												name="ihr"
+												value={formState.ihr}
+												handleChange={handleChange}
+											/>
 										</div>
 									</Accordion.Content>
 								</Accordion.Item>
@@ -427,7 +461,8 @@ export default function ContractBoostCalculator() {
 						<p>
 							Golden Egg cost (buying in 5s):{' '}
 							{selectedBoostPreset
-								? boostSetPresets.find((preset) => preset.id === selectedBoostPreset)?.discountGeCost
+								? boostSetPresets.find((preset) => preset.id === selectedBoostPreset)
+										?.discountGeCost
 								: 'You are using a custom boost setup'}{' '}
 						</p>
 						<p>Population (online): {Math.round(population / 3)?.toLocaleString()} chickens</p>

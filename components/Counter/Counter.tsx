@@ -2,9 +2,9 @@
 import React, { useState } from 'react';
 import styles from './styles.module.css';
 
-interface CounterProps {
+type CounterProps = {
 	readonly initialCount?: number;
-}
+};
 
 function Counter({ initialCount = 99 }: CounterProps) {
 	const [count, setCount] = useState(initialCount);

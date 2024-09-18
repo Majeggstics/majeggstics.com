@@ -11,7 +11,9 @@ export default function CustomTextInput({
 	readonly type?: string;
 	readonly value: any;
 }) {
-	return <input type={type} name={name} id={name} value={value} onChange={handleChange} {...rest} />;
+	return (
+		<input type={type} name={name} id={name} value={value} onChange={handleChange} {...rest} />
+	);
 }
 
 export function CustomNumberInput({
@@ -25,7 +27,17 @@ export function CustomNumberInput({
 	readonly rest?: any;
 	readonly value: any;
 }) {
-	return <input type="number" name={name} id={name} value={value} min={0} onChange={handleChange} {...rest} />;
+	return (
+		<input
+			type="number"
+			name={name}
+			id={name}
+			value={value}
+			min={0}
+			onChange={handleChange}
+			{...rest}
+		/>
+	);
 }
 
 export function CustomSelectInput({
@@ -44,7 +56,14 @@ export function CustomSelectInput({
 	readonly value: any;
 }) {
 	return (
-		<select name={name} id={name} onChange={handleChange} value={value} style={{ ...style }} {...rest}>
+		<select
+			name={name}
+			id={name}
+			onChange={handleChange}
+			value={value}
+			style={{ ...style }}
+			{...rest}
+		>
 			{options.map((option, index) => (
 				<option key={index} value={option?.value}>
 					{option?.text}
