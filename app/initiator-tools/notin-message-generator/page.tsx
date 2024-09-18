@@ -20,7 +20,7 @@ export default function NotInMessageGeneratorPage() {
     ":three:": "+12",
   };
 
-  const timeslotHeaderMap: { [key: string]: string } = {
+  const timeslotHeaderMap: Record<string, string> = {
     "+1": "Timeslot 1",
     "+6": "Timeslot 2",
     "+12": "Timeslot 3",

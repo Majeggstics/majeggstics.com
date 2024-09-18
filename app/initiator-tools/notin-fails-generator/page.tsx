@@ -20,7 +20,7 @@ export default function NotInFailsGeneratorPage() {
 
   const contract = `${nitroMode ? contractEgg : ''} ${contractName}`.trim();
 
-  const timeslotMap: {[key: string]: string} = {
+  const timeslotMap: Record<string, string> = {
     ":one:": "+1",
     ":two:": "+6",
     ":three:": "+12",
