@@ -1,0 +1,46 @@
+name: Tests (Lint & Build)
+on:
+  push:
+    paths: ["**.ts", "**.tsx", "**.js", "**.jsx", "**.json"]
+  pull_request:
+    paths: ["**.ts", "**.tsx", "**.js", "**.jsx", "**.json"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        uses: ./.github/actions/yarnCache
+
+      - name: Add TSC Problem Matcher
+        run: echo "::add-matcher::.github/tsc.json"
+
+      - name: Build (PR)
+        if: ${{ github.event_name != 'push' }}
+        run: yarn build
+
+      - name: Build (Push)
+        if: ${{ github.event_name == 'push' }}
+        run: yarn build
+
+      - name: ESLint (PR)
+        if: ${{ github.event_name != 'push' }}
+        run: yarn lint
+
+      - name: ESLint (Push)
+        if: ${{ github.event_name == 'push' }}
+        run: yarn lint
