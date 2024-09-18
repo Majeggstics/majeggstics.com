@@ -20,8 +20,12 @@ export default function MinFailsGeneratorPage() {
   // Get the content of the textarea
 
   const timeslotRegex = /Timeslot\s:([a-z]+):/g
-  const timeslotEmoji = [...notInMessage.matchAll(timeslotRegex)].map(match => match[1]);
-  const coopTimeslot = timeslotMap[timeslotEmoji]
+  const timeslotEmoji = [...notInMessage.matchAll(timeslotRegex)].map(match => match[1])[0];
+  let coopTimeslot = "1";
+  if (timeslotEmoji in timeslotMap) {
+	// TODO: this typescast is some bullshit
+	coopTimeslot = timeslotMap[timeslotEmoji as unknown as ('one' | 'two' | 'three')];
+  }
 
 
 
