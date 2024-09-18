@@ -1,15 +1,16 @@
-"use client";
-import { BuilderComponent, useIsPreviewing } from "@builder.io/react";
-import { BuilderContent, builder } from "@builder.io/sdk";
-import DefaultErrorPage from "next/error";
-import "../builder-registry";
+'use client';
+import { BuilderComponent, useIsPreviewing } from '@builder.io/react';
+import type { BuilderContent } from '@builder.io/sdk';
+import { builder } from '@builder.io/sdk';
+import DefaultErrorPage from 'next/error';
+import '../builder-registry';
 
 interface BuilderPageProps {
-  content?: BuilderContent;
+  readonly content?: BuilderContent;
 }
 
 // Builder Public API Key set in .env file
-builder.init(process.env.NEXT_PUBLIC_BUILDER_API_KEY || "");
+builder.init(process.env.NEXT_PUBLIC_BUILDER_API_KEY ?? '');
 
 export function RenderBuilderContent({ content }: BuilderPageProps) {
   // Call the useIsPreviewing hook to determine if
@@ -20,6 +21,7 @@ export function RenderBuilderContent({ content }: BuilderPageProps) {
   if (content || isPreviewing) {
     return <BuilderComponent content={content} model="page" />;
   }
+
   // If the "content" is falsy and the page is
   // not being previewed in Builder, render the
   // DefaultErrorPage with a 404.

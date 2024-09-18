@@ -1,9 +1,9 @@
 name: Tests (Lint & Build)
 on:
   push:
-    paths: ["**.ts", "**.tsx", "**.js", "**.jsx", "**.json"]
+    paths: ['**.ts', '**.tsx', '**.js', '**.jsx', '**.json']
   pull_request:
-    paths: ["**.ts", "**.tsx", "**.js", "**.jsx", "**.json"]
+    paths: ['**.ts', '**.tsx', '**.js', '**.jsx', '**.json']
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}

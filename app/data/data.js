@@ -54,5 +54,5 @@ export const artifacts = {
   50: 'TERRA_STONE_FRAGMENT',
   51: 'LIFE_STONE_FRAGMENT',
   52: 'CLARITY_STONE_FRAGMENT',
-  10000: 'UNKNOWN',
-}
+  10_000: 'UNKNOWN',
+};

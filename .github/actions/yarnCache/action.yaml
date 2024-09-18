@@ -1,12 +1,12 @@
-name: "yarn install"
-description: "Run yarn install with node_modules linker and cache enabled"
+name: 'yarn install'
+description: 'Run yarn install with node_modules linker and cache enabled'
 inputs:
   working-directory:
-    description: "The working directory to run yarn install in"
+    description: 'The working directory to run yarn install in'
     required: false
-    default: "."
+    default: '.'
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Expose yarn config as "$GITHUB_OUTPUT"
       id: yarn-config
@@ -36,6 +36,6 @@ runs:
       run: |
         yarn install --inline-builds
       env:
-        YARN_ENABLE_GLOBAL_CACHE: "false"
-        YARN_NM_MODE: "hardlinks-local"
+        YARN_ENABLE_GLOBAL_CACHE: 'false'
+        YARN_NM_MODE: 'hardlinks-local'
         YARN_INSTALL_STATE_PATH: .yarn/ci-cache/install-state.gz
