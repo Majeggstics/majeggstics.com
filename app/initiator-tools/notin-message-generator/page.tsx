@@ -14,7 +14,7 @@ type ThreadMatch = {
 export default function NotInMessageGeneratorPage() {
   const [notInMessage, setNotInMessage] = useState('');
 
-  const timeslotMap: { [key: string]: string } = {
+  const timeslotMap: Record<string, string> = {
     ":one:": "+1",
     ":two:": "+6",
     ":three:": "+12",
@@ -50,10 +50,10 @@ export default function NotInMessageGeneratorPage() {
         .filter<ThreadMatch>((o): o is ThreadMatch => o !== null);
   
       if (timeslot) {
-        acc[timeslot] = (acc[timeslot] || ([] as ThreadMatch[])).concat(content);
+        acc[timeslot] = (acc[timeslot] || ([] as Array<ThreadMatch>)).concat(content);
       }
       return acc;
-    }, {} as { [key: string]: Array<ThreadMatch> });
+    }, {} as Record<string, Array<ThreadMatch>> });
   
     return timeslotGroups;
   };
