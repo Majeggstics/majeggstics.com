@@ -41,10 +41,10 @@ export default function NotInFailsGeneratorPage() {
         ));
 
       if (timeslot) {
-        acc[timeslot] = (acc[timeslot] || ([] as string[])).concat(content);
+        acc[timeslot] = (acc[timeslot] || ([] as Array<string>)).concat(content);
       }
       return acc;
-    }, {} as {[key: string]: Array<string>});
+    }, {} as Record<string, Array<string>>);
     return timeslotGroups;
   };
 
