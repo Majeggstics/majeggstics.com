@@ -24,7 +24,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        uses: .github/actions/yarnCache
+        uses: ./.github/actions/yarnCache
 
       - name: Build (PR)
         if: ${{ github.event_name != 'push' }}
