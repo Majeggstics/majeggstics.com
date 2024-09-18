@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/yarnCache
 
+      - name: Add TSC Problem Matcher
+        run: echo "::add-matcher::.github/tsc.json"
+
       - name: Build (PR)
         if: ${{ github.event_name != 'push' }}
         run: yarn build
