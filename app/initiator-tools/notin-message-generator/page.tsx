@@ -7,33 +7,37 @@ import copy from 'copy-to-clipboard';
 
 import ToastMessage, { notify } from '@/components/ToastMessage';
 
+type ThreadMatch = {
+	user: string,
+	threadUrl: string | null
+}
 export default function NotInMessageGeneratorPage() {
   const [notInMessage, setNotInMessage] = useState('');
 
-  const timeslotMap = {
+  const timeslotMap: Record<string, string> = {
     ":one:": "+1",
     ":two:": "+6",
     ":three:": "+12",
   };
 
-  const timeslotHeaderMap = {
+  const timeslotHeaderMap: Record<string, string> = {
     "+1": "Timeslot 1",
     "+6": "Timeslot 2",
     "+12": "Timeslot 3",
   };
 
-  const parseInput = (input) => {
+  const parseInput = (input: string) => {
     const timeslotRegex = /Timeslot\s:([a-z]+)::\n((?:.|\n)+?)(?=(Timeslot\s:[a-z]+::|\(no pings were sent\)|$))/g;
     const matches = [...input.matchAll(timeslotRegex)];
     
     const timeslotGroups = matches.reduce((acc, match) => {
       const emoji = `:${match[1]}:`;
       const timeslot = timeslotMap[emoji] || "";
-      const content = match[2].trim().split('\n')
-        .map(line => {
+      const content: Array<ThreadMatch> = match[2].trim().split('\n')
+        .flatMap(line => {
           // Extract thread URL and all user mentions
           const threadMatch = line.match(/\[thread\]\(<([^>]+)>\)/);
-          const userMatches = [...line.matchAll(/<@\d+> \(`[^)]+`\)/g)].concat();
+          const userMatches = [...line.matchAll(/<@\d+> \(`[^)]+`\)/g)].join();
           
           if (userMatches.length > 0) {
             return {
@@ -43,19 +47,18 @@ export default function NotInMessageGeneratorPage() {
           }
           return null;
         })
-        .filter(entry => entry !== null)
-        .flat(); // Flatten the array in case there are multiple users per line
+        .filter<ThreadMatch>((o): o is ThreadMatch => o !== null);
   
       if (timeslot) {
-        acc[timeslot] = (acc[timeslot] || []).concat(content);
+        acc[timeslot] = (acc[timeslot] || ([] as Array<ThreadMatch>)).concat(content);
       }
       return acc;
-    }, {});
+    }, {} as Record<string, Array<ThreadMatch>> });
   
     return timeslotGroups;
   };
 
-  const convertToDiscordUrl = (url) => {
+  const convertToDiscordUrl = (url: string) => {
     const match = url.match(/discord.com\/channels\/(\d+)\/(\d+)/);
     if (match) {
       const [_, channelId, messageId] = match;
@@ -67,11 +70,12 @@ export default function NotInMessageGeneratorPage() {
 
   const generateOutput = () => {
     const timeslotGroups = parseInput(notInMessage);
-    const outputElements = [];
+    const outputElements: Array<ReturnType<typeof Fragment>> = [];
 
     Object.entries(timeslotGroups).forEach(([timeslot, users], timeslotIndex) => {
       const hourMap = { "+1": 18, "+6": 23, "+12": 5 };
-      const hour = hourMap[timeslot];
+	// TODO: this cast is stupid, proper typing will fix it
+      const hour = hourMap[timeslot as ("+1" | "+6" | "+12")];
       const date = moment().tz("America/Toronto").hour(hour).minute(0).second(0);
       const now = date.unix();
       const discordTimestamp = `<t:${now}:t>`;
@@ -108,7 +112,7 @@ export default function NotInMessageGeneratorPage() {
 
   const [copiedElements, setCopiedElements] = useState<{[key: number]: {[key: number]: boolean}}>({});
 
-  const copyToClipboard = (text, timeslotIndex, userIndex) => {
+  const copyToClipboard = (text: string, timeslotIndex: number, userIndex: number): void => {
     const copyResult = copy(text);
 
     if (copyResult) {
