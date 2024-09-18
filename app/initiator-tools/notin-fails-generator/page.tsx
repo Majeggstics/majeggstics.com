@@ -20,13 +20,13 @@ export default function NotInFailsGeneratorPage() {
 
   const contract = `${nitroMode ? contractEgg : ''} ${contractName}`.trim();
 
-  const timeslotMap = {
+  const timeslotMap: Record<string, string> = {
     ":one:": "+1",
     ":two:": "+6",
     ":three:": "+12",
   };
 
-  const parseInput = (input) => {
+  const parseInput = (input: string) => {
     const timeslotRegex = /Timeslot\s:([a-z]+)::\n((?:.|\n)+?)(?=(Timeslot\s:[a-z]+::|\(no pings were sent\)|$))/g;
     const matches = [...input.matchAll(timeslotRegex)];
     const timeslotGroups = matches.reduce((acc, match) => {
@@ -41,10 +41,10 @@ export default function NotInFailsGeneratorPage() {
         ));
 
       if (timeslot) {
-        acc[timeslot] = (acc[timeslot] || []).concat(content);
+        acc[timeslot] = (acc[timeslot] || ([] as Array<string>)).concat(content);
       }
       return acc;
-    }, {});
+    }, {} as Record<string, Array<string>>);
     return timeslotGroups;
   };
 
