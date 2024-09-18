@@ -1,37 +1,23 @@
 'use client';
 
 import copy from 'copy-to-clipboard';
-import { Fragment, useState } from 'react';
-import { CustomSelectInput } from '@/components/CustomInput';
+import { useState } from 'react';
 import ToastMessage, { notify } from '@/components/ToastMessage';
+import { Timeslot } from '@/components/initiator-tools';
 
 export default function MinFailsGeneratorPage() {
 	const [notInMessage, setNotInMessage] = useState('');
 	const [showIndividualMinFailMessages, setShowIndividualMinFailMessages] = useState(true);
 	const [nitroMode, setNitroMode] = useState(false);
 
-	const timeslotMap = {
-		one: '1',
-		two: '6',
-		three: '12',
-	};
-	// console.log('notInMessage', notInMessage);
-	// Get the content of the textarea
-
-	const timeslotRegex = /Timeslot\s:(?<timeslot>[a-z]+):/g;
-	const timeslotEmoji = [...notInMessage.matchAll(timeslotRegex)].map((match) => match[1])[0];
-	let coopTimeslot = '1';
-	if (timeslotEmoji in timeslotMap) {
-		// TODO: this typescast is some bullshit
-		coopTimeslot = timeslotMap[timeslotEmoji as unknown as 'one' | 'three' | 'two'];
-	}
+	const timeslot: Timeslot | null = Timeslot.fromWonkyMessage(notInMessage);
 
 	// Split the content into an array of lines
 	const fails = notInMessage
-		?.slice()
+		.slice()
 		.split('\n')
-		?.filter((elem) => elem?.toLowerCase().includes('spent'))
-		?.map((elem) =>
+		.filter((elem) => elem?.toLowerCase().includes('spent'))
+		.map((elem) =>
 			elem
 				?.replace('<:b_icon_token:1123683788258549861>', ':b_icon_token:')
 				?.replace('<:clock:1123686591412576357>', ':clock:')
@@ -59,35 +45,30 @@ export default function MinFailsGeneratorPage() {
 		}
 	};
 
-	const contractEggRegex = /Minimum check for.*?<(?<egg>:.*:).*>.*/;
-	const contractEggMatch = contractEggRegex.exec(notInMessage);
-	const contractEgg = contractEggMatch ? contractEggMatch[1].trim() : '';
-
-	// console.log('contractEgg', contractEgg);
-
-	const contractNameRegex = /Minimum check for.*?>(?<timeslot>.*)/;
-	const contractNameMatch = contractNameRegex.exec(notInMessage);
-	const contractName = contractNameMatch ? contractNameMatch[1].trim() : '';
-
-	// console.log('contractName', contractName);
+	const contractEgg =
+		/Minimum check for.*?<(?<egg>:.*:).*>.*/.exec(notInMessage)?.groups!.egg ?? '';
+	const contractName =
+		/Minimum check for.*?>(?<timeslot>.*)/.exec(notInMessage)?.groups!.timeslot ?? '';
 
 	const twentyFourHourNotins = notInMessage
-		?.slice()
-		?.split('\n')
-		?.filter((elem) => elem?.toLowerCase().includes('missing'))
-		?.map((elem) => elem?.replace('* ', '')?.replace(' is missing.', '')?.concat(', failure to join after 24 hours'));
-
-	// console.log('twentyFourHourNotins', twentyFourHourNotins);
+		.slice()
+		.split('\n')
+		.filter((elem) => elem?.toLowerCase().includes('missing'))
+		.map((elem) =>
+			elem
+				?.replace('* ', '')
+				?.replace(' is missing.', '')
+				?.concat(', failure to join after 24 hours'),
+		);
 
 	const coopsInDanger = notInMessage
-		?.slice()
-		?.split('\n')
-		?.filter((elem) => elem?.toLowerCase().includes(':warning'));
-	// ?.map(elem => elem?.replace("* ", "")?.replace(" is missing.", "")?.concat(", failure to join after 24 hours"));
+		.slice()
+		.split('\n')
+		.filter((elem) => elem?.toLowerCase().includes(':warning'));
 
-	// console.log('coopsInDanger', coopsInDanger);
+	if (timeslot === null) return null;
 
-	const contractNameWithTimeslot = `${nitroMode ? contractEgg : ''} ${contractName} +${coopTimeslot}`;
+	const contractNameWithTimeslot = `${nitroMode ? contractEgg : ''} ${contractName} ${timeslot.format('eggst')}`;
 
 	return (
 		<div style={{ margin: '2rem 1rem' }}>
@@ -157,7 +138,8 @@ export default function MinFailsGeneratorPage() {
 
 			<div>
 				<button onClick={() => setShowIndividualMinFailMessages((prevState) => !prevState)}>
-					Show minimum fails as {showIndividualMinFailMessages ? ' a single message' : ' multiple messages'}
+					Show minimum fails as{' '}
+					{showIndividualMinFailMessages ? ' a single message' : ' multiple messages'}
 				</button>
 			</div>
 
@@ -192,7 +174,11 @@ export default function MinFailsGeneratorPage() {
 			) : (
 				<div>
 					<h2>{contractNameWithTimeslot} Minimum fails</h2>
-					{fails?.length > 0 ? fails?.map((elem, index) => <p key={index}>{elem}</p>) : <p>No fails</p>}
+					{fails?.length > 0 ? (
+						fails?.map((elem, index) => <p key={index}>{elem}</p>)
+					) : (
+						<p>No fails</p>
+					)}
 					<p>
 						<button
 							onClick={() => {
@@ -213,9 +199,3 @@ export default function MinFailsGeneratorPage() {
 		</div>
 	);
 }
-
-const timeSlotOptions = [
-	{ value: '1', text: '+1' },
-	{ value: '6', text: '+6' },
-	{ value: '12', text: '+12' },
-];

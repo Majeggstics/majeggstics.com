@@ -5,9 +5,9 @@ import { builder } from '@builder.io/sdk';
 import DefaultErrorPage from 'next/error';
 import '../builder-registry';
 
-interface BuilderPageProps {
+type BuilderPageProps = {
 	readonly content?: BuilderContent;
-}
+};
 
 // Builder Public API Key set in .env file
 builder.init(process.env.NEXT_PUBLIC_BUILDER_API_KEY ?? '');
