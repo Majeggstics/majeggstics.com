@@ -22,7 +22,7 @@ export default function Home() {
 					</p>
 					<br />
 					<p>
-						<a href="https://discord.gg/egginc" target="_blank" rel="noreferrer">
+						<a href="https://discord.gg/egginc" rel="noreferrer" target="_blank">
 							Egg Inc. discord
 						</a>
 					</p>

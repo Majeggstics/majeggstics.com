@@ -107,6 +107,5 @@ export const parseNotInMessage = (input: string): NotInPerTimeslot => {
 	);
 };
 
-export const useExtractNotins = (input: string): NotInPerTimeslot => {
-	return useMemo(() => parseNotInMessage(input), [input]);
-};
+export const useExtractNotins = (input: string): NotInPerTimeslot =>
+	useMemo(() => parseNotInMessage(input), [input]);
