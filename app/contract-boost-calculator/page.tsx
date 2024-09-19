@@ -189,11 +189,11 @@ export default function ContractBoostCalculator() {
 			`${process.env.NEXT_PUBLIC_API_URL}/contract?EID=${formState.EID}&contract=${formState.contract}&coop=${formState.coop}`,
 		).then(async (res) => res.json());
 		const coopData = rawData?.contributorsList?.map((item: any) => ({
-            // ...item,
-            userName: item.userName,
-            isSelectedIGN: item.userId === formState.EID,
-            equippedArtifactsList: item.farmInfo.equippedArtifactsList,
-        }));
+			// ...item,
+			userName: item.userName,
+			isSelectedIGN: item.userId === formState.EID,
+			equippedArtifactsList: item.farmInfo.equippedArtifactsList,
+		}));
 		// console.log('coopData', coopData);
 		setEquippedArtifactsByIGN(coopData);
 
