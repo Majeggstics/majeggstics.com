@@ -1,35 +1,35 @@
 body {
-  max-width: 90vw;
-  margin: 0 auto;
+	max-width: 90vw;
+	margin: 0 auto;
 }
 
 main {
-  max-width: 80%;
-  margin: 2rem auto;
+	max-width: 80%;
+	margin: 2rem auto;
 }
 
 .bold {
-  font-weight: 600;
+	font-weight: 600;
 }
 
 table {
-  border: 1px solid black;
+	border: 1px solid black;
 }
 
 table th,
 table td {
-  text-align: left;
-  vertical-align: top;
-  border: 1px solid black;
+	text-align: left;
+	vertical-align: top;
+	border: 1px solid black;
 }
 
 img {
-  object-fit: contain;
-  max-width: 75vw;
+	object-fit: contain;
+	max-width: 75vw;
 }
 
 #guide section {
-  margin-bottom: 1rem;
+	margin-bottom: 1rem;
 }
 
 /* .responsive-image {
@@ -41,9 +41,9 @@ img {
 
 /* For mobile screens  */
 @media (max-width: 767px) {
-  .responsive-image {
-    width: 100%;
-    height: auto;
-    /* Or any height you want on mobile */
-  }
+	.responsive-image {
+		width: 100%;
+		height: auto;
+		/* Or any height you want on mobile */
+	}
 }
