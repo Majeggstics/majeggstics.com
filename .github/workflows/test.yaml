@@ -1,9 +1,11 @@
 name: Tests (Lint & Build)
 on:
   push:
-    paths: ["**.ts", "**.tsx", "**.js", "**.jsx", "**.json"]
+    branches:
+      - main
+    paths: ['**.ts', '**.tsx', '**.js', '**.jsx', '**.json']
   pull_request:
-    paths: ["**.ts", "**.tsx", "**.js", "**.jsx", "**.json"]
+    paths: ['**.ts', '**.tsx', '**.js', '**.jsx', '**.json']
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -29,18 +31,14 @@ jobs:
       - name: Add TSC Problem Matcher
         run: echo "::add-matcher::.github/tsc.json"
 
-      - name: Build (PR)
-        if: ${{ github.event_name != 'push' }}
-        run: yarn build
-
-      - name: Build (Push)
-        if: ${{ github.event_name == 'push' }}
-        run: yarn build
-
-      - name: ESLint (PR)
-        if: ${{ github.event_name != 'push' }}
+      - name: Lint
         run: yarn lint
 
-      - name: ESLint (Push)
-        if: ${{ github.event_name == 'push' }}
-        run: yarn lint
+      - name: Typecheck
+        run: yarn typecheck
+
+      - name: Test
+        run: yarn test
+
+      - name: Build
+        run: yarn build
