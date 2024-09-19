@@ -15,7 +15,6 @@ export const useEventSetState = (
 };
 
 export function notify(message: string, type = 'default') {
-	console.log('notify called');
 	switch (type) {
 		case 'info':
 			toast.info(message);

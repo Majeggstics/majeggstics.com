@@ -25,8 +25,6 @@ export default function MinFailsGeneratorPage() {
 				?.replace('* ', '- '),
 		);
 
-	// console.log({ fails });
-
 	const [copiedElements, setCopiedElements] = useState<boolean[]>(
 		Array.from({ length: fails.length }).fill(false) as boolean[],
 	);
@@ -35,7 +33,6 @@ export default function MinFailsGeneratorPage() {
 		const copyResult = copy(text);
 
 		if (copyResult) {
-			// console.log('Copied', copyResult);
 			notify('Message copied');
 
 			setCopiedElements((prev) => {

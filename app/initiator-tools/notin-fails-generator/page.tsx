@@ -18,10 +18,12 @@ export default function NotInFailsGeneratorPage() {
 	const notins = useExtractNotins(notInMessage);
 
 	const failsOutput = Object.entries(notins)
-		.map(([timeslotEmoji, users]) =>
+		.map(([timeslotEmoji, slotNotins]) =>
 			[
 				`## ${contract} ${Timeslot.fromEmoji(timeslotEmoji)!.format('eggst')} notins`,
-				...users.map(({ user }) => `${user.split('`')[1]}, failure to join after 5 hours`),
+				...slotNotins.flatMap(({ users }) =>
+					users.map(({ ign }) => `\`${ign}\`, failure to join after 5 hours`),
+				),
 			].join('\n'),
 		)
 		.join('\n\n');
