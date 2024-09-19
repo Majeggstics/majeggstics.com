@@ -1,5 +1,8 @@
 'use client';
 
+// this lint rule is completely accurate but i cba to deal with it right now
+/* eslint-disable react/jsx-no-bind */
+
 import * as Accordion from '@radix-ui/react-accordion';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import * as Tooltip from '@radix-ui/react-tooltip';
@@ -40,10 +43,9 @@ export default function ContractBoostCalculator() {
 	const getEquippedArtifactById = useCallback(
 		(artifactId: number) => {
 			const artifactData = equippedArtifactsListForSelectedIGN?.equippedArtifactsList?.find(
-				(artifact: any) => {
+				(artifact: any) =>
 					// console.log('artifact', artifact);
-					return artifact.spec.name === artifactId;
-				},
+					artifact.spec.name === artifactId,
 			);
 			// console.log('artifactData', artifactData);
 
@@ -218,31 +220,31 @@ export default function ContractBoostCalculator() {
 						<div className={styles.inputContainer}>
 							<label htmlFor="EID">EID (Optional)</label>
 							<CustomTextInput
-								name="EID"
-								value={formState.EID}
 								handleChange={(event: ChangeEvent<HTMLInputElement>) => {
 									handleChange(event);
 								}}
+								name="EID"
+								value={formState.EID}
 							/>
 						</div>
 						<div className={styles.inputContainer}>
 							<label htmlFor="contract">Contract code</label>
 							<CustomTextInput
-								name="contract"
-								value={formState.contract}
 								handleChange={(event: ChangeEvent<HTMLInputElement>) => {
 									handleChange(event);
 								}}
+								name="contract"
+								value={formState.contract}
 							/>
 						</div>
 						<div className={styles.inputContainer}>
 							<label htmlFor="coop">Coop code</label>
 							<CustomTextInput
-								name="coop"
-								value={formState.coop}
 								handleChange={(event: ChangeEvent<HTMLInputElement>) => {
 									handleChange(event);
 								}}
+								name="coop"
+								value={formState.coop}
 							/>
 						</div>
 
@@ -261,10 +263,10 @@ export default function ContractBoostCalculator() {
 							Select your IGN (Automatically selected if you entered your EID)
 						</label>
 						<CustomSelectInput
+							handleChange={handleChange}
 							name="IGN"
 							options={availableIGNOptions}
 							value={formState.IGN}
-							handleChange={handleChange}
 						/>
 					</div>
 
@@ -281,10 +283,10 @@ export default function ContractBoostCalculator() {
 					<div className={styles.boostBtnContainer}>
 						{boostSetPresets.map((preset) => (
 							<button
-								key={preset.id}
 								className={`${styles.boostBtn} ${preset.id === selectedBoostPreset ? styles.activeBoostBtn : ''}`}
-								title={preset.description}
+								key={preset.id}
 								onClick={() => handleBoostPresetClick(preset.id)}
+								title={preset.description}
 							>
 								{preset.name}
 							</button>
@@ -292,12 +294,12 @@ export default function ContractBoostCalculator() {
 					</div>
 					<div className={styles.boostAndArtifactInputsContainer}>
 						<div>
-							<Accordion.Root type="single" collapsible>
+							<Accordion.Root collapsible type="single">
 								<Accordion.Item value="CustomInputs">
 									<Accordion.Header>
 										<Accordion.Trigger className={styles.AccordionTrigger}>
 											Custom Inputs
-											<ChevronDownIcon className={styles.AccordionChevron} aria-hidden />
+											<ChevronDownIcon aria-hidden className={styles.AccordionChevron} />
 										</Accordion.Trigger>
 									</Accordion.Header>
 									<Accordion.Content className={styles.AccordionContent}>
@@ -306,12 +308,12 @@ export default function ContractBoostCalculator() {
 												Tachyon Prism Multiplier (Multiple of these will stack additively)
 											</label>
 											<CustomNumberInput
-												name="tachPrismMultiplier"
-												value={formState.tachPrismMultiplier}
 												handleChange={(event: ChangeEvent<HTMLInputElement>) => {
 													handleChange(event);
 													setSelectedBoostPreset('');
 												}}
+												name="tachPrismMultiplier"
+												value={formState.tachPrismMultiplier}
 											/>
 										</div>
 										<div className={styles.inputContainer}>
@@ -319,23 +321,23 @@ export default function ContractBoostCalculator() {
 												Boost Beacon Multiplier (Multiple of these will stack additively)
 											</label>
 											<CustomNumberInput
-												name="boostBeaconMultiplier"
-												value={formState.boostBeaconMultiplier}
 												handleChange={(event: ChangeEvent<HTMLInputElement>) => {
 													handleChange(event);
 													setSelectedBoostPreset('');
 												}}
+												name="boostBeaconMultiplier"
+												value={formState.boostBeaconMultiplier}
 											/>
 										</div>
 										<div className={styles.inputContainer}>
 											<label htmlFor="baseBoostTime">Base Boost Time (minutes)</label>
 											<CustomNumberInput
-												name="baseBoostTime"
-												value={formState.baseBoostTime}
 												handleChange={(event: ChangeEvent<HTMLInputElement>) => {
 													handleChange(event);
 													setSelectedBoostPreset('');
 												}}
+												name="baseBoostTime"
+												value={formState.baseBoostTime}
 											/>
 										</div>
 										<div className={styles.inputContainer}>
@@ -343,17 +345,17 @@ export default function ContractBoostCalculator() {
 												Boost Event Duration Multiplier
 											</label>
 											<CustomNumberInput
+												handleChange={handleChange}
 												name="boostEventDurationMultiplier"
 												value={formState.boostEventDurationMultiplier}
-												handleChange={handleChange}
 											/>
 										</div>
 										<div className={styles.inputContainer}>
 											<label htmlFor="ihr">IHR (You probably don&apos;t need to change this)</label>
 											<CustomNumberInput
+												handleChange={handleChange}
 												name="ihr"
 												value={formState.ihr}
-												handleChange={handleChange}
 											/>
 										</div>
 									</Accordion.Content>
@@ -363,28 +365,28 @@ export default function ContractBoostCalculator() {
 						<div className={styles.inputContainer}>
 							<label htmlFor="monocle">Monocle</label>
 							<CustomSelectInput
+								handleChange={handleChange}
 								name="monocle"
 								options={monocleOptions}
 								value={formState.monocle}
-								handleChange={handleChange}
 							/>
 						</div>
 						<div className={styles.inputContainer}>
 							<label htmlFor="chalice">Chalice</label>
 							<CustomSelectInput
+								handleChange={handleChange}
 								name="chalice"
 								options={chaliceOptions}
 								value={formState.chalice}
-								handleChange={handleChange}
 							/>
 						</div>
 						<div className={styles.inputContainer}>
 							<label htmlFor="gusset">Gusset</label>
 							<CustomSelectInput
+								handleChange={handleChange}
 								name="gusset"
 								options={gussetOptions}
 								value={formState.gusset}
-								handleChange={handleChange}
 							/>
 						</div>
 					</div>
@@ -394,24 +396,24 @@ export default function ContractBoostCalculator() {
 							<div>
 								<label htmlFor="t2LifeStonesCount">T2</label>
 								<CustomSelectInput
-									name="t2LifeStonesCount"
-									value={formState.t2LifeStonesCount}
 									handleChange={handleChange}
+									name="t2LifeStonesCount"
 									options={stonesCountOptions}
+									value={formState.t2LifeStonesCount}
 								/>
 								<label htmlFor="t3LifeStonesCount">T3</label>
 								<CustomSelectInput
-									name="t3LifeStonesCount"
-									value={formState.t3LifeStonesCount}
 									handleChange={handleChange}
+									name="t3LifeStonesCount"
 									options={stonesCountOptions}
+									value={formState.t3LifeStonesCount}
 								/>
 								<label htmlFor="t4LifeStonesCount">T4</label>
 								<CustomSelectInput
-									name="t4LifeStonesCount"
-									value={formState.t4LifeStonesCount}
 									handleChange={handleChange}
+									name="t4LifeStonesCount"
 									options={stonesCountOptions}
+									value={formState.t4LifeStonesCount}
 								/>
 							</div>
 						</div>
@@ -420,24 +422,24 @@ export default function ContractBoostCalculator() {
 							<div>
 								<label htmlFor="t2DiliStonesCount">T2</label>
 								<CustomSelectInput
-									name="t2DiliStonesCount"
-									value={formState.t2DiliStonesCount}
 									handleChange={handleChange}
+									name="t2DiliStonesCount"
 									options={stonesCountOptions}
+									value={formState.t2DiliStonesCount}
 								/>
 								<label htmlFor="t3DiliStonesCount">T3</label>
 								<CustomSelectInput
-									name="t3DiliStonesCount"
-									value={formState.t3DiliStonesCount}
 									handleChange={handleChange}
+									name="t3DiliStonesCount"
 									options={stonesCountOptions}
+									value={formState.t3DiliStonesCount}
 								/>
 								<label htmlFor="t4DiliStonesCount">T4</label>
 								<CustomSelectInput
-									name="t4DiliStonesCount"
-									value={formState.t4DiliStonesCount}
 									handleChange={handleChange}
+									name="t4DiliStonesCount"
 									options={stonesCountOptions}
+									value={formState.t4DiliStonesCount}
 								/>
 							</div>
 						</div>
@@ -486,7 +488,7 @@ export default function ContractBoostCalculator() {
 				<section className={styles.footerSection}>
 					<p>
 						Heavily inspired by{' '}
-						<a href="https://hashtru.netlify.app/contractboost" target="_blank">
+						<a href="https://hashtru.netlify.app/contractboost" rel="noreferrer" target="_blank">
 							hashtru&apos;s Contract Boost Calculator
 						</a>
 					</p>

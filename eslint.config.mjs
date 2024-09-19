@@ -1,8 +1,8 @@
-import common from 'eslint-config-neon/flat/common.js';
-import node from 'eslint-config-neon/flat/node.js';
-import prettier from 'eslint-config-neon/flat/prettier.js';
-import react from 'eslint-config-neon/flat/react.js';
-import typescript from 'eslint-config-neon/flat/typescript.js';
+import common from 'eslint-config-neon/common';
+import node from 'eslint-config-neon/node';
+import prettier from 'eslint-config-neon/prettier';
+import react from 'eslint-config-neon/react';
+import typescript from 'eslint-config-neon/typescript';
 import merge from 'lodash.merge';
 
 const commonFiles = '{js,mjs,cjs,ts,mts,cts,jsx,tsx}';
@@ -33,17 +33,6 @@ const typeScriptRuleset = merge(...typescript, {
 		'@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
 		'@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
 		'@typescript-eslint/consistent-type-definitions': ['error', 'type'],
-		'@typescript-eslint/naming-convention': [
-			'error',
-			{
-				selector: 'typeParameter',
-				format: ['PascalCase'],
-				custom: {
-					regex: '^\\w{3,}',
-					match: true,
-				},
-			},
-		],
 	},
 	settings: {
 		'import/resolver': {

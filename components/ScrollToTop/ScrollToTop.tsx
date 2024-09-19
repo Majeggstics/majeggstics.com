@@ -31,7 +31,7 @@ function ScrollToTop() {
 			onClick={scrollToTopFuntion}
 			type="button"
 		>
-			<img src="./images/MajeggsticIcon.png" alt="" width={50} />
+			<img alt="" src="./images/MajeggsticIcon.png" width={50} />
 		</button>
 	);
 }

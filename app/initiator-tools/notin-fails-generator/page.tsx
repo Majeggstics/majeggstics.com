@@ -2,8 +2,9 @@
 
 import copy from 'copy-to-clipboard';
 import { Fragment, useState } from 'react';
-import ToastMessage, { notify } from '@/components/ToastMessage';
+import ToastMessage from '@/components/ToastMessage';
 import { Timeslot, useExtractNotins } from '@/components/initiator-tools';
+import { notify } from '@/components/utils';
 
 export default function NotInFailsGeneratorPage() {
 	const [notInMessage, setNotInMessage] = useState('');
@@ -17,10 +18,12 @@ export default function NotInFailsGeneratorPage() {
 	const notins = useExtractNotins(notInMessage);
 
 	const failsOutput = Object.entries(notins)
-		.map(([timeslotEmoji, users]) =>
+		.map(([timeslotEmoji, slotNotins]) =>
 			[
 				`## ${contract} ${Timeslot.fromEmoji(timeslotEmoji)!.format('eggst')} notins`,
-				...users.map(({ user }) => `${user.split('`')[1]}, failure to join after 5 hours`),
+				...slotNotins.flatMap(({ users }) =>
+					users.map(({ ign }) => `\`${ign}\`, failure to join after 5 hours`),
+				),
 			].join('\n'),
 		)
 		.join('\n\n');
@@ -33,12 +36,12 @@ export default function NotInFailsGeneratorPage() {
 			<p style={{ display: 'flex', flexDirection: 'column' }}>
 				<label htmlFor="#notInMessage">Not in message from Wonky</label>
 				<textarea
-					name="notInMessage"
 					id="notInMessage"
-					value={notInMessage}
+					name="notInMessage"
 					onChange={(event) => setNotInMessage(event.target.value)}
-					style={{ margin: '1rem 0' }}
 					rows={10}
+					style={{ margin: '1rem 0' }}
+					value={notInMessage}
 				/>
 			</p>
 
@@ -47,21 +50,19 @@ export default function NotInFailsGeneratorPage() {
 					{nitroMode ? 'Nitro mode ON 🚀' : 'Nitro mode (include egg emoji in output)'}
 				</button>
 
-				<textarea name="failsOutput" id="failsOutput" value={failsOutput} rows={10} disabled />
-				<Fragment>
-					<button
-						onClick={() => {
-							const copyResult = copy(failsOutput);
+				<textarea disabled id="failsOutput" name="failsOutput" rows={10} value={failsOutput} />
+				<button
+					onClick={() => {
+						const copyResult = copy(failsOutput);
 
-							if (copyResult) {
-								notify('Message copied');
-							}
-						}}
-						style={{ width: 'fit-content' }}
-					>
-						Copy to Clipboard
-					</button>
-				</Fragment>
+						if (copyResult) {
+							notify('Message copied');
+						}
+					}}
+					style={{ width: 'fit-content' }}
+				>
+					Copy to Clipboard
+				</button>
 			</p>
 		</div>
 	);
