@@ -66,9 +66,7 @@ export default function MinFailsGeneratorPage() {
 		.split('\n')
 		.filter((elem) => elem?.toLowerCase().includes(':warning'));
 
-	if (timeslot === null) return null;
-
-	const contractNameWithTimeslot = `${nitroMode ? contractEgg : ''} ${contractName} ${timeslot.format('eggst')}`;
+	const contractNameWithTimeslot = `${nitroMode ? contractEgg : ''} ${contractName} ${timeslot?.format('eggst')}`;
 
 	return (
 		<div style={{ margin: '2rem 1rem' }}>
