@@ -71,12 +71,16 @@ export const convertToDiscordUrl = (url: string) => {
 	return url;
 };
 
-export const parseNotInMessage = (input: string): NotInPerTimeslot => {
+export type ParseOptions = {
+	combinePlayersInThread?: boolean;
+};
+export const parseNotInMessage = (input: string, options: ParseOptions = {}): NotInPerTimeslot => {
 	const timeslotRegex = zipRegex(
 		[timeslotHeaderRegex, /(?<notins>(?:.|\n)+?)/, /(?=Timeslot|\(no pings were sent\)|$)/],
 		'g',
 	);
 
+	console.log({ options });
 	const matches = [...input.matchAll(timeslotRegex)];
 
 	return Object.fromEntries(
@@ -90,9 +94,15 @@ export const parseNotInMessage = (input: string): NotInPerTimeslot => {
 					.groups!.notins.trim()
 					.split('\n')
 					.flatMap((line) => {
+						console.log({ line });
 						const httpUrl = /\[thread]\(<(?<url>[^>]+)>\)/.exec(line)?.groups!.url;
 						const threadUrl = httpUrl ? convertToDiscordUrl(httpUrl.trim()) : null;
-						const userMatches = line.match(/<@\d+> \(`[^)]+`\)/g) ?? [];
+						let userMatches = line.match(/<@\d+> \(`[^)]+`\)/g) ?? [];
+						console.log({ userMatches });
+						if (options.combinePlayersInThread) {
+							userMatches = [userMatches.join(', ')];
+						}
+						console.log({ threadUrl, userMatches });
 
 						return userMatches.map(
 							(user: string): NotIn => ({
@@ -107,5 +117,5 @@ export const parseNotInMessage = (input: string): NotInPerTimeslot => {
 	);
 };
 
-export const useExtractNotins = (input: string): NotInPerTimeslot =>
-	useMemo(() => parseNotInMessage(input), [input]);
+export const useExtractNotins = (input: string, options: ParseOptions = {}): NotInPerTimeslot =>
+	useMemo(() => parseNotInMessage(input, options), [input, options]);
