@@ -51,17 +51,17 @@ export class Timeslot {
 	}
 }
 
-type UserSpec = {
+export type UserSpec = {
+	combinedIdentifier: string;
 	discordId: string;
 	ign: string;
-	combinedIdentifier: string;
 };
-type NotIns = {
+export type NotIns = {
 	threadUrl: string | null;
-	users: Array<UserSpec>;
+	users: UserSpec[];
 };
 
-type NotInsPerTimeslot = Record<string, NotIns[]>;
+export type NotInsPerTimeslot = Record<string, NotIns[]>;
 
 export const zipRegex = (res: RegExp[], flags: string) =>
 	new RegExp(res.map((re) => re.source).join(''), flags);
@@ -76,7 +76,7 @@ export const convertToDiscordUrl = (url: string) => {
 	return url;
 };
 
-export const parseNotInMessage = (input: string): NotInPerTimeslot => {
+export const parseNotInMessage = (input: string): NotInsPerTimeslot => {
 	const timeslotRegex = zipRegex(
 		[timeslotHeaderRegex, /(?<notins>(?:.|\n)+?)/, /(?=Timeslot|\(no pings were sent\)|$)/],
 		'g',
@@ -91,14 +91,14 @@ export const parseNotInMessage = (input: string): NotInPerTimeslot => {
 				const timeslot = Timeslot.fromEmoji(emoji);
 				if (timeslot === null) return null;
 
-				const notins: NotIn[] = match
+				const notins: NotIns[] = match
 					.groups!.notins.trim()
 					.split('\n')
 					.map((line) => {
 						const httpUrl = /\[thread]\(<(?<url>[^>]+)>\)/.exec(line)?.groups!.url;
 						const threadUrl = httpUrl ? convertToDiscordUrl(httpUrl.trim()) : null;
 						const userMatches = [...line.matchAll(/<@(?<discordId>\d+)> \(`(?<ign>[^)]+)`\)/g)];
-						const users: Array<UserSpec> = userMatches.map((match) => ({
+						const users: UserSpec[] = userMatches.map((match) => ({
 							ign: match.groups!.ign,
 							discordId: match.groups!.discordId,
 							combinedIdentifier: match[0], // entire match
@@ -115,5 +115,5 @@ export const parseNotInMessage = (input: string): NotInPerTimeslot => {
 	);
 };
 
-export const useExtractNotins = (input: string): NotInPerTimeslot =>
+export const useExtractNotins = (input: string): NotInsPerTimeslot =>
 	useMemo(() => parseNotInMessage(input), [input]);
