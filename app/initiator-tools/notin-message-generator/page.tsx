@@ -43,10 +43,14 @@ const NotIn = ({ timeslotEmoji, user, threadUrl }: NotInProps) => {
 	);
 };
 
+type TimeslotIdentifier = string;
+type DiscordThreadUrl = string;
 export default function NotInMessageGeneratorPage() {
 	const [notInMessage, handleNotInMessageChange] = useEventSetState('');
 
-	const notins = useExtractNotins(notInMessage);
+	const notins = useExtractNotins(notInMessage, { combinePlayersInThread: true });
+
+	console.log({ notins });
 
 	return (
 		<div style={{ margin: '2rem 1rem' }}>
