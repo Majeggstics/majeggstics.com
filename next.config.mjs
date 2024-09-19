@@ -1,18 +1,6 @@
-import BuilderDevTools from '@builder.io/dev-tools/next';
-
 /** @type {import('next').NextConfig} */
-// const nextConfig = BuilderDevTools()({
 const nextConfig = {
-	images: {
-		remotePatterns: [
-			{
-				protocol: 'https',
-				hostname: 'cdn.builder.io',
-				port: '',
-				// pathname: '/account123/**',
-			},
-		],
-	},
+	images: {},
 	compiler: {
 		removeConsole: process.env.NODE_ENV === 'production',
 	},

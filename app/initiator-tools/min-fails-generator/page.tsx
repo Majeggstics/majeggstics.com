@@ -2,8 +2,9 @@
 
 import copy from 'copy-to-clipboard';
 import { useState } from 'react';
-import ToastMessage, { notify } from '@/components/ToastMessage';
+import ToastMessage from '@/components/ToastMessage';
 import { Timeslot } from '@/components/initiator-tools';
+import { notify } from '@/components/utils';
 
 export default function MinFailsGeneratorPage() {
 	const [notInMessage, setNotInMessage] = useState('');
@@ -81,12 +82,12 @@ export default function MinFailsGeneratorPage() {
 			<p style={{ display: 'flex', flexDirection: 'column' }}>
 				<label htmlFor="#notInMessage">Minimum check message from Wonky</label>
 				<textarea
-					name="notInMessage"
 					id="notInMessage"
-					value={notInMessage}
+					name="notInMessage"
 					onChange={(event) => setNotInMessage(event.target.value)}
-					style={{ margin: '1rem 0' }}
 					rows={10}
+					style={{ margin: '1rem 0' }}
+					value={notInMessage}
 				/>
 			</p>
 
@@ -150,16 +151,14 @@ export default function MinFailsGeneratorPage() {
 						</button>
 					</p>
 					{fails?.length > 0 ? (
-						fails.map((elem, index) => {
-							return (
-								<div key={index} style={{ marginBottom: '3rem' }}>
-									<p>
-										{copiedElements[index] ? '✅' : '❌'} {elem}
-									</p>
-									<button onClick={() => copyToClipboard(elem, index)}>Copy to Clipboard</button>
-								</div>
-							);
-						})
+						fails.map((elem, index) => (
+							<div key={index} style={{ marginBottom: '3rem' }}>
+								<p>
+									{copiedElements[index] ? '✅' : '❌'} {elem}
+								</p>
+								<button onClick={() => copyToClipboard(elem, index)}>Copy to Clipboard</button>
+							</div>
+						))
 					) : (
 						<div>
 							<p>No fails</p>

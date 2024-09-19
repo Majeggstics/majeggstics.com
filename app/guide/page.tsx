@@ -16,62 +16,62 @@ export default function Guide() {
 	return (
 		<main id="guide">
 			<section>
-				<Typography variant="h2" gutterBottom>
+				<Typography gutterBottom variant="h2">
 					Majeggstics Guide & Rule Book!
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					Welcome to The Majeggstics, where <em>No Farmer is Left Behind!</em>
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					Majeggstics is a worldwide group of Egg Inc. players with the common goal of making sure{' '}
 					<em>every</em> player can complete <em>every</em> contract, by optimizing play strategies
 					and making fair contributions to our co-ops.
 				</Typography>
 			</section>
 			<section>
-				<Typography variant="h4" gutterBottom>
+				<Typography gutterBottom variant="h4">
 					Minimum rules
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					The Majeggstics are a team - we expect everyone to contribute to our co-ops. When you
 					register for a contract, you are agreeing to meet the minimum contribution for that
 					contract.
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					<b>
 						The minimum egg laying rate for each contract is posted in #mj-announcements. Minimum is
 						measured at 12 and 24 hours after contract start.
 					</b>
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					The 12 hour minimum is lower than the 24 hour minimum. If you meet the 12 hour minimum,
 					you have passed! If you don’t meet the 12 hour minimum, you still have not failed, but you
 					must meet the 24 hour minimum to pass.
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					You will receive a strike for joining your contract later than 5 hours after start, and an
 					additional strike if you have not joined by the 24 hour check. (Strikes may also be given
 					for inappropriate behavior in chat, and server staff are notified when server rules are
 					broken.)
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					Tokens are the human players who manage the Majeggstics - we recruit new members, help
 					people play the game more efficiently, start and add people to co-op groups, and confirm
 					everyone has met the minimum required laying rate for each contract.
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					A token will communicate with you if you receive a strike. Strikes are recorded. After
 					four strikes, you will be removed from Majeggstics. Strikes are only counted for the last
 					20 contracts you complete - after that, strikes are erased.
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					After a strike, a token will create a <b>private thread</b> in #the_majeggstics to talk to
 					you about what happened, and make sure you are supported to be successful in the future.
 					If you’re concerned you won’t be successful, you can send <em>mj-support</em> anywhere in
 					Majeggstics channels and a support Token will help you out. It can take time to respond,
 					so ask for help using <em>mj-support</em> early on!
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					Remember that the Majeggstic’s goal is to see everyone succeed. Minimums are meant to help
 					you, not hurt. If you’re struggling to meet minimum or need help with a contract, ask for
 					advice in #the_majeggstics or your grade’s Majeggstics channel. The group would be
@@ -79,7 +79,7 @@ export default function Guide() {
 				</Typography>
 			</section>
 			<section>
-				<Typography variant="h4" gutterBottom>
+				<Typography gutterBottom variant="h4">
 					Registering for a Contract
 				</Typography>
 				<table>
@@ -118,8 +118,8 @@ export default function Guide() {
 					</tbody>
 				</table>
 				<br />
-				<Typography variant="body1" gutterBottom>
-					<img src="./images/newContractIcon.jpg" alt="New Contract Icon" />
+				<Typography gutterBottom variant="body1">
+					<img alt="New Contract Icon" src="./images/newContractIcon.jpg" />
 					<span>[Image Description: New Contract Icon]</span>
 				</Typography>
 				<ul>
@@ -136,19 +136,19 @@ export default function Guide() {
 						the “Contracts” role.
 					</li>
 				</ul>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					When a new contract is released, Wonky, our beloved bot, will generate a registration post
 					in #mj-announcements. Select a time slot - we start contracts at 3 times - +1, +6, and +12
 					hours after the contract release. Register for the time slot that&apos;s most convenient
 					for your schedule. You must join your co-op and start your farm within 5 hours of your
 					start time. It is your responsibility to register early and join your co-op.
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					Registration for each time slot is finalized when Wonky creates co-ops. We recommend you
 					sign up at least 15 minutes early, as co-ops may be created up to 5 minutes early because
 					of the size of our group. If co-ops are late, be patient with initiators.{' '}
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					Late registrations may be accepted depending on initiator availability and available
 					spaces in our co-ops. If you are unable to register for a contract with Majeggstics, you
 					can join a public co-op in the &quot;Co-Op Recruitment&quot; section and join us for the
@@ -156,10 +156,10 @@ export default function Guide() {
 				</Typography>
 			</section>
 			<section>
-				<Typography variant="h4" gutterBottom>
+				<Typography gutterBottom variant="h4">
 					Joining your Co-op
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					Ping! Pong! Wonky generated your co-op and started a thread in your grade’s channel. Check
 					your DMs from Wonky for the contract code. If you’re the first person, double-check your
 					contract code, then start the co-op immediately. Do not wait in the lobby.
@@ -213,7 +213,7 @@ export default function Guide() {
 				</ul>
 			</section>
 			<section>
-				<Typography variant="h4" gutterBottom>
+				<Typography gutterBottom variant="h4">
 					Start and grow your contract farm
 				</Typography>
 				<ul>
@@ -279,9 +279,9 @@ export default function Guide() {
 				</ul>
 				<p>
 					<img
+						alt="In-game contract info page with highlighted farm sharing button and CB ready icon circled"
 						className="responsive-image"
 						src="./images/inGameContractInfoPage.png"
-						alt="In-game contract info page with highlighted farm sharing button and CB ready icon circled"
 					/>
 					<br />
 					<span>
@@ -291,18 +291,18 @@ export default function Guide() {
 				</p>
 				<p>
 					<img
+						alt="A friend’s farm ready to receive CBs"
 						className="responsive-image"
 						src="./images/farmReadyToReceiveCBs.png"
-						alt="A friend’s farm ready to receive CBs"
 					/>
 					<br />
 					<span>[ID: A friend’s farm ready to receive CBs]</span>
 				</p>
 				<p>
 					<img
+						alt="A friend’s farm immediately after sending CBs showing the cooldown timer"
 						className="responsive-image"
 						src="./images/farmAfterSendingCBsWithTimer.png"
-						alt="A friend’s farm immediately after sending CBs showing the cooldown timer"
 					/>
 					<br />
 					<span>
@@ -311,7 +311,7 @@ export default function Guide() {
 				</p>
 			</section>
 			<section>
-				<Typography variant="h4" gutterBottom>
+				<Typography gutterBottom variant="h4">
 					Boosting
 				</Typography>
 				<ul>
@@ -319,18 +319,18 @@ export default function Guide() {
 						Use{' '}
 						<a
 							href="https://docs.google.com/spreadsheets/d/1qeqmgsn3Bsqbs2AfQ6kLZcNpsELEyiIrfo95IBKXWBg/edit#gid=36558563"
-							target="_blank"
 							rel="noreferrer"
+							target="_blank"
 						>
 							{' '}
 							GomCalc ↗
 						</a>
 						,{' '}
-						<a href="https://saladfork.github.io/egg-inc-tools/" target="_blank" rel="noreferrer">
+						<a href="https://saladfork.github.io/egg-inc-tools/" rel="noreferrer" target="_blank">
 							SaladForks’ Egg Inc Tools ↗
 						</a>
 						, and{' '}
-						<a href="https://hashtru.netlify.app/contractboost/" target="_blank" rel="noreferrer">
+						<a href="https://hashtru.netlify.app/contractboost/" rel="noreferrer" target="_blank">
 							Hashtru’s Contract Boost Calculator ↗
 						</a>{' '}
 						to help determine the best boost combination for your goals - these will vary widely
@@ -368,7 +368,7 @@ export default function Guide() {
 				</ul>
 			</section>
 			<section>
-				<Typography variant="h4" gutterBottom>
+				<Typography gutterBottom variant="h4">
 					Post-boosting
 				</Typography>
 				<ul>
@@ -414,7 +414,7 @@ export default function Guide() {
 				</ul>
 			</section>
 			<section>
-				<Typography variant="h4" gutterBottom>
+				<Typography gutterBottom variant="h4">
 					Completion
 				</Typography>
 				<ul>
@@ -425,10 +425,10 @@ export default function Guide() {
 				</ul>
 			</section>
 			<section>
-				<Typography variant="h4" gutterBottom>
+				<Typography gutterBottom variant="h4">
 					Taking Breaks & Leaving
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					We’re here to help you be successful with contracts, but we understand that sometimes you
 					need a break.
 				</Typography>
@@ -449,10 +449,10 @@ export default function Guide() {
 				</ul>
 			</section>
 			<section>
-				<Typography variant="h4" gutterBottom>
+				<Typography gutterBottom variant="h4">
 					Code of Conduct
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					Is it a privilege for Majeggstics to have access to private channels and Wonky in the Egg,
 					Inc. server. Because of our special status, we have high expectations for your behavior in
 					our channels and around the server.
@@ -462,8 +462,8 @@ export default function Guide() {
 						<b>
 							<a
 								href="https://discord.com/channels/455380663013736479/972559672814993418/972560766957924442"
-								target="_blank"
 								rel="noreferrer"
+								target="_blank"
 							>
 								Follow server #rules ↗
 							</a>
@@ -484,19 +484,19 @@ export default function Guide() {
 						we can provide. If you need to chat about mental health, check out:
 						<ul>
 							<li>
-								<a href="https://www.7cups.com/" target="_blank" rel="noreferrer">
+								<a href="https://www.7cups.com/" rel="noreferrer" target="_blank">
 									7 Cups of Tea ↗
 								</a>
 								: Free 24/7 chat by trained volunteers.{' '}
 							</li>
 							<li>
-								<a href="https://dialecticalbehaviortherapy.com/" target="_blank" rel="noreferrer">
+								<a href="https://dialecticalbehaviortherapy.com/" rel="noreferrer" target="_blank">
 									Dialectical Behaviour Therapy ↗
 								</a>
 								: Free, anonymous, independent skills and tools to help manage big feelings.{' '}
 							</li>
 							<li>
-								<a href="https://projectlets.org" target="_blank" rel="noreferrer">
+								<a href="https://projectlets.org" rel="noreferrer" target="_blank">
 									Project Lets ↗
 								</a>
 								: Community-support based mental health care, by and for folks with lived experience
@@ -573,15 +573,15 @@ export default function Guide() {
 				</ul>
 			</section>
 			<section>
-				<Typography variant="h4" gutterBottom>
+				<Typography gutterBottom variant="h4">
 					Useful Links
 				</Typography>
 				<ul>
 					<li>
 						<a
 							href="https://discord.com/channels/455380663013736479/972559672814993418/972560766957924442"
-							target="_blank"
 							rel="noreferrer"
+							target="_blank"
 						>
 							Server #rules ↗
 						</a>
@@ -589,8 +589,8 @@ export default function Guide() {
 					<li>
 						<a
 							href="https://discord.com/chttps://discord.com/channels/455380663013736479/807641608538292254/1121583305410740314hannels/455380663013736479/807641608538292254/1121583305410740314"
-							target="_blank"
 							rel="noreferrer"
+							target="_blank"
 						>
 							Ciria’s Useful Links Pin in #the_majeggstics ↗
 						</a>
@@ -598,8 +598,8 @@ export default function Guide() {
 					<li>
 						<a
 							href="https://discord.com/channels/455380663013736479/1121015323005554808"
-							target="_blank"
 							rel="noreferrer"
+							target="_blank"
 						>
 							Ciria’s Amazing Infographics Thread in #the_majeggstics ↗
 						</a>
@@ -607,8 +607,8 @@ export default function Guide() {
 					<li>
 						<a
 							href="https://discord.com/channels/455380663013736479/801187025742331996"
-							target="_blank"
 							rel="noreferrer"
+							target="_blank"
 						>
 							#artichat ↗
 						</a>{' '}
@@ -617,8 +617,8 @@ export default function Guide() {
 					<li>
 						<a
 							href="https://discord.com/channels/455380663013736479/455385659079917569"
-							target="_blank"
 							rel="noreferrer"
+							target="_blank"
 						>
 							#tips-and-tricks ↗
 						</a>{' '}
@@ -628,38 +628,38 @@ export default function Guide() {
 				</ul>
 			</section>
 			<section>
-				<Typography variant="h4" gutterBottom>
+				<Typography gutterBottom variant="h4">
 					Joining Majeggstics
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					Ready to get started?
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					Open the game and find your <b>EID</b>: Open the ‘9 dots’ menu, touch ‘Help’, then ‘Data
 					Loss Issue’. This will open an email, and you can copy your EID from the subject line.
 					You’ll receive a confirmation DM from Wonky, the bot who helps run our co-ops, and your
 					EID will be deleted from the chat to protect your privacy.
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					By sending the /join command, you are agreeing to follow Majeggstics rules.{' '}
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					<img
+						alt="How to join the Mageggstics"
 						className="responsive-image"
 						src="./images/howToJoinTheMajeggstics.png"
-						alt="How to join the Mageggstics"
 					/>
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					<b> Welcome to the Majeggstics, we’re happy to have you!</b>
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					<b>
 						If Majeggstics won’t be a good fit for you, DM @megadanger and ask to be removed from
 						the group. Check the staff list in #mj-announcements to find our current member manager.
 					</b>
 				</Typography>
-				<Typography variant="body1" gutterBottom>
+				<Typography gutterBottom variant="body1">
 					<b>
 						The public “#Co-Op Recruitment” section can help you find co-ops, or you can look for
 						other open groups that may fit your goals and needs better.
