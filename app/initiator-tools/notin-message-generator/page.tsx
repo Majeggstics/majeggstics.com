@@ -4,7 +4,7 @@
 import copy from 'copy-to-clipboard';
 import { Fragment, useState, useCallback, useMemo } from 'react';
 import ToastMessage from '@/components/ToastMessage';
-import { Timeslot, useExtractNotins } from '@/components/initiator-tools';
+import { Timeslot, useExtractNotins, type UserSpec } from '@/components/initiator-tools';
 import { notify, useEventSetState } from '@/components/utils';
 
 type NotInProps = {
@@ -48,7 +48,7 @@ type DiscordThreadUrl = string;
 export default function NotInMessageGeneratorPage() {
 	const [notInMessage, handleNotInMessageChange] = useEventSetState('');
 
-	const notins = useExtractNotins(notInMessage, { combinePlayersInThread: true });
+	const notins = useExtractNotins(notInMessage);
 
 	console.log({ notins });
 
@@ -68,7 +68,7 @@ export default function NotInMessageGeneratorPage() {
 				/>
 			</p>
 
-			{Object.entries(notins).map(([timeslotEmoji, users]) => (
+			{Object.entries(notins).map(([timeslotEmoji, slotNotins]) => (
 				<Fragment key={`header-${timeslotEmoji}`}>
 					<h4>{Timeslot.fromEmoji(timeslotEmoji)!.format('header')}</h4>
 					<div
@@ -76,12 +76,14 @@ export default function NotInMessageGeneratorPage() {
 							display: 'grid',
 							gridTemplateColumns: 'max-content repeat(2, min-content) auto',
 							gridColumnGap: '0.5rem',
+							gridRowGap: '1rem',
 						}}
 					>
-						{users.map(({ user, threadUrl }, userIndex) => (
+						{slotNotins.map(({ users, threadUrl }, userIndex) => (
 							<NotIn
 								key={`${timeslotEmoji}-${userIndex}`}
-								{...{ timeslotEmoji, user, threadUrl }}
+								user={users.map((u: UserSpec) => u.combinedIdentifier).join(', ')}
+								{...{ timeslotEmoji, threadUrl }}
 							/>
 						))}
 					</div>

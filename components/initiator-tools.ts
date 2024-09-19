@@ -51,12 +51,17 @@ export class Timeslot {
 	}
 }
 
-type NotIn = {
+type UserSpec = {
+	discordId: string;
+	ign: string;
+	combinedIdentifier: string;
+};
+type NotIns = {
 	threadUrl: string | null;
-	user: string;
+	users: Array<UserSpec>;
 };
 
-type NotInPerTimeslot = Record<string, NotIn[]>;
+type NotInsPerTimeslot = Record<string, NotIns[]>;
 
 export const zipRegex = (res: RegExp[], flags: string) =>
 	new RegExp(res.map((re) => re.source).join(''), flags);
@@ -71,16 +76,12 @@ export const convertToDiscordUrl = (url: string) => {
 	return url;
 };
 
-export type ParseOptions = {
-	combinePlayersInThread?: boolean;
-};
-export const parseNotInMessage = (input: string, options: ParseOptions = {}): NotInPerTimeslot => {
+export const parseNotInMessage = (input: string): NotInPerTimeslot => {
 	const timeslotRegex = zipRegex(
 		[timeslotHeaderRegex, /(?<notins>(?:.|\n)+?)/, /(?=Timeslot|\(no pings were sent\)|$)/],
 		'g',
 	);
 
-	console.log({ options });
 	const matches = [...input.matchAll(timeslotRegex)];
 
 	return Object.fromEntries(
@@ -93,23 +94,20 @@ export const parseNotInMessage = (input: string, options: ParseOptions = {}): No
 				const notins: NotIn[] = match
 					.groups!.notins.trim()
 					.split('\n')
-					.flatMap((line) => {
-						console.log({ line });
+					.map((line) => {
 						const httpUrl = /\[thread]\(<(?<url>[^>]+)>\)/.exec(line)?.groups!.url;
 						const threadUrl = httpUrl ? convertToDiscordUrl(httpUrl.trim()) : null;
-						let userMatches = line.match(/<@\d+> \(`[^)]+`\)/g) ?? [];
-						console.log({ userMatches });
-						if (options.combinePlayersInThread) {
-							userMatches = [userMatches.join(', ')];
-						}
-						console.log({ threadUrl, userMatches });
+						const userMatches = [...line.matchAll(/<@(?<discordId>\d+)> \(`(?<ign>[^)]+)`\)/g)];
+						const users: Array<UserSpec> = userMatches.map((match) => ({
+							ign: match.groups!.ign,
+							discordId: match.groups!.discordId,
+							combinedIdentifier: match[0], // entire match
+						}));
 
-						return userMatches.map(
-							(user: string): NotIn => ({
-								user,
-								threadUrl,
-							}),
-						);
+						return {
+							users,
+							threadUrl,
+						};
 					});
 				return [timeslot.format('emoji'), notins];
 			})
@@ -117,5 +115,5 @@ export const parseNotInMessage = (input: string, options: ParseOptions = {}): No
 	);
 };
 
-export const useExtractNotins = (input: string, options: ParseOptions = {}): NotInPerTimeslot =>
-	useMemo(() => parseNotInMessage(input, options), [input, options]);
+export const useExtractNotins = (input: string): NotInPerTimeslot =>
+	useMemo(() => parseNotInMessage(input), [input]);
