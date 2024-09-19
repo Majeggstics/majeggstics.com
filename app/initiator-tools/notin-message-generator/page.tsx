@@ -50,8 +50,6 @@ export default function NotInMessageGeneratorPage() {
 
 	const notins = useExtractNotins(notInMessage);
 
-	console.log({ notins });
-
 	return (
 		<div style={{ margin: '2rem 1rem' }}>
 			<ToastMessage />
@@ -82,7 +80,7 @@ export default function NotInMessageGeneratorPage() {
 						{slotNotins.map(({ users, threadUrl }, userIndex) => (
 							<NotIn
 								key={`${timeslotEmoji}-${userIndex}`}
-								user={users.map((u: UserSpec) => u.combinedIdentifier).join(', ')}
+								user={users.map((user: UserSpec) => user.combinedIdentifier).join(', ')}
 								{...{ timeslotEmoji, threadUrl }}
 							/>
 						))}
