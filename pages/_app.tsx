@@ -1,0 +1,15 @@
+import { type AppProps } from 'next/app';
+import { Inter } from 'next/font/google';
+import './globals.css';
+import ScrollToTop from '@/components/ScrollToTop/ScrollToTop';
+
+const inter = Inter({ subsets: ['latin'] });
+
+export default function App({ Component, pageProps }: AppProps) {
+	return (
+		<div className={inter.className}>
+			<Component {...pageProps} />
+			<ScrollToTop />
+		</div>
+	);
+}
