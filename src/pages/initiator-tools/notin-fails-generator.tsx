@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { Fragment, useState } from 'react';
 import ToastMessage from '@/components/ToastMessage';
 import { Timeslot, useExtractNotins } from '@/components/initiator-tools';
-import { notify } from '@/components/utils';
+import { notify } from '@/lib/utils';
 
 export default function NotInFailsGeneratorPage() {
 	const [notInMessage, setNotInMessage] = useState('');

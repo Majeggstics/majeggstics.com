@@ -9,10 +9,7 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import Head from 'next/head';
 import { useEffect, useState, useCallback } from 'react';
 import type { ChangeEvent } from 'react';
-import CustomTextInput, {
-	CustomNumberInput,
-	CustomSelectInput,
-} from '../../components/CustomInput';
+import CustomTextInput, { CustomNumberInput, CustomSelectInput } from '@/components/CustomInput';
 import {
 	artifactRarityOptions,
 	BASE_MAX_HAB_SPACE,
@@ -22,7 +19,7 @@ import {
 	gussetOptions,
 	monocleOptions,
 	stonesCountOptions,
-} from './constants';
+} from '@/lib/data/contract-boost-constants';
 import styles from './styles.module.css';
 
 export default function ContractBoostCalculator() {

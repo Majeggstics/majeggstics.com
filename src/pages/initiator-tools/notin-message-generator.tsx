@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { Fragment, useState, useCallback, useMemo } from 'react';
 import ToastMessage from '@/components/ToastMessage';
 import { Timeslot, useExtractNotins, type UserSpec } from '@/components/initiator-tools';
-import { notify, useEventSetState } from '@/components/utils';
+import { notify, useEventSetState } from '@/lib/utils';
 
 type NotInProps = {
 	readonly threadUrl: string | null;

@@ -6,9 +6,9 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "prettier --check . && eslint_d --format=pretty \"{pages,components}/**\"",
-		"format": "prettier --write . && eslint_d --fix --format=pretty \"{pages,components}/**\"",
-		"test": "mocha {app,components}/**/*.spec.ts",
+		"lint": "prettier --check . && eslint_d --format=pretty src",
+		"format": "prettier --write . && eslint_d --fix --format=pretty src",
+		"test": "mocha src/**/*.spec.ts",
 		"typecheck": "tsc --noEmit",
 		"e2e": "./Taskfile playwright:local",
 		"e2e:ui": "./Taskfile playwright:ui"

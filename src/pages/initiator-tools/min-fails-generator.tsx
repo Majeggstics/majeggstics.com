@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { useState } from 'react';
 import ToastMessage from '@/components/ToastMessage';
 import { Timeslot } from '@/components/initiator-tools';
-import { notify } from '@/components/utils';
+import { notify } from '@/lib/utils';
 
 export default function MinFailsGeneratorPage() {
 	const [notInMessage, setNotInMessage] = useState('');
