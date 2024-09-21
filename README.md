@@ -39,9 +39,10 @@ yarn e2e
 Integration & end-to-end tests are in [playwright][]. This is the right place to test
 UI interactions and ensure pages are rendering correctly.
 
-By default, `yarn e2e` runs against `http://localhost:3000`, viz., it expects your
-dev server to be up. To run against a deployed instance (or if your dev server is on
-another port) set the `BASE_URL` env var,
+By default, `yarn e2e` runs against `http://localhost:3000`. If your dev server is
+already running there, it will use the existing server; if not, it will start its own
+dev server in the background. To run against a deployed instance (or if you want it to
+use a dev server on another port) set the `BASE_URL` env var,
 
 ```
 env BASE_URL='https://majeggstics.com' yarn e2e
@@ -54,8 +55,8 @@ Playwright's UI mode, with
 yarn e2e:ui
 ```
 
-`BASE_URL` is respected. Your mileage may vary on whether it _works_
-depending on your host OS. See `./Taskfile` for more details.
+`BASE_URL` is respected. Your mileage may vary on whether this launches a UI or errors
+out, depending on your host OS. See `./Taskfile` for more details.
 
 [chai]: https://www.chaijs.com/
 [mocha]: https://mochajs.org/
