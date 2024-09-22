@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - stable
+
+env:
+  NEXT_PUBLIC_API_URL: 'https://ei_worker.fyko.workers.dev'
+
 jobs:
   build:
     runs-on: ubuntu-latest

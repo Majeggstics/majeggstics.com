@@ -67,6 +67,9 @@ to build statics and expects the results to be in `out/`.
 Commits to the `stable` branch are deployed to https://majeggstics.com/ via Github
 Pages. Deploy configuration is in `.github/workflows/deploy-stable.yaml`.
 
+In both static build systems, `NEXT_PUBLIC_API_URL` must be set to an EI-api proto to
+json forwarder.
+
 ## dns infrastructure
 
 The domain is registered with Namecheap; DNS goes to Cloudflare nameservers.
