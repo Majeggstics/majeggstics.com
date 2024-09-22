@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# majeggstics.com
 
-## Getting Started
+## dev setup
 
-First, run the development server:
+If you run into any issues or are not confident that something is working, ping
+@DukeCephalopod in discord for help.
 
-```bash
-npm run dev
-# or
+1. Install [volta][]. Ensure it's working: in this directory, `which yarn` should print
+   `$HOME/.volta/bin/yarn`, not `/usr/bin/yarn` or a similar system directory.
+1. Install dependencies with `yarn install`
+1. Compile source with `yarn build`
+
+### dev server
+
+```
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A hot-reloading dev server at http://localhost:3000. To use a different port,
+`yarn` passes args directly through to the underlying script, so simply
+`yarn dev -p 4444` (or whatever).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### unit tests
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```
+yarn test
+```
 
-## Learn More
+Unit tests are in [mocha][] + [chai][]. Don't unit test whole rendered components, just hooks
+or util functions. As a general guideline, if it's in `pages/`, unit testing isn't the right
+tool to reach for. For examples, look for `.spec.ts` files outside the `e2e` directory.
 
-To learn more about Next.js, take a look at the following resources:
+### e2e tests
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+yarn e2e
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+Integration & end-to-end tests are in [playwright][]. This is the right place to test
+UI interactions and ensure pages are rendering correctly.
 
-## Deploy on Vercel
+By default, `yarn e2e` runs against `http://localhost:3000`. If your dev server is
+already running there, it will use the existing server; if not, it will start its own
+dev server in the background. To run against a deployed instance (or if you want it to
+use a dev server on another port) set the `BASE_URL` env var,
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+env BASE_URL='https://majeggstics.com' yarn e2e
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+For rapid development or focusing in on a specific test, it may be useful to run
+Playwright's UI mode, with
+
+```
+yarn e2e:ui
+```
+
+`BASE_URL` is respected. Your mileage may vary on whether this launches a UI or errors
+out, depending on your host OS. See `./Taskfile` for more details.
+
+[chai]: https://www.chaijs.com/
+[mocha]: https://mochajs.org/
+[playwright]: http://playwright.dev/
+[volta]: https://docs.volta.sh/guide/getting-started

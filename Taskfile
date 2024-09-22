@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+export PATH="./node_modules/.bin:$PATH"
+help() { declare -F | awk -v ORS="   " '{ print $3 }'; echo; }
+
+_playwright_version() {
+  jq -r '.devDependencies["@playwright/test"]' package.json | sed -e 's/\^/v/'
+}
+
+playwright:local() {
+  exec docker run \
+    --interactive --tty --rm --ipc=host --net=host \
+    --volume .:/app:rw --env BASE_URL="$BASE_URL" \
+    "mcr.microsoft.com/playwright:$(_playwright_version)" \
+    /bin/bash -c "cd /app; yarn playwright test"
+}
+
+# works on my machine™  —dukeceph
+# on mac or windows maybe need other variables/volumes
+# ref https://www.oddbird.net/2022/11/30/headed-playwright-in-docker/
+playwright:ui() {
+  xhost +local:docker
+  exec docker run \
+    --interactive --tty --rm --ipc=host --net=host\
+    --env DISPLAY="$DISPLAY" \
+    --volume /tmp/.X11-unix:/tmp/.X11-unix \
+    --volume .:/app:rw --env BASE_URL="$BASE_URL" \
+    "mcr.microsoft.com/playwright:$(_playwright_version)" \
+    /bin/bash -c "cd /app; yarn playwright test --ui"
+}
+
+# as a general style guide, any package.json task that doesn't
+# fit in a hundred (ish) characters so should probably move to
+# a function here for improved readability and maintainability
+# ------------------------------------------------------------
+# this splits argv into words and processes them as a command:
+# $ ./Taskfile _playwright_version
+# simply runs the `_playwright_version` function defined above
+#
+# i use a shell alias, `run=./Taskfile`, that you may like too
+"$@"
