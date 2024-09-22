@@ -58,6 +58,19 @@ yarn e2e:ui
 `BASE_URL` is respected. Your mileage may vary on whether this launches a UI or errors
 out, depending on your host OS. See `./Taskfile` for more details.
 
+## deploying
+
+Commits to the `main` branch are deployed to https://beta.majeggstics.com/ via
+Cloudflare Pages. Configuration happens in the Cloudflare UI; it runs `yarn build`
+to build statics and expects the results to be in `out/`.
+
+Commits to the `stable` branch are deployed to https://majeggstics.com/ via Github
+Pages. Deploy configuration is in `.github/workflows/deploy-stable.yaml`.
+
+## dns infrastructure
+
+The domain is registered with Namecheap; DNS goes to Cloudflare nameservers.
+
 [chai]: https://www.chaijs.com/
 [mocha]: https://mochajs.org/
 [playwright]: http://playwright.dev/
