@@ -46,6 +46,7 @@
 		"eslint-formatter-pretty": "^6.0.1",
 		"eslint-plugin-prettier": "^5.2.1",
 		"ignore-styles": "^5.0.1",
+		"lint-staged": "^15.2.10",
 		"lodash.merge": "^4.6.2",
 		"mocha": "^10.7.3",
 		"prettier": "^3.3.3",
