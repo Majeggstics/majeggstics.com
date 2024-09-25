@@ -7,7 +7,6 @@ let addlConfig = {};
 if (BASE_URL.includes('localhost') || BASE_URL.includes('127.0.0.1')) {
 	addlConfig = {
 		retries: 0,
-		workers: 0,
 		webServer: {
 			command: 'yarn dev',
 			url: 'http://localhost:4321',
@@ -17,7 +16,6 @@ if (BASE_URL.includes('localhost') || BASE_URL.includes('127.0.0.1')) {
 } else {
 	addlConfig = {
 		retries: process.env.CI ? 2 : 0,
-		workers: process.env.CI ? 1 : 0,
 	};
 }
 
@@ -27,6 +25,7 @@ if (BASE_URL.includes('localhost') || BASE_URL.includes('127.0.0.1')) {
 export default defineConfig({
 	testDir: './e2e',
 	fullyParallel: true,
+	workers: 1,
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */

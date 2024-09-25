@@ -275,5 +275,6 @@ export const artifactRarity = (rarityId: number): string => {
 		case 3:
 			return 'L';
 	}
+
 	return '';
 };

@@ -40,9 +40,9 @@ export class Timeslot {
 				return Timeslot.Two;
 			case ':three:':
 				return Timeslot.Three;
+			default:
+				return null;
 		}
-
-		return null;
 	}
 
 	static fromWonkyMessage(input: string): Timeslot | null {

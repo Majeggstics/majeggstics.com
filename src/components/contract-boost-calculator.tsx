@@ -20,8 +20,9 @@ import {
 
 type EquippedArtifact = {
 	spec: {
-		name: number; // what
+		// what
 		level: number;
+		name: number;
 		rarity: number;
 	};
 };
@@ -52,6 +53,7 @@ export default function ContractBoostCalculator() {
 				const rarity = artifactRarity(artifactData.spec.rarity);
 				return `T${tier}${rarity}`;
 			}
+
 			return '';
 		},
 		[equippedArtifactsListForSelectedIGN],
