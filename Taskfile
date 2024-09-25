@@ -36,6 +36,10 @@ lint:fix() {
   eslint --fix --format=pretty src
 }
 
+install-git-hooks() {
+  echo 'yarn lint-staged' > .git/hooks/pre-commit
+}
+
 # as a general style guide, any package.json task that doesn't
 # fit in a hundred (ish) characters so should probably move to
 # a function here for improved readability and maintainability

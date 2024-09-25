@@ -9,6 +9,7 @@ If you run into any issues or are not confident that something is working, ping
    `$HOME/.volta/bin/yarn`, not `/usr/bin/yarn` or a similar system directory.
 1. Install dependencies with `yarn install`
 1. Compile source with `yarn build`
+1. (optional) Install git hooks with `./Taskfile install-git-hooks`
 
 ### dev server
 
