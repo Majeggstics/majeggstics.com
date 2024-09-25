@@ -18,9 +18,9 @@ export default function MinFailsGeneratorPage() {
 		.filter((elem) => elem?.toLowerCase().includes('spent'))
 		.map((elem) =>
 			elem
-				?.replace('<:b_icon_token:1123683788258549861>', ':b_icon_token:')
-				?.replace('<:clock:1123686591412576357>', ':clock:')
-				?.replace('* ', '- '),
+				.replace('<:b_icon_token:1123683788258549861>', ':b_icon_token:')
+				.replace('<:clock:1123686591412576357>', ':clock:')
+				.replace('* ', '- '),
 		);
 
 	const [copiedElements, setCopiedElements] = useState<boolean[]>(
@@ -42,12 +42,12 @@ export default function MinFailsGeneratorPage() {
 	};
 
 	const headerRegex = /Minimum check for\s*<?(?<contractEgg>:.*:)(?:\d+>)?\s*(?<contractName>.*)/;
-	const { contractEgg, contractName } = headerRegex.exec(notInMessage)?.groups! || {};
+	const { contractEgg, contractName } = headerRegex.exec(notInMessage)?.groups ?? {};
 
 	const notinRows = notInMessage.split('\n');
 	const twentyFourHourNotins = notinRows
 		.filter((elem) => elem.toLowerCase().includes('missing'))
-		.map((elem) => elem.replace(/(?:^\*| is missing.)/g, '') + ', failure to join after 24 hours');
+		.map((elem) => elem.replace(/^\*| is missing./g, '') + ', failure to join after 24 hours');
 
 	const coopsInDanger = notinRows.filter((elem) => elem.toLowerCase().includes(':warning'));
 

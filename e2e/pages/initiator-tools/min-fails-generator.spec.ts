@@ -21,7 +21,7 @@ test('generates output', async ({ page }) => {
 	await expect(page.getByText('Copy to Clipboard').nth(0)).toBeVisible();
 });
 
-test.only('extracts timeslot', async ({ page, context }) => {
+test('extracts timeslot', async ({ page }) => {
 	await page.getByRole('textbox').fill(`
 		## Minimum check for :egg_unknown: Contract Name
 		### Formula \`Majeggstics 24h\`, Timeslot :one:

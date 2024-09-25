@@ -37,6 +37,9 @@ const typeScriptRuleset = merge(...typescript, {
 
 		// those aren't absolute paths; ref tsconfig .compilerOptions.paths
 		'import-x/no-absolute-path': 'off',
+
+		// i don't prefer that, sorry
+		'unicorn/prefer-string-replace-all': 'off',
 	},
 	settings: {
 		'import/resolver': {
