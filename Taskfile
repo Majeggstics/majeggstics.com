@@ -13,7 +13,7 @@ playwright:local() {
     --volume .:/app:rw --env BASE_URL="$BASE_URL" \
     --env ASTRO_TELEMETRY_DISABLED=1 \
     "mcr.microsoft.com/playwright:$(_playwright_version)" \
-    bash -c "cd /app; yarn playwright test"
+    bash -c "cd /app; yarn playwright test $*"
 }
 
 # works on my machine™  —dukeceph
@@ -28,7 +28,7 @@ playwright:ui() {
     --volume .:/app:rw --env BASE_URL="$BASE_URL" \
     --env ASTRO_TELEMETRY_DISABLED=1 \
     "mcr.microsoft.com/playwright:$(_playwright_version)" \
-    /bin/bash -c "cd /app; yarn playwright test --ui"
+    /bin/bash -c "cd /app; yarn playwright test --ui $*"
 }
 
 lint:fix() {

@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => void (await page.goto('/initiator-tools/min-fails-generator')));
+
 test('has title', async ({ page }) => {
 	await expect(page).toHaveTitle(/Min Fails Generator/i);
 });
@@ -20,11 +21,11 @@ test('generates output', async ({ page }) => {
 	await expect(page.getByText('Copy to Clipboard').nth(0)).toBeVisible();
 });
 
-test('extracts timeslot', async ({ page }) => {
+test.only('extracts timeslot', async ({ page, context }) => {
 	await page.getByRole('textbox').fill(`
 		## Minimum check for :egg_unknown: Contract Name
 		### Formula \`Majeggstics 24h\`, Timeslot :one:
 	`);
 
-	await expect(page.getByText('+1 Coops in danger')).toBeVisible();
+	await expect(page.getByRole('heading', { name: /coops in danger/i })).toContainText('+1');
 });

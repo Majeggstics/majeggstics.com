@@ -41,26 +41,15 @@ export default function MinFailsGeneratorPage() {
 		}
 	};
 
-	const contractEgg =
-		/Minimum check for.*?<(?<egg>:.*:).*>.*/.exec(notInMessage)?.groups!.egg ?? '';
-	const contractName =
-		/Minimum check for.*?>(?<timeslot>.*)/.exec(notInMessage)?.groups!.timeslot ?? '';
+	const headerRegex = /Minimum check for\s*<?(?<contractEgg>:.*:)(?:\d+>)?\s*(?<contractName>.*)/;
+	const { contractEgg, contractName } = headerRegex.exec(notInMessage)?.groups! || {};
 
-	const twentyFourHourNotins = notInMessage
-		.slice()
-		.split('\n')
-		.filter((elem) => elem?.toLowerCase().includes('missing'))
-		.map((elem) =>
-			elem
-				?.replace('* ', '')
-				?.replace(' is missing.', '')
-				?.concat(', failure to join after 24 hours'),
-		);
+	const notinRows = notInMessage.split('\n');
+	const twentyFourHourNotins = notinRows
+		.filter((elem) => elem.toLowerCase().includes('missing'))
+		.map((elem) => elem.replace(/(?:^\*| is missing.)/g, '') + ', failure to join after 24 hours');
 
-	const coopsInDanger = notInMessage
-		.slice()
-		.split('\n')
-		.filter((elem) => elem?.toLowerCase().includes(':warning'));
+	const coopsInDanger = notinRows.filter((elem) => elem.toLowerCase().includes(':warning'));
 
 	const contractNameWithTimeslot = `${nitroMode ? contractEgg : ''} ${contractName} ${timeslot?.format('eggst')}`;
 

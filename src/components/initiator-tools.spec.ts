@@ -11,7 +11,7 @@ describe('Timeslot#fromWonkyMessage', () => {
 			### Formula \`Majeggstics 24h\`, Timeslot :one:
 		`);
 
-		expect(timeslot.index).to.equal(0);
+		expect(timeslot?.index).to.equal(0);
 	});
 
 	it('should parse from notins message', () => {
@@ -23,7 +23,7 @@ describe('Timeslot#fromWonkyMessage', () => {
 			(no pings were sent)
 		`);
 
-		expect(timeslot.index).to.equal(2);
+		expect(timeslot?.index).to.equal(2);
 	});
 });
 
