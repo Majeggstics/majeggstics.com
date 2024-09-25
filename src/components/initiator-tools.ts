@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
 import { DateTime } from 'luxon';
+import { useMemo } from 'react';
 
 const timeslotFormatMap = {
 	emoji: [':one:', ':two:', ':three:'],

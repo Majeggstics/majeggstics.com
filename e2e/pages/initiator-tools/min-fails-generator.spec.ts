@@ -1,6 +1,6 @@
-import { beforeEach, expect, test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
-beforeEach(async ({ page }) => void (await page.goto('/initiator-tools/min-fails-generator')));
+test.beforeEach(async ({ page }) => void (await page.goto('/initiator-tools/min-fails-generator')));
 test('has title', async ({ page }) => {
 	await expect(page).toHaveTitle(/Min Fails Generator/i);
 });
