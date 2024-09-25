@@ -21,6 +21,7 @@ const reactRuleset = merge(...react, {
 });
 
 const typeScriptRuleset = merge(...typescript, {
+	ignores: ['src/env.d.ts'],
 	files: [`**/*${commonFiles}`],
 	languageOptions: {
 		parserOptions: {

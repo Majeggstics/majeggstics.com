@@ -1,0 +1,14 @@
+---
+import { DateTime } from 'luxon';
+const time = DateTime.fromISO('09:00', { zone: 'America/Los_Angeles' });
+---
+
+<span data-local-contract-time>{time}</span>
+<script>
+	document.querySelectorAll('[data-local-contract-time]').forEach((time) => {
+		const date = new Date(time.innerHTML);
+		const _24 = date.toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit' });
+		const _12 = date.toLocaleTimeString([], { hour12: true, hour: 'numeric', minute: '2-digit' });
+		time.innerHTML = `${_24} (${_12})`;
+	});
+</script>

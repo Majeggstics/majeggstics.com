@@ -1,4 +1,4 @@
-import moment from 'moment-timezone';
+import { DateTime } from 'luxon';
 import { useMemo } from 'react';
 
 const timeslotFormatMap = {
@@ -22,17 +22,19 @@ export class Timeslot {
 		this.index = index;
 	}
 
-	format(as: 'discord' | 'eggst' | 'emoji' | 'header'): string {
-		if (as === 'discord') {
-			const hour = [18, 23, 5][this.index];
-			const date = moment().tz('America/Toronto').hour(hour).minute(0).second(0);
-			return `<t:${date.unix()}:t>`;
+	format(as: 'eggst' | 'emoji' | 'header' | 'join_deadline'): string {
+		if (as === 'join_deadline') {
+			const offset = [6, 11, 17][this.index];
+			const time = DateTime.fromISO('09:00', { zone: 'America/Los_Angeles' }).plus({
+				hours: offset,
+			});
+			return `<t:${time.toUnixInteger()}:t>`;
 		}
 
 		return timeslotFormatMap[as][this.index];
 	}
 
-	static fromEmoji(emoji: string): Timeslot | null {
+	static fromEmoji(emoji: string | undefined): Timeslot | null {
 		switch (emoji) {
 			case ':one:':
 				return Timeslot.One;
@@ -40,9 +42,9 @@ export class Timeslot {
 				return Timeslot.Two;
 			case ':three:':
 				return Timeslot.Three;
+			default:
+				return null;
 		}
-
-		return null;
 	}
 
 	static fromWonkyMessage(input: string): Timeslot | null {
@@ -92,16 +94,16 @@ export const parseNotInMessage = (input: string): NotInsPerTimeslot => {
 				if (timeslot === null) return null;
 
 				const notins: NotIns[] = match
-					.groups!.notins.trim()
+					?.groups!.notins!.trim()
 					.split('\n')
 					.map((line) => {
 						const httpUrl = /\[thread]\(<(?<url>[^>]+)>\)/.exec(line)?.groups!.url;
 						const threadUrl = httpUrl ? convertToDiscordUrl(httpUrl.trim()) : null;
 						const userMatches = [...line.matchAll(/<@(?<discordId>\d+)> \(`(?<ign>[^)]+)`\)/g)];
 						const users: UserSpec[] = userMatches.map((match) => ({
-							ign: match.groups!.ign,
-							discordId: match.groups!.discordId,
-							combinedIdentifier: match[0], // entire match
+							ign: match.groups!.ign!,
+							discordId: match.groups!.discordId!,
+							combinedIdentifier: match[0]!, // entire match
 						}));
 
 						return {

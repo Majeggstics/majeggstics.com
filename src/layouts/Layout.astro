@@ -1,0 +1,51 @@
+---
+export type Props = {
+	title: string;
+	frontmatter?: {
+		title: string;
+	};
+};
+const { title } = Astro.props.frontmatter ?? Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="256x256" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+
+		{/* https://fonts.google.com/specimen/Inter */}
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+			rel="stylesheet"
+		/>
+
+		<title>{title}</title>
+	</head>
+	<body>
+		<main>
+			<slot />
+		</main>
+	</body>
+</html>
+
+<style is:global>
+	body {
+		max-width: 90vw;
+		margin: 0 auto;
+		font-family: inter, sans-serif;
+	}
+
+	main {
+		max-width: 80%;
+		margin: 2rem auto;
+	}
+
+	img {
+		object-fit: contain;
+		max-width: 75vw;
+	}
+</style>
