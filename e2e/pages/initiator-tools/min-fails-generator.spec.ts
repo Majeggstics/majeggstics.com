@@ -7,7 +7,7 @@ test('has title', async ({ page }) => {
 
 test('generates output', async ({ page }) => {
 	await page.getByRole('textbox').fill(`
-		## Minimum check for <:egg_rocketfuel:455468270661795850> Launch Window
+		## Minimum check for <:egg_unknown:> Contract Name
 		### Formula \`Majeggstics 24h\`, Timeslot :two:
 		** **
 		<:grade_aaa:111> [**\`coop\`**](<carpet>) ([**thread**](<discord_url_1>))
@@ -18,4 +18,13 @@ test('generates output', async ({ page }) => {
 	`);
 
 	await expect(page.getByText('Copy to Clipboard').nth(0)).toBeVisible();
+});
+
+test('extracts timeslot', async ({ page }) => {
+	await page.getByRole('textbox').fill(`
+		## Minimum check for :egg_unknown: Contract Name
+		### Formula \`Majeggstics 24h\`, Timeslot :one:
+	`);
+
+	await expect(page.getByText('+1 Coops in danger')).toBeVisible();
 });
