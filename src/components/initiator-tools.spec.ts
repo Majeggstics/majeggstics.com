@@ -1,5 +1,5 @@
 import * as chai from 'chai';
-import { Timeslot, parseNotInMessage } from './initiator-tools';
+import { parseNotInMessage } from './initiator-tools';
 
 chai.config.truncateThreshold = 0;
 const expect = chai.expect;

@@ -29,7 +29,7 @@ export const monocleOptions = [
 		value: 1.3,
 		text: 'T4L',
 	},
-];
+] as const;
 
 export const chaliceOptions = [
 	{
@@ -72,7 +72,7 @@ export const chaliceOptions = [
 		value: 1.4,
 		text: 'T4L',
 	},
-];
+] as const;
 
 export const gussetOptions = [
 	{
@@ -111,7 +111,7 @@ export const gussetOptions = [
 		value: 1.25,
 		text: 'T4L',
 	},
-];
+] as const;
 
 export const stonesCountOptions = [
 	{
@@ -166,7 +166,7 @@ export const stonesCountOptions = [
 		value: 12,
 		text: '12',
 	},
-];
+] as const;
 
 export const formInitialState = {
 	EID: '',
@@ -187,7 +187,7 @@ export const formInitialState = {
 	t2DiliStonesCount: stonesCountOptions[0].value,
 	t3DiliStonesCount: stonesCountOptions[0].value,
 	t4DiliStonesCount: stonesCountOptions[0].value,
-};
+} as const;
 
 export const boostSetPresets = [
 	{
@@ -264,11 +264,16 @@ export const boostSetPresets = [
 		baseGeCost: '2500 (always buy in a group of 5!)',
 		discountGeCost: 2_000,
 	},
-];
+] as const;
 
-export const artifactRarityOptions: any = {
-	0: '',
-	1: 'R',
-	2: 'E',
-	3: 'L',
+export const artifactRarity = (rarityId: number): string => {
+	switch (rarityId) {
+		case 1:
+			return 'R';
+		case 2:
+			return 'E';
+		case 3:
+			return 'L';
+	}
+	return '';
 };

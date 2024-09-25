@@ -1,21 +1,23 @@
 import { defineConfig, devices } from '@playwright/test';
 
 // purposefully not using ??: we want to replace empty empty string with default
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:4321';
 
 let addlConfig = {};
 if (BASE_URL.includes('localhost') || BASE_URL.includes('127.0.0.1')) {
 	addlConfig = {
 		retries: 0,
+		workers: 0,
 		webServer: {
 			command: 'yarn dev',
-			url: 'http://localhost:3000',
+			url: 'http://localhost:4321',
 			reuseExistingServer: true,
 		},
 	};
 } else {
 	addlConfig = {
 		retries: process.env.CI ? 2 : 0,
+		workers: process.env.CI ? 1 : 0,
 	};
 }
 
@@ -27,8 +29,6 @@ export default defineConfig({
 	fullyParallel: true,
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
 	forbidOnly: !!process.env.CI,
-	/* Opt out of parallel tests on CI. */
-	workers: process.env.CI ? 1 : undefined,
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
 	reporter: 'html',
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */

@@ -11,8 +11,9 @@ playwright:local() {
   exec docker run \
     --interactive --tty --rm --ipc=host --net=host \
     --volume .:/app:rw --env BASE_URL="$BASE_URL" \
+    --env ASTRO_TELEMETRY_DISABLED=1 \
     "mcr.microsoft.com/playwright:$(_playwright_version)" \
-    /bin/bash -c "cd /app; yarn playwright test"
+    bash -c "cd /app; yarn playwright test"
 }
 
 # works on my machine™  —dukeceph
@@ -25,8 +26,14 @@ playwright:ui() {
     --env DISPLAY="$DISPLAY" \
     --volume /tmp/.X11-unix:/tmp/.X11-unix \
     --volume .:/app:rw --env BASE_URL="$BASE_URL" \
+    --env ASTRO_TELEMETRY_DISABLED=1 \
     "mcr.microsoft.com/playwright:$(_playwright_version)" \
     /bin/bash -c "cd /app; yarn playwright test --ui"
+}
+
+lint:fix() {
+  prettier --write . | grep --color=always -v unchanged
+  eslint --fix --format=pretty src
 }
 
 # as a general style guide, any package.json task that doesn't
