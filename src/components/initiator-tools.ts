@@ -1,5 +1,5 @@
-import moment from 'moment-timezone';
 import { useMemo } from 'react';
+import { DateTime } from 'luxon';
 
 const timeslotFormatMap = {
 	emoji: [':one:', ':two:', ':three:'],
@@ -24,9 +24,11 @@ export class Timeslot {
 
 	format(as: 'eggst' | 'emoji' | 'header' | 'join_deadline'): string {
 		if (as === 'join_deadline') {
-			const hour = [18, 23, 5][this.index];
-			const date = moment().tz('America/Toronto').hour(hour!).minute(0).second(0);
-			return `<t:${date.unix()}:t>`;
+			const offset = [6, 11, 17][this.index];
+			const time = DateTime.fromISO('09:00', { zone: 'America/Los_Angeles' }).plus({
+				hours: offset,
+			});
+			return `<t:${time.toUnixInteger()}:t>`;
 		}
 
 		return timeslotFormatMap[as][this.index];
