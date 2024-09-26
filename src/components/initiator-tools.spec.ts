@@ -1,4 +1,5 @@
 import * as chai from 'chai';
+import { stripIndent } from 'common-tags';
 import { Timeslot, parseNotInMessage } from './initiator-tools';
 
 chai.config.truncateThreshold = 0;
@@ -6,7 +7,7 @@ const expect = chai.expect;
 
 describe('Timeslot#fromWonkyMessage', () => {
 	it('should parse from a min-fails message', () => {
-		const timeslot = Timeslot.fromWonkyMessage(`
+		const timeslot = Timeslot.fromWonkyMessage(stripIndent`
 			## Minimum check for :egg_unknown: Contract Name
 			### Formula \`Majeggstics 24h\`, Timeslot :one:
 		`);
@@ -15,7 +16,7 @@ describe('Timeslot#fromWonkyMessage', () => {
 	});
 
 	it('should parse from notins message', () => {
-		const timeslot = Timeslot.fromWonkyMessage(`
+		const timeslot = Timeslot.fromWonkyMessage(stripIndent`
 			Not in <:egg:1> **Contract** <:egg:1> - \`contract-id\`:
 			Timeslot :three::
 			<:grade_aaa:1> [code](<carpet>) ([thread](<discord>)): <@11> (\`foo\`)
@@ -34,7 +35,7 @@ describe('parseNotInMessage', () => {
 	});
 
 	it('should parse one timeslot and one username', () => {
-		const parsed = parseNotInMessage(`
+		const parsed = parseNotInMessage(stripIndent`
 			Timeslot :one::
 			<:grade_aaa:> [foo](<link>) ([thread](<thread1>)): <@1111> (\`foo\`)
 			<:grade_aaa:111> [bar](<link>) ([thread](<thread2>)): <@2222> (\`bar\`)
@@ -55,7 +56,7 @@ describe('parseNotInMessage', () => {
 	});
 
 	it('should parse multiple timeslots and multiple usernames', () => {
-		const parsed = parseNotInMessage(`
+		const parsed = parseNotInMessage(stripIndent`
 			Timeslot :one::
 			<:grade_aaa:> [foo](<link>) ([thread](<link>)): <@11> (\`foo\`), <@22> (\`bar\`)
 
