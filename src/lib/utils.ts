@@ -1,4 +1,11 @@
-import type { ChangeEvent, ChangeEventHandler, Dispatch, SetStateAction } from 'react';
+import type {
+	ChangeEvent,
+	ChangeEventHandler,
+	Dispatch,
+	EventHandler,
+	SetStateAction,
+	SyntheticEvent,
+} from 'react';
 import { useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
 
@@ -12,6 +19,13 @@ export const useEventSetState = (
 		useCallback((event: ChangeEvent<HTMLElementWithValue>) => setRawState(event.target.value), []),
 		setRawState,
 	];
+};
+
+export const useToggleState = (
+	initial: boolean = false,
+): [boolean, EventHandler<SyntheticEvent<any, Event>>, Dispatch<SetStateAction<boolean>>] => {
+	const [rawState, setRawState] = useState<boolean>(initial);
+	return [rawState, useCallback(() => setRawState((state) => !state), []), setRawState];
 };
 
 export function notify(message: string, type = 'default') {

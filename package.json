@@ -41,6 +41,8 @@
 		"@types/prop-types": "^15.7.13",
 		"@types/react": "^18.3.9",
 		"@types/react-dom": "^18.3.0",
+		"@typescript-eslint/parser": "^8.7.0",
+		"astro-eslint-parser": "^1.0.3",
 		"chai": "^5.1.1",
 		"common-tags": "^1.8.2",
 		"eslint": "^8.57.1",
