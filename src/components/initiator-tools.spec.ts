@@ -34,6 +34,16 @@ describe('parseNotInMessage', () => {
 		void expect(parsed).to.be.an('object').that.is.empty;
 	});
 
+	it('should parse one timeslot and no usernames', () => {
+		const parsed = parseNotInMessage(stripIndent`
+			Timeslot :three::
+
+			(no pings were sent)
+		`);
+		expect(parsed).to.have.key(':three:');
+		void expect(parsed[':three:']).to.be.an('array').that.is.empty;
+	});
+
 	it('should parse one timeslot and one username', () => {
 		const parsed = parseNotInMessage(stripIndent`
 			Timeslot :one::

@@ -7,7 +7,7 @@ const timeslotFormatMap = {
 	header: ['Timeslot 1', 'Timeslot 2', 'Timeslot 3'],
 } as const;
 
-const timeslotHeaderRegex = /Timeslot\s*(?<emoji>:[a-z]+:)/;
+const timeslotHeaderRegex = /Timeslot\s*(?<emoji>:[a-z]+:):?/;
 
 export class Timeslot {
 	static One = new Timeslot(0);
