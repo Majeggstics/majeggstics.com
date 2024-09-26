@@ -29,8 +29,10 @@
 		"react-toastify": "^10.0.5"
 	},
 	"devDependencies": {
+		"@acab/ecsstatic": "^0.8.0",
 		"@playwright/test": "^1.47.2",
 		"@types/chai": "^4.3.19",
+		"@types/common-tags": "^1",
 		"@types/d3-time-format": "^4.0.3",
 		"@types/ignore-styles": "^5.0.3",
 		"@types/luxon": "^3",
@@ -40,6 +42,7 @@
 		"@types/react": "^18.3.9",
 		"@types/react-dom": "^18.3.0",
 		"chai": "^5.1.1",
+		"common-tags": "^1.8.2",
 		"eslint": "^8.57.1",
 		"eslint-config-neon": "^0.2.0",
 		"eslint-config-next": "14.2.13",

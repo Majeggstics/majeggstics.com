@@ -61,12 +61,12 @@ out, depending on your host OS. See `./Taskfile` for more details.
 
 ## deploying
 
-Commits to the `main` branch are deployed to https://beta.majeggstics.com/ via
+Commits to the `stable` branch are deployed to https://majeggstics.com/ via
 Cloudflare Pages. Configuration happens in the Cloudflare UI; it runs `yarn build`
 to build statics and expects the results to be in `out/`.
 
-Commits to the `stable` branch are deployed to https://majeggstics.com/ via Github
-Pages. Deploy configuration is in `.github/workflows/deploy-stable.yaml`.
+Commits to the `main` branch are deployed to https://beta.majeggstics.com/ via Github
+Pages. Deploy configuration is in `.github/workflows/deploy-beta.yaml`.
 
 In both static build systems, `NEXT_PUBLIC_API_URL` must be set to an EI-api proto to
 json forwarder.

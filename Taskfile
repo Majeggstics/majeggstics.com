@@ -38,6 +38,7 @@ lint:fix() {
 
 install-git-hooks() {
   echo 'yarn lint-staged' > .git/hooks/pre-commit
+  chmod +x .git/hooks/pre-commit
 }
 
 # as a general style guide, any package.json task that doesn't

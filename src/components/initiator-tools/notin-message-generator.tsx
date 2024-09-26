@@ -1,7 +1,7 @@
 // Currently doesn't support Wonky's "(from timeslot xx)"
 import copy from 'copy-to-clipboard';
 import { Fragment, useState, useCallback, useMemo } from 'react';
-import ToastMessage from '/components/ToastMessage';
+import { css } from '@acab/ecsstatic';
 import { Timeslot, useExtractNotins, type UserSpec } from '/components/initiator-tools';
 import { notify, useEventSetState } from '/lib/utils';
 
@@ -41,38 +41,33 @@ const NotIn = ({ timeslotEmoji, user, threadUrl }: NotInProps) => {
 	);
 };
 
+const grid = css`
+	display: grid;
+	grid-template-columns: max-content repeat(2, min-content) auto;
+	grid-column-gap: 0.5rem;
+	grid-row-gap: 1rem;
+`;
+
 export default function NotInMessageGeneratorPage() {
 	const [notInMessage, handleNotInMessageChange] = useEventSetState('');
 
 	const notins = useExtractNotins(notInMessage);
 
 	return (
-		<div style={{ margin: '2rem 1rem' }}>
-			<ToastMessage />
-			<h1>NotIn Message Generator</h1>
-			<p style={{ display: 'flex', flexDirection: 'column' }}>
-				<label htmlFor="#notInMessage">Not in message from Wonky</label>
-				<textarea
-					id="notInMessage"
-					name="notInMessage"
-					onChange={handleNotInMessageChange}
-					rows={10}
-					style={{ margin: '1rem 0' }}
-					value={notInMessage}
-				/>
-			</p>
+		<>
+			<label htmlFor="notInMessage">Not in message from Wonky:</label>
+			<textarea
+				id="notInMessage"
+				name="notInMessage"
+				onChange={handleNotInMessageChange}
+				rows={10}
+				value={notInMessage}
+			/>
 
 			{Object.entries(notins).map(([timeslotEmoji, slotNotins]) => (
-				<Fragment key={`header-${timeslotEmoji}`}>
+				<Fragment key={timeslotEmoji}>
 					<h4>{Timeslot.fromEmoji(timeslotEmoji)!.format('header')}</h4>
-					<div
-						style={{
-							display: 'grid',
-							gridTemplateColumns: 'max-content repeat(2, min-content) auto',
-							gridColumnGap: '0.5rem',
-							gridRowGap: '1rem',
-						}}
-					>
+					<div className={grid}>
 						{slotNotins.map(({ users, threadUrl }, userIndex) => (
 							<NotIn
 								key={`${timeslotEmoji}-${userIndex}`}
@@ -83,6 +78,6 @@ export default function NotInMessageGeneratorPage() {
 					</div>
 				</Fragment>
 			))}
-		</div>
+		</>
 	);
 }

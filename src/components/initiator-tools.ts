@@ -7,7 +7,7 @@ const timeslotFormatMap = {
 	header: ['Timeslot 1', 'Timeslot 2', 'Timeslot 3'],
 } as const;
 
-const timeslotHeaderRegex = /Timeslot\s*(?<emoji>:[a-z]+:)/;
+const timeslotHeaderRegex = /Timeslot\s*(?<emoji>:[a-z]+:):?/;
 
 export class Timeslot {
 	static One = new Timeslot(0);
@@ -96,6 +96,7 @@ export const parseNotInMessage = (input: string): NotInsPerTimeslot => {
 				const notins: NotIns[] = match
 					?.groups!.notins!.trim()
 					.split('\n')
+					.filter((line) => line.length > 0)
 					.map((line) => {
 						const httpUrl = /\[thread]\(<(?<url>[^>]+)>\)/.exec(line)?.groups!.url;
 						const threadUrl = httpUrl ? convertToDiscordUrl(httpUrl.trim()) : null;
