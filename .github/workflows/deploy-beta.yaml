@@ -1,8 +1,8 @@
-name: Deploy (Stable)
+name: Deploy (Beta)
 on:
   push:
     branches:
-      - stable
+      - main
 
 env:
   NEXT_PUBLIC_API_URL: 'https://ei_worker.fyko.workers.dev'
