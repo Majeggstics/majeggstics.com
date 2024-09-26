@@ -2,24 +2,23 @@ import copy from 'copy-to-clipboard';
 import { useState } from 'react';
 import ToastMessage from '/components/ToastMessage';
 import { Timeslot } from '/components/initiator-tools';
-import { notify } from '/lib/utils';
+import { notify, useEventSetState, useToggleState } from '/lib/utils';
 
 export default function MinFailsGeneratorPage() {
-	const [notInMessage, setNotInMessage] = useState('');
-	const [showIndividualMinFailMessages, setShowIndividualMinFailMessages] = useState(true);
-	const [nitroMode, setNitroMode] = useState(false);
+	const [notInMessage, handleNotInMessageChange] = useEventSetState('');
+	const [showIndividualMessages, toggleShowIndividualMessages] = useToggleState(true);
+	const [nitroMode, toggleNitroMode] = useToggleState(false);
 
 	const timeslot: Timeslot | null = Timeslot.fromWonkyMessage(notInMessage);
 
-	// Split the content into an array of lines
-	const fails = notInMessage
-		.slice()
-		.split('\n')
+	const notinRows = notInMessage.split('\n');
+
+	const fails = notinRows
 		.filter((elem) => elem?.toLowerCase().includes('spent'))
 		.map((elem) =>
 			elem
-				.replace('<:b_icon_token:1123683788258549861>', ':b_icon_token:')
-				.replace('<:clock:1123686591412576357>', ':clock:')
+				.replace(/<:b_icon_token:\d+>/, ':b_icon_token:')
+				.replace(/<:clock:\d+>/, ':clock:')
 				.replace('* ', '- '),
 		);
 
@@ -44,7 +43,6 @@ export default function MinFailsGeneratorPage() {
 	const headerRegex = /Minimum check for\s*<?(?<contractEgg>:.*:)(?:\d+>)?\s*(?<contractName>.*)/;
 	const { contractEgg, contractName } = headerRegex.exec(notInMessage)?.groups ?? {};
 
-	const notinRows = notInMessage.split('\n');
 	const twentyFourHourNotins = notinRows
 		.filter((elem) => elem.toLowerCase().includes('missing'))
 		.map((elem) => elem.replace(/^\*| is missing./g, '') + ', failure to join after 24 hours');
@@ -54,82 +52,69 @@ export default function MinFailsGeneratorPage() {
 	const contractNameWithTimeslot = `${nitroMode ? contractEgg : ''} ${contractName} ${timeslot?.format('eggst')}`;
 
 	return (
-		<div style={{ margin: '2rem 1rem' }}>
-			<ToastMessage />
-			<h1>Minimum Fails Generator</h1>
+		<>
+			<button onClick={toggleNitroMode} style={{ width: 'fit-content' }}>
+				{nitroMode ? 'Nitro mode ON' : 'Nitro mode (include egg emoji in output)'}
+			</button>
 
-			<p style={{ display: 'flex', flexDirection: 'column' }}>
-				<button onClick={() => setNitroMode(!nitroMode)} style={{ width: 'fit-content' }}>
-					{nitroMode ? 'Nitro mode ON' : 'Nitro mode (include egg emoji in output)'}
-				</button>
-			</p>
-			<p style={{ display: 'flex', flexDirection: 'column' }}>
-				<label htmlFor="#notInMessage">Minimum check message from Wonky</label>
-				<textarea
-					id="notInMessage"
-					name="notInMessage"
-					onChange={(event) => setNotInMessage(event.target.value)}
-					rows={10}
-					style={{ margin: '1rem 0' }}
-					value={notInMessage}
-				/>
-			</p>
+			<label htmlFor="notInMessage">Minimum check message from Wonky</label>
+			<textarea
+				id="notInMessage"
+				name="notInMessage"
+				onChange={handleNotInMessageChange}
+				rows={10}
+				value={notInMessage}
+			/>
 
-			<div>
+			<section>
 				<h2>{contractNameWithTimeslot} Coops in danger ⚠️</h2>
 				{coopsInDanger?.length > 0 ?
 					coopsInDanger?.map((elem, index) => <p key={index}>{elem}</p>)
 				:	<p>No coops in danger</p>}
-				<p>
-					<button
-						onClick={() => {
-							let stringToBeCopied = `## ${contractNameWithTimeslot} Coops in danger\n`;
+				<button
+					onClick={() => {
+						let stringToBeCopied = `## ${contractNameWithTimeslot} Coops in danger\n`;
 
-							stringToBeCopied += coopsInDanger.join('\n');
+						stringToBeCopied += coopsInDanger.join('\n');
 
-							copy(stringToBeCopied);
-						}}
-					>
-						Copy to Clipboard
-					</button>
-				</p>
-			</div>
+						copy(stringToBeCopied);
+					}}
+				>
+					Copy to Clipboard
+				</button>
+			</section>
 
 			<div style={{ margin: '4rem 0' }}>
 				<h2>{contractNameWithTimeslot} 24 hour notins</h2>
 				{twentyFourHourNotins?.length > 0 ?
 					twentyFourHourNotins?.map((elem, index) => <p key={index}>{elem}</p>)
 				:	<p>No 24 hour notins</p>}
-				<p>
-					<button
-						onClick={() => {
-							let stringToBeCopied = `## ${contractNameWithTimeslot} 24 hour notins\n`;
+				<button
+					onClick={() => {
+						let stringToBeCopied = `## ${contractNameWithTimeslot} 24 hour notins\n`;
 
-							stringToBeCopied += twentyFourHourNotins.join('\n');
+						stringToBeCopied += twentyFourHourNotins.join('\n');
 
-							copy(stringToBeCopied);
-						}}
-					>
-						Copy to Clipboard
-					</button>
-				</p>
-			</div>
-
-			<div>
-				<button onClick={() => setShowIndividualMinFailMessages((prevState) => !prevState)}>
-					Show minimum fails as{' '}
-					{showIndividualMinFailMessages ? ' a single message' : ' multiple messages'}
+						copy(stringToBeCopied);
+					}}
+				>
+					Copy to Clipboard
 				</button>
 			</div>
 
-			{showIndividualMinFailMessages ?
+			<div>
+				<button onClick={toggleShowIndividualMessages}>
+					Show minimum fails as
+					{showIndividualMessages ? ' a single message' : ' multiple messages'}
+				</button>
+			</div>
+
+			{showIndividualMessages ?
 				<div>
 					<h2>{contractNameWithTimeslot} Minimum fails</h2>
-					<p>
-						<button onClick={() => copy('## ' + contractNameWithTimeslot + ' Minimum fails')}>
-							Copy heading to Clipboard
-						</button>
-					</p>
+					<button onClick={() => copy('## ' + contractNameWithTimeslot + ' Minimum fails')}>
+						Copy heading to Clipboard
+					</button>
 					{fails?.length > 0 ?
 						fails.map((elem, index) => (
 							<div key={index} style={{ marginBottom: '3rem' }}>
@@ -141,9 +126,7 @@ export default function MinFailsGeneratorPage() {
 						))
 					:	<div>
 							<p>No fails</p>
-							<p>
-								<button onClick={() => copy('No fails')}>Copy to Clipboard</button>
-							</p>
+							<button onClick={() => copy('No fails')}>Copy to Clipboard</button>
 						</div>
 					}
 				</div>
@@ -152,23 +135,21 @@ export default function MinFailsGeneratorPage() {
 					{fails?.length > 0 ?
 						fails?.map((elem, index) => <p key={index}>{elem}</p>)
 					:	<p>No fails</p>}
-					<p>
-						<button
-							onClick={() => {
-								let stringToBeCopied = `## ${contractNameWithTimeslot} Minimum fails\n`;
+					<button
+						onClick={() => {
+							let stringToBeCopied = `## ${contractNameWithTimeslot} Minimum fails\n`;
 
-								stringToBeCopied += fails.join('\n');
+							stringToBeCopied += fails.join('\n');
 
-								if (copy(stringToBeCopied)) {
-									notify('Message copied');
-								}
-							}}
-						>
-							Copy to Clipboard
-						</button>
-					</p>
+							if (copy(stringToBeCopied)) {
+								notify('Message copied');
+							}
+						}}
+					>
+						Copy to Clipboard
+					</button>
 				</div>
 			}
-		</div>
+		</>
 	);
 }

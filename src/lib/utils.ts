@@ -14,6 +14,13 @@ export const useEventSetState = (
 	];
 };
 
+export const useToggleState = (
+	initial: boolean = false,
+): [boolean, Dispatch<SetStateAction<void>>, Dispatch<SetStateAction<boolean>>] => {
+	const [rawState, setRawState] = useState<boolean>(initial);
+	return [rawState, useCallback(() => setRawState((state) => !state), []), setRawState];
+};
+
 export function notify(message: string, type = 'default') {
 	switch (type) {
 		case 'info':

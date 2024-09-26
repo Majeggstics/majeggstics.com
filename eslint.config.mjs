@@ -1,5 +1,7 @@
+import tsParser from '@typescript-eslint/parser';
+import astroParser from 'astro-eslint-parser';
+import astro from 'eslint-config-neon/astro';
 import common from 'eslint-config-neon/common';
-import node from 'eslint-config-neon/node';
 import prettier from 'eslint-config-neon/prettier';
 import react from 'eslint-config-neon/react';
 import typescript from 'eslint-config-neon/typescript';
@@ -9,14 +11,22 @@ const commonFiles = '{js,mjs,cjs,ts,mts,cts,jsx,tsx}';
 
 const commonRuleset = merge(...common, { files: [`**/*${commonFiles}`] });
 
-const nodeRuleset = merge(...node, { files: [`**/*${commonFiles}`] });
-
 const prettierRuleset = merge(...prettier, { files: [`**/*${commonFiles}`] });
 
 const reactRuleset = merge(...react, {
 	files: [`**/*${commonFiles}`],
 	rules: {
-		'react/button-has-type': 0,
+		'react/button-has-type': 'off',
+	},
+});
+
+const astroRuleset = merge(...astro, {
+	files: [`**/*.astro`],
+	languageOptions: {
+		parser: astroParser,
+		parserOptions: {
+			parser: tsParser,
+		},
 	},
 });
 
@@ -53,15 +63,15 @@ const typeScriptRuleset = merge(...typescript, {
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
 	{
-		ignores: ['**/node_modules/', '.git/', '**/dist/'],
+		ignores: ['**/node_modules/', '.git/', 'out/'],
 	},
 	{
 		files: ['**/*{js,mjs,cjs,jsx}'],
-		rules: { 'tsdoc/syntax': 0 },
+		rules: { 'tsdoc/syntax': 'off' },
 	},
 	commonRuleset,
-	// nodeRuleset,
 	reactRuleset,
 	typeScriptRuleset,
 	prettierRuleset,
+	astroRuleset,
 ];

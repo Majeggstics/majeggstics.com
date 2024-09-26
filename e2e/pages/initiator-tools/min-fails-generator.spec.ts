@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test';
 test.beforeEach(async ({ page }) => void (await page.goto('/initiator-tools/min-fails-generator')));
 
 test('has title', async ({ page }) => {
-	await expect(page).toHaveTitle(/Min Fails Generator/i);
+	await expect(page).toHaveTitle(/min fails generator/i);
 });
 
 test('generates output', async ({ page }) => {
 	await page.getByRole('textbox').fill(`
-		## Minimum check for <:egg_unknown:> Contract Name
+		## Minimum check for <:egg_unknown:111> Contract Name
 		### Formula \`Majeggstics 24h\`, Timeslot :two:
 		** **
 		<:grade_aaa:111> [**\`coop\`**](<carpet>) ([**thread**](<discord_url_1>))
