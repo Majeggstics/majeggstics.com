@@ -96,6 +96,7 @@ export const parseNotInMessage = (input: string): NotInsPerTimeslot => {
 				const notins: NotIns[] = match
 					?.groups!.notins!.trim()
 					.split('\n')
+					.filter((line) => line.length > 0)
 					.map((line) => {
 						const httpUrl = /\[thread]\(<(?<url>[^>]+)>\)/.exec(line)?.groups!.url;
 						const threadUrl = httpUrl ? convertToDiscordUrl(httpUrl.trim()) : null;
