@@ -1,8 +1,31 @@
 import * as chai from 'chai';
-import { parseNotInMessage } from './initiator-tools';
+import { Timeslot, parseNotInMessage } from './initiator-tools';
 
 chai.config.truncateThreshold = 0;
 const expect = chai.expect;
+
+describe('Timeslot#fromWonkyMessage', () => {
+	it('should parse from a min-fails message', () => {
+		const timeslot = Timeslot.fromWonkyMessage(`
+			## Minimum check for :egg_unknown: Contract Name
+			### Formula \`Majeggstics 24h\`, Timeslot :one:
+		`);
+
+		expect(timeslot?.index).to.equal(0);
+	});
+
+	it('should parse from notins message', () => {
+		const timeslot = Timeslot.fromWonkyMessage(`
+			Not in <:egg:1> **Contract** <:egg:1> - \`contract-id\`:
+			Timeslot :three::
+			<:grade_aaa:1> [code](<carpet>) ([thread](<discord>)): <@11> (\`foo\`)
+
+			(no pings were sent)
+		`);
+
+		expect(timeslot?.index).to.equal(2);
+	});
+});
 
 describe('parseNotInMessage', () => {
 	it('should parse an empty message', () => {

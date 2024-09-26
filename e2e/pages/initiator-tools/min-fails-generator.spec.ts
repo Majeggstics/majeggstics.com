@@ -1,13 +1,14 @@
 import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => void (await page.goto('/initiator-tools/min-fails-generator')));
+
 test('has title', async ({ page }) => {
 	await expect(page).toHaveTitle(/Min Fails Generator/i);
 });
 
 test('generates output', async ({ page }) => {
 	await page.getByRole('textbox').fill(`
-		## Minimum check for <:egg_rocketfuel:455468270661795850> Launch Window
+		## Minimum check for <:egg_unknown:> Contract Name
 		### Formula \`Majeggstics 24h\`, Timeslot :two:
 		** **
 		<:grade_aaa:111> [**\`coop\`**](<carpet>) ([**thread**](<discord_url_1>))
@@ -18,4 +19,13 @@ test('generates output', async ({ page }) => {
 	`);
 
 	await expect(page.getByText('Copy to Clipboard').nth(0)).toBeVisible();
+});
+
+test('extracts timeslot', async ({ page }) => {
+	await page.getByRole('textbox').fill(`
+		## Minimum check for :egg_unknown: Contract Name
+		### Formula \`Majeggstics 24h\`, Timeslot :one:
+	`);
+
+	await expect(page.getByRole('heading', { name: /coops in danger/i })).toContainText('+1');
 });
