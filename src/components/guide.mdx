@@ -1,116 +1,117 @@
----
-layout: /layouts/Layout.astro
-title: 'Majeggstics Guide'
----
-
 import LocalContractDrop from '/components/LocalContractDrop.astro';
 
 # Majeggstics Guide & Rule Book!
 
-Welcome to The Majeggstics, where _No Farmer is Left Behind_!
+Welcome to The Majeggstics, where *No Farmer is Left Behind*!
 
 Majeggstics is a worldwide group of Egg Inc. players with the common goal of making sure _every_ player can complete _every_ contract, by optimizing play strategies and making fair contributions to our co-ops.
 
 ## Contract rules
 
-The Majeggstics are a team — we expect everyone to contribute to our co-ops. When you register for a contract, you are agreeing to meet the minimum contribution for that contract.
+The Majeggstics are a team — we expect everyone to contribute to our co-ops to the best of their ability. When you register for a contract, you are agreeing to join your co-op and to meet the minimum contribution for that contract.
 
-**The minimum egg laying rate for each contract is posted in \#mj-announcements. Minimums are measured at 12 and 24 hours after contract start.**
+**The minimum egg laying rate for each contract is posted in *\#mj-announcements*. Minimums are measured at 12 and 24 hours after contract start.**
 
 We are handing out strikes to members, that do not comply with the rules set for our group. These strikeable offenses are the following:
 
-- **Failed to reach minimums after 24 hours**:
+<div class="infobox">
+**Failed to reach minimums after 24 hours**:  
+The 12 hour minimum is lower than the 24 hour minimum and you have to meet either at the respective time to pass. If you met the 12 hour minimum you don't have to meet the 24 hour minimum anymore. If you *fail to meet both 12 hour and 24 hour minimum*, you will receive a strike.
 
-  - The 12 hour minimum is lower than the 24 hour minimum. If you meet the 12 hour minimum, you have passed! If you don't meet the 12 hour minimum, you still have not failed, but you must meet the 24 hour minimum to pass. If you fail to do so, you will receive a strike.
+**Failed to join the co-op on time**:  
+You will receive a strike for joining your co-op later than *5 hours after start*, and an additional strike if you have not joined by the 24 hour check.
 
-- **Failed to join the co-op on time**:
+**More than 30 hours of consecutive offline time**:  
+You will receive a strike if you are not logging into the game for *over 30 hours*.
+</div>
 
-  - You will receive a strike for joining your co-op later than 5 hours after start, and an additional strike if you have not joined by the 24 hour check.
+Tokens <span class="token_icon"></span> are the human players who manage the Majeggstics - we recruit new members, help people play the game more efficiently, start and add people to co-op groups, and confirm everyone has met the minimum required laying rate for each contract. You can see someone is a token by the little token icon <span class="token_icon"></span> next to their name.
 
-- **More than 30 hours of consecutive offline time**:
-  - You will receive a strike if you are not logging into the game for over 30 hours.
+## Strike Communication
 
-Tokens are the human players who manage the Majeggstics - we recruit new members, help people play the game more efficiently, start and add people to co-op groups, and confirm everyone has met the minimum required laying rate for each contract. You can see someone is a token by the little token icon next to their name.
+A token <span class="token_icon"></span> will create or message you in a *private thread* in *\#the_majeggstics* to talk about what happened and offer help on how to prevent this from happening in the future. Strikes are recorded and after getting four strikes, you will be removed from Majeggstics. Strikes are only counted for the last 20 contracts, whether you played them or not - after that, strikes are erased.
 
-A token will communicate with you if you receive a strike. Strikes are recorded. After four strikes, you will be removed from Majeggstics. Strikes are only counted for the last 20 contracts, whether you played them or not - after that, strikes are erased.
+If you're concerned during your co-op that you won't be able to meet minimums, you can send `mj-support` anywhere in Majeggstics channels (preferably in your co-op thread) and a support token <span class="token_icon"></span> will help you out. It can take time to respond, so ask for help early on!
 
-After a strike, a token will create a **private thread** in \#the_majeggstics to talk to you about what happened, and make sure you are supported to be successful in the future. If you're concerned you won't be successful, you can send `mj-support` anywhere in Majeggstics channels and a support token will help you out. It can take time to respond, so ask for help using `mj-support` early on!
-
-Remember that the Majeggstic's goal is to see everyone succeed. Minimums are meant to help you, not hurt. If you're struggling to meet minimum or need help with a contract, ask for advice in \#the_majeggstics or your grade's Majeggstics channel. The group would be thrilled to help, and everyone will have the chance to learn along with you!
+Remember that the Majeggstic's goal is to see everyone succeed. Minimums are meant to help you, not hurt. If you're struggling to meet minimum or need help with a contract, ask for advice in *\#the_majeggstics* or *\#mj-help* channels. The group would be thrilled to help, and everyone will have the chance to learn along with you!
 
 ## Registering for a Contract
 
 **Contracts are released 3 times a week at:**
 
 <table>
-	<tbody>
+	<thead>
 		<tr>
-			<td>Your Local Time</td>
-			<td>
-				<LocalContractDrop />
-			</td>
+			<th>Your Local Time</th>
+			<th class="time"><LocalContractDrop /></th>
 		</tr>
+  </thead>
+  <tbody>
 		<tr>
 			<td>UTC 0 (Coordinated Universal Time)</td>
-			<td>16:00 (4:00 PM)</td>
+			<td class="time">16:00 (4:00 pm)</td>
 		</tr>
 		<tr>
 			<td>PT -8 (Pacific Time, NA)</td>
-			<td>09:00 (9:00 AM)</td>
+			<td class="time">09:00 (9:00 am)</td>
 		</tr>
 		<tr>
 			<td>ET -5 (Eastern Time, NA)</td>
-			<td>12:00 (12:00 PM)</td>
+			<td class="time">12:00 (12:00 pm)</td>
 		</tr>
 		<tr>
 			<td>AEST +10 (Australian Eastern Time)</td>
-			<td>02:00 (2:00 AM)</td>
+			<td class="time">02:00 (2:00 am)</td>
 		</tr>
 	</tbody>
 </table>
-Contract release times are affected by Daylight Savings Time in the US and may change throughout the
-year.
+Contract release times are affected by Daylight Savings Time in the US and may change throughout the year.
 
 ![New Contract Icon](/images/newContractIcon.jpg)
 
-- Monday has a new contract for everyone. The first Monday of each month has a new Prophecy Egg (PE) contract. _(This will change as of the start of the Winter Season in 2024. From then on there will be only ONE new PE per season, rather than per month)_.
+<div class="infobox">
+**Monday** has a new contract for everyone. The first Monday of each month has a new Prophecy Egg (PE) contract.  
+<span class="note">(This will change as of the start of the Winter Season in 2024. From then on there will be only ONE new PE per season, rather than per month)</span>
 
-- Wednesday and Friday have leggacy contracts. Wednesday has a non-PE contract, and Friday has a PE contract. (If you have an ULTRA Standard or ULTRA Pro subscription, you will get an additional leggacy PE contract on Fridays).
+**Wednesday** has a non-PE leggacy contract which usually rewards boosts, GE or artifact boxes.
 
-- If you want to be pinged when contracts are released, go to #optional-roles and select the “Contracts” role.
+**Friday** has a PE leggacy contract.  
+<span class="note">(If you have an ULTRA Standard or ULTRA Pro subscription, you will get an additional leggacy PE contract on Fridays)</span>
 
-When a new contract is released, a registration post will be posted in \#mj-announcements. Select a time slot — we start contracts at +1, +6, and +12 hours after the contract release. Register for the time slot that's most convenient for your schedule. You must join your co-op and start your farm within 5 hours of your start time. It is your responsibility to register early and join your co-op.
+If you want to be pinged when contracts are released, go to *\#optional-roles* and select the “Contracts” role.
+</div>
 
-Registration for each time slot is finalized when Wonky creates co-ops. We recommend you sign up at least 15 minutes early, as co-ops may be created up to 5 minutes early because of the size of our group. If co-ops are late, be patient with initiators.
+On the day of a contract release, a registration post will be posted in *\#mj-announcements* a few hours before contract drop time. Select a time slot — we start contracts at +1, +6, and +12 hours after the contract release. Register for the time slot that's most convenient for your schedule. You must join your co-op and start your farm within 5 hours of your start time. It is your responsibility to register early and join your co-op.
 
-Late registrations may be accepted depending on initiator availability and available spaces in our co-ops. If you are unable to register for a contract with Majeggstics, you can ask for a rerun in \#mj-freestyle once the co-ops for Majeggstics have finished, join a public co-op in the "Co-Op Recruitment" section or organise your own contract with others!
+Registration for each time slot is closed when Wonky creates co-ops. We recommend you sign up at least 15 minutes early, as co-ops may be created up to 5 minutes early because of the size of our group. If co-ops are late, be patient with initiators. Wonky is subject to heavy rate limiting from discord, especially noticeable on small co-op sizes. Please patiently wait until co-ops are created!
+
+Late registrations may be accepted depending on initiator availability and available spaces in our co-ops. If you are unable to register for a contract with Majeggstics, you can ask for a rerun in *\#mj-freestyle* once the co-ops for Majeggstics have finished, join a public co-op in the "Co-Op Recruitment" section or organise your own contract with others!
 
 ## Joining your co-op
 
-Wonky generated your co-op and started a thread in \#mj-contracts. Check your DMs from Wonky for the contract code.
+Wonky generates your co-op and starts a thread in *\#mj-contracts*. Check your DMs from Wonky or the ping in said thread for the contract code.
 
-- All our co-ops are precreated as Anygrade AAA co-ops. This is done by members of the group who have an active ULTRA subscription and volunteer to do this to ensure everyone can start immediately once the groups have been formed.
+<div class="infobox">
+All our co-ops are precreated as **Anygrade AAA** co-ops, done by members of the group who have an active ULTRA subscription and volunteer to help us. You will *not* have to start the co-op yourself.
 
-- Our co-ops are set to **private** to ensure that everyone participating meets our expectations. Do not share your co-op code or set the co-op to public — this can result in Majeggstics members getting kicked from our co-ops and makes extra work for tokens.
+Our co-ops are set to **private** to ensure that everyone participating meets our expectations. Do *not share your co-op code or set the co-op to public* — this can result in Majeggstics members getting kicked from our co-ops and causes extra work for tokens <span class="token_icon"></span>.
 
-- If there is an error with your registration (e.g. registered in multiple co-ops, unable to join co-op due to grade) make use of the `!mj-coop` command in your co-op thread. Tokens will be with you shortly to resolve the issue.
+If there is a *problem with your registration or co-op* (e.g. registered in multiple co-ops, unable to join co-op due to grade) make use of the `!mj-coop` command in your co-op thread. Tokens <span class="token_icon"></span> will be with you shortly to resolve the issue.  
+<span class="note">There is currently a known bug when joining co-ops - you appear joined on your device, but not on the Egg Inc servers. Please confirm your game is in sync with the server by checking the eicoop link in your co-op thread *before boosting*.</span>
 
-  - There is currently a known bug when joining co-ops - you appear joined on your device, but not on the Egg Inc servers. Please confirm your game is in sync with the server by checking the eicoop link in your co-op thread _before boosting_.
+Wonky groups members together to ensure we have balanced teams. You *must join the co-op you are assigned to*. If you:
+  1. Join your co-op *later than 5 hours* after start, you will receive *one strike*.
+  2. Do not join your co-op *before the 24-hour check*, you will receive *two strikes*.
+  3. Join a Majeggstics co-op without being assigned by Wonky or a token or share the co-op code outside of Majeggstics, *you might be removed from Majeggstics*.
 
-- Wonky groups members together to ensure we have balanced teams. You must join the co-op you are assigned to. If you:
-
-  - Join your co-op later than 5 hours after start, you will receive one strike.
-  - Do not join your co-op before the 24-hour check, you will receive two strikes.
-  - Join a Majeggstics co-op without being assigned by Wonky or a token or share the co-op code outside of Majeggstics, you might be removed from Majeggstics.
-
-- Tokens monitor many co-op threads and can't respond to every message. If you need help, make sure to ask in #mj-contracts or use the `!mj-coop` command for problems with the co-op itself or the `mj-support` command for gameplay and minimum related issues. Don't be afraid to interrupt off-topic chat — our priority is helping your co-op complete successfully.
+Tokens <span class="token_icon"></span> monitor many co-op threads and can't respond to every message. If you need help, make sure to ask in *#mj-contracts* or use the `!mj-coop` command for problems with the co-op itself or the `mj-support` command for gameplay and minimum related issues. Don't be afraid to interrupt off-topic chat — our priority is helping your co-op complete successfully.
+</div>
 
 ## Start and grow your contract farm
 
-- Finish common research, buy habs, and buy transport.
-
-  - Use artifacts that increase income like Demeter's Necklace, Tungsten Ankh, Vial of Martian Dust, Book of Basan; and artifacts that hold Shell Stones, Terra Stones, Soul Stones and Prophecy Stones.
-  - Puzzle cubes will lower research costs - use your income-boosting artifacts, then switch your puzzle cube on while you're buying. If you need to save more, swap the cube out for a better income artifact.
+1. Finish common research, buy habs and buy transport.
+    - Use artifacts that increase income like *Demeter's Necklace*, *Tungsten Ankh*, *Vial of Martian Dust*, *Book of Basan* and artifacts that hold *Shell Stones*, *Terra Stones*, *Soul Stones* and *Prophecy Stones*.
+    - Puzzle cubes will lower research costs - use your income-boosting artifacts, then switch your puzzle cube on while you're buying. If you need to save more, swap the cube out for a better income artifact.
 
 - Equip your best **Ship in a Bottle (SIAB)** to help your co-op mates earn more money. Your SIAB is worth more to the team than any artifact you can equip for yourself. Tachyon deflectors are not useful until after teammates have boosted, so equip an extra artifact for yourself until then.
 

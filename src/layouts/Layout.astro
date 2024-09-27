@@ -15,11 +15,12 @@ const { title } = Astro.props.frontmatter ?? Astro.props;
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 
-		{/* https://fonts.google.com/specimen/Inter */}
+		{/* https://fonts.google.com/specimen/Montserrat */}
+		{/* https://fonts.google.com/specimen/Courier+Prime */}
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
 			rel="stylesheet"
 		/>
 
@@ -36,12 +37,34 @@ const { title } = Astro.props.frontmatter ?? Astro.props;
 	body {
 		max-width: 90vw;
 		margin: 0 auto;
-		font-family: inter, sans-serif;
+		font-family: Montserrat, sans-serif;
+		line-height: 1.9;
+		font-weight: 300;
 	}
 
 	main {
 		max-width: 80%;
 		margin: 2rem auto;
+	}
+	
+	strong {
+		font-weight: 500;
+	}
+	
+	mark, em {
+		background-color: rgba(0,0,0,0.05);
+		font-style: normal;
+		padding: 3px;
+		font-weight: 400;
+	}
+	
+	a {
+		text-decoration: none;
+		font-weight: 400;
+	}
+	
+	code {
+		font-family: "Courier Prime", monospace;
 	}
 
 	img {
