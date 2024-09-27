@@ -1,0 +1,23 @@
+---
+import Layout from '/layouts/Layout.astro';
+import { Content } from '/components/guide.mdx';
+---
+
+<Layout>
+	<Content />
+</Layout>
+
+<style is:global>
+	body {
+		background-image: url('/images/MajeggsticIcon.png');
+		background-repeat: repeat;
+	}
+
+	p:before {
+		content: "hi cereal! here's a paragraph for you: ";
+	}
+
+	p:after {
+		content: ' ok bye cereal!';
+	}
+</style>
