@@ -1,154 +1,211 @@
 import copy from 'copy-to-clipboard';
-import { useState } from 'react';
+import Markdown from 'markdown-to-jsx';
+import { css } from '@acab/ecsstatic';
+import { useState, useCallback, useMemo, type ReactNode } from 'react';
 import { Timeslot } from '/components/initiator-tools';
-import { notify, useEventSetState, useToggleState } from '/lib/utils';
+import { useEventSetState, useToggleState } from '/lib/utils';
 
-export default function MinFailsGeneratorPage() {
-	const [notInMessage, handleNotInMessageChange] = useEventSetState('');
-	const [showIndividualMessages, toggleShowIndividualMessages] = useToggleState(true);
-	const [nitroMode, toggleNitroMode] = useToggleState(false);
-
-	const timeslot: Timeslot | null = Timeslot.fromWonkyMessage(notInMessage);
-
-	const notinRows = notInMessage.split('\n');
-
-	const fails = notinRows
-		.filter((elem) => elem?.toLowerCase().includes('spent'))
-		.map((elem) =>
-			elem
-				.replace(/<:b_icon_token:\d+>/, ':b_icon_token:')
-				.replace(/<:clock:\d+>/, ':clock:')
-				.replace('* ', '- '),
-		);
-
-	const [copiedElements, setCopiedElements] = useState<boolean[]>(
-		Array.from({ length: fails.length }).fill(false) as boolean[],
+type MinsProps = {
+	readonly contract: string;
+	readonly minsMessage: string;
+};
+type CoopsInDangerProps = MinsProps & {
+	readonly nitro: boolean;
+};
+const CoopsInDanger = ({ nitro, contract, minsMessage }: CoopsInDangerProps) => {
+	const coopsInDanger = useMemo(
+		() =>
+			minsMessage
+				.split('\n')
+				.filter((row) => row.toLowerCase().includes(':warning:'))
+				.map((row) => /^(?<emoji><?:\w+:(?:\d+>)?) (?<markdown>.*)/.exec(row)?.groups ?? {}),
+		[minsMessage],
 	);
 
-	const copyToClipboard = (text: string, index: number) => {
-		const copyResult = copy(text);
+	const copyCoopsInDanger = useMemo(
+		() => coopsInDanger.map((coop) => (nitro ? coop.emoji + ' ' : '') + coop.markdown).join('\n'),
+		[nitro, coopsInDanger],
+	);
 
-		if (copyResult) {
-			notify('Message copied');
-
-			setCopiedElements((prev) => {
-				const newCopiedElements = [...prev];
-				newCopiedElements[index] = true;
-				return newCopiedElements;
-			});
-		}
-	};
-
-	const headerRegex = /Minimum check for\s*<?(?<contractEgg>:.*:)(?:\d+>)?\s*(?<contractName>.*)/;
-	const { contractEgg, contractName } = headerRegex.exec(notInMessage)?.groups ?? {};
-
-	const twentyFourHourNotins = notinRows
-		.filter((elem) => elem.toLowerCase().includes('missing'))
-		.map((elem) => elem.replace(/^\*| is missing./g, '') + ', failure to join after 24 hours');
-
-	const coopsInDanger = notinRows.filter((elem) => elem.toLowerCase().includes(':warning'));
-
-	const contractNameWithTimeslot = `${nitroMode ? contractEgg : ''} ${contractName} ${timeslot?.format('eggst')}`;
+	const copyText = useCallback(() => {
+		copy(`## ${contract} Coops in danger\n${copyCoopsInDanger} `);
+	}, [contract, copyCoopsInDanger]);
 
 	return (
+		<section>
+			<h2>{contract} Coops in danger ⚠️</h2>
+			{coopsInDanger.length > 0 ?
+				<ul>
+					{coopsInDanger.map(({ markdown }, index) => (
+						<li key={index}>
+							<Markdown>
+								{markdown?.replace(' :warning: ', ' ') ??
+									'Broken row contained :warning: but did not match regex. Contact @dukecephalopod.'}
+							</Markdown>
+						</li>
+					))}
+				</ul>
+			:	<p>No coops in danger</p>}
+			<button onClick={copyText}> Copy to Clipboard </button>
+		</section>
+	);
+};
+
+const Notins = ({ contract, minsMessage }: MinsProps) => {
+	const twentyFourHourNotins = useMemo(
+		() =>
+			minsMessage
+				.split('\n')
+				.filter((row) => row.toLowerCase().includes('missing'))
+				.map((row) => row.replace(/^\*| is missing./g, '') + ', failure to join after 24 hours'),
+		[minsMessage],
+	);
+
+	const copyText = useCallback(() => {
+		copy(`## ${contract} 24 hour notins\n${twentyFourHourNotins.join('\n')}`);
+	}, [contract, twentyFourHourNotins]);
+
+	return (
+		<section>
+			<h2>{contract} 24 hour notins</h2>
+			{twentyFourHourNotins.length > 0 ?
+				<ul>
+					{twentyFourHourNotins.map((user, index) => (
+						<li key={index}>{user}</li>
+					))}
+				</ul>
+			:	<p>No 24 hour notins</p>}
+			<button onClick={copyText}>Copy to Clipboard</button>
+		</section>
+	);
+};
+
+type CopyProps = {
+	readonly children: ReactNode;
+	readonly text: string;
+};
+const Copy = ({ children, text }: CopyProps) => {
+	const [copied, setCopied] = useState(false);
+	const onClick = useCallback(() => {
+		copy(text);
+		setCopied(true);
+	}, [text]);
+	return (
 		<>
+			<button onClick={onClick}>Copy</button>
+			<span>{copied ? ' ✅ ' : ' ❌ '}</span>
+			{children}
+		</>
+	);
+};
+
+const column = css`
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+`;
+
+const grid = css`
+	display: grid;
+	grid-template-columns: max-content min-content auto;
+	grid-column-gap: 0.7rem;
+	grid-row-gap: 1rem;
+	align-items: center;
+`;
+
+const MinimumFails = ({ contract, minsMessage }: MinsProps) => {
+	const fails = useMemo(
+		() =>
+			minsMessage
+				.split('\n')
+				.filter((elem) => elem?.toLowerCase().includes('spent'))
+				.map((elem) =>
+					elem
+						.replace(/<:b_icon_token:\d+>/, ':b_icon_token:')
+						.replace(/<:clock:\d+>/, ':clock:')
+						.replace('* ', '- '),
+				),
+		[minsMessage],
+	);
+
+	const copyAll = useCallback(() => {
+		copy(`## ${contract} Minimum fails\n${fails.join('\n')}`);
+	}, [contract, fails]);
+
+	return (
+		<section className={column}>
+			<button onClick={copyAll}>Copy minimum fails as a single message</button>
+
+			<div className={grid}>
+				<Copy text={`## ${contract} Minimum fails`}>
+					<h2>{contract} Minimum fails</h2>
+				</Copy>
+				{fails.length === 0 ?
+					<Copy text="No fails">No fails</Copy>
+				:	fails.map((fail, index) => (
+						<Copy key={index} text={fail}>
+							<Markdown>{fail.replace(/^- /, '')}</Markdown>
+						</Copy>
+					))
+				}
+			</div>
+		</section>
+	);
+};
+
+const fullWidth = css`
+	width: 100%;
+`;
+
+export default function MinFailsGeneratorPage() {
+	const [minsMessage, handleMinsMessageChange] = useEventSetState('');
+	const [nitroMode, toggleNitroMode] = useToggleState(false);
+
+	const timeslot: Timeslot | null = Timeslot.fromWonkyMessage(minsMessage);
+
+	const headerRegex = /Minimum check for\s*<?(?<contractEgg>:.*:)(?:\d+>)?\s*(?<contractName>.*)/;
+	const { contractEgg, contractName } = headerRegex.exec(minsMessage)?.groups ?? {};
+
+	const contractNameWithTimeslot =
+		contractName ?
+			`${nitroMode ? contractEgg + ' ' : ''}${contractName} ${timeslot?.format('eggst')} `
+		:	'Unknown Contract';
+
+	return (
+		<div className={column}>
 			<button onClick={toggleNitroMode} style={{ width: 'fit-content' }}>
 				{nitroMode ? 'Nitro mode ON' : 'Nitro mode (include egg emoji in output)'}
 			</button>
 
-			<label htmlFor="notInMessage">Minimum check message from Wonky</label>
-			<textarea
-				id="notInMessage"
-				name="notInMessage"
-				onChange={handleNotInMessageChange}
-				rows={10}
-				value={notInMessage}
-			/>
-
-			<section>
-				<h2>{contractNameWithTimeslot} Coops in danger ⚠️</h2>
-				{coopsInDanger?.length > 0 ?
-					coopsInDanger?.map((elem, index) => <p key={index}>{elem}</p>)
-				:	<p>No coops in danger</p>}
-				<button
-					onClick={() => {
-						let stringToBeCopied = `## ${contractNameWithTimeslot} Coops in danger\n`;
-
-						stringToBeCopied += coopsInDanger.join('\n');
-
-						copy(stringToBeCopied);
-					}}
-				>
-					Copy to Clipboard
-				</button>
-			</section>
-
-			<div style={{ margin: '4rem 0' }}>
-				<h2>{contractNameWithTimeslot} 24 hour notins</h2>
-				{twentyFourHourNotins?.length > 0 ?
-					twentyFourHourNotins?.map((elem, index) => <p key={index}>{elem}</p>)
-				:	<p>No 24 hour notins</p>}
-				<button
-					onClick={() => {
-						let stringToBeCopied = `## ${contractNameWithTimeslot} 24 hour notins\n`;
-
-						stringToBeCopied += twentyFourHourNotins.join('\n');
-
-						copy(stringToBeCopied);
-					}}
-				>
-					Copy to Clipboard
-				</button>
-			</div>
-
 			<div>
-				<button onClick={toggleShowIndividualMessages}>
-					Show minimum fails as
-					{showIndividualMessages ? ' a single message' : ' multiple messages'}
-				</button>
+				<label htmlFor="minsMessage">Minimum check message from Wonky:</label>
+				<textarea
+					className={fullWidth}
+					id="minsMessage"
+					name="minsMessage"
+					onChange={handleMinsMessageChange}
+					rows={10}
+					value={minsMessage}
+				/>
 			</div>
 
-			{showIndividualMessages ?
-				<div>
-					<h2>{contractNameWithTimeslot} Minimum fails</h2>
-					<button onClick={() => copy('## ' + contractNameWithTimeslot + ' Minimum fails')}>
-						Copy heading to Clipboard
-					</button>
-					{fails?.length > 0 ?
-						fails.map((elem, index) => (
-							<div key={index} style={{ marginBottom: '3rem' }}>
-								<p>
-									{copiedElements[index] ? '✅' : '❌'} {elem}
-								</p>
-								<button onClick={() => copyToClipboard(elem, index)}>Copy to Clipboard</button>
-							</div>
-						))
-					:	<div>
-							<p>No fails</p>
-							<button onClick={() => copy('No fails')}>Copy to Clipboard</button>
-						</div>
-					}
-				</div>
-			:	<div>
-					<h2>{contractNameWithTimeslot} Minimum fails</h2>
-					{fails?.length > 0 ?
-						fails?.map((elem, index) => <p key={index}>{elem}</p>)
-					:	<p>No fails</p>}
-					<button
-						onClick={() => {
-							let stringToBeCopied = `## ${contractNameWithTimeslot} Minimum fails\n`;
+			{minsMessage.length === 0 ? null : (
+				<div className={column}>
+					<CoopsInDanger
+						contract={contractNameWithTimeslot}
+						minsMessage={minsMessage}
+						nitro={nitroMode}
+					/>
 
-							stringToBeCopied += fails.join('\n');
+					<hr />
 
-							if (copy(stringToBeCopied)) {
-								notify('Message copied');
-							}
-						}}
-					>
-						Copy to Clipboard
-					</button>
+					<Notins contract={contractNameWithTimeslot} minsMessage={minsMessage} />
+
+					<hr />
+
+					<MinimumFails contract={contractNameWithTimeslot} minsMessage={minsMessage} />
 				</div>
-			}
-		</>
+			)}
+		</div>
 	);
 }

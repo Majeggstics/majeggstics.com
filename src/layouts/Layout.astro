@@ -6,6 +6,7 @@ export type Props = {
 	};
 };
 const { title } = Astro.props.frontmatter ?? Astro.props;
+import 'normalize.css';
 ---
 
 <html lang="en">
@@ -49,5 +50,34 @@ const { title } = Astro.props.frontmatter ?? Astro.props;
 	img {
 		object-fit: contain;
 		max-width: 75vw;
+	}
+
+	hr {
+		border: 0;
+		height: 1px;
+		width: 100%;
+		background-image: linear-gradient(
+			to right,
+			rgba(0, 0, 0, 0),
+			rgba(0, 0, 0, 0.75),
+			rgba(0, 0, 0, 0)
+		);
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		margin-top: 0;
+	}
+
+	code {
+		background-color: hsl(210, 8%, 90%);
+		border-radius: 0.25em;
+		padding: 0.125em 0.25em;
+		line-height: 1.6;
+		font-size: 80%;
 	}
 </style>
