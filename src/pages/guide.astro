@@ -4,7 +4,9 @@ import { Content } from '/components/guide.mdx';
 ---
 
 <Layout title="Majeggstics Guide">
-	<Content />
+	<main>
+		<Content />
+	</main>
 </Layout>
 
 <style is:global>
@@ -41,6 +43,20 @@ import { Content } from '/components/guide.mdx';
 		background-color: rgba(0,0,0,0.1);
 		padding: 1em 3em;
 		border-left: 15px solid rgba(0,0,0,0.2);
+		margin: 2.25em 0;
+	}
+	
+	.alertbox {
+		background-color: rgba(255,21,0,0.2);
+		padding: 1em 3em;
+		border-left: 15px solid rgba(255,21,0,0.2);
+		margin: 2.25em 0;
+	}
+	
+	.advicebox {
+		background-color: rgba(61,255,61,0.2);
+		padding: 1em 3em;
+		border-left: 15px solid rgba(61,255,61,0.2);
 		margin: 2.25em 0;
 	}
 	
