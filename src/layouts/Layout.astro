@@ -12,7 +12,7 @@ const { title } = Astro.props.frontmatter ?? Astro.props;
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="256x256" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="generator" content={Astro.generator} />
 
 		{/* https://fonts.google.com/specimen/Montserrat */}
@@ -23,6 +23,7 @@ const { title } = Astro.props.frontmatter ?? Astro.props;
 			href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
 			rel="stylesheet"
 		/>
+		<script src="https://kit.fontawesome.com/06ab336092.js" crossorigin="anonymous"></script>
 
 		<title>{title}</title>
 	</head>
@@ -76,5 +77,34 @@ const { title } = Astro.props.frontmatter ?? Astro.props;
 	img {
 		object-fit: contain;
 		max-width: 75vw;
+	}
+	
+	/* ----- Media Queries ----- */
+
+	/* Extra large devices (large desktops, 1201px and above) */
+	@media only screen and (min-width: 1201px) {
+
+	}
+		
+	/* Large devices (laptops/desktops, 993px - 1200px) */
+	@media only screen and (max-width: 1200px) {
+
+	}
+	
+	/* Medium devices (tablets, 769px - 992px) */
+	@media only screen and (max-width: 992px) {
+		main {
+			max-width: 90%;
+		}
+	}
+	
+	/* Small devices (phones in landscape, 481px - 768px) */
+	@media only screen and (max-width: 768px) {
+
+	}
+	
+	/* Extra small devices (phones, 0px - 480px) */
+	@media only screen and (max-width: 480px) {
+
 	}
 </style>
