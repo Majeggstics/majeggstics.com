@@ -10,7 +10,8 @@ export default function NotInFailsGeneratorPage() {
 
 	const contractEgg = /Not in\s<(?<egg>:[^:]+:)\d+>/.exec(notInMessage)?.groups!.egg ?? '';
 	const contractName =
-		/Not in\s<:[^:]+:\d+> \*\*(?<contract>.+?)\*\*/.exec(notInMessage)?.groups!.contract ?? '';
+		/Not in\s<?:[^:]+:(?:\d+>)? \*\*(?<contract>.+?)\*\*/.exec(notInMessage)?.groups!.contract ??
+		'';
 	const contract = `${nitroMode ? contractEgg : ''} ${contractName}`.trim();
 
 	const notins = useExtractNotins(notInMessage);

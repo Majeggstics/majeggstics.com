@@ -1,6 +1,6 @@
 // Currently doesn't support Wonky's "(from timeslot xx)"
 import copy from 'copy-to-clipboard';
-import { Fragment, useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { css } from '@acab/ecsstatic';
 import { Timeslot, useExtractNotins, type UserSpec } from '/components/initiator-tools';
 import { notify, useEventSetState } from '/lib/utils';
@@ -65,7 +65,7 @@ export default function NotInMessageGeneratorPage() {
 			/>
 
 			{Object.entries(notins).map(([timeslotEmoji, slotNotins]) => (
-				<Fragment key={timeslotEmoji}>
+				<section key={timeslotEmoji}>
 					<h4>{Timeslot.fromEmoji(timeslotEmoji)!.format('header')}</h4>
 					<div className={grid}>
 						{slotNotins.map(({ users, threadUrl }, userIndex) => (
@@ -76,7 +76,7 @@ export default function NotInMessageGeneratorPage() {
 							/>
 						))}
 					</div>
-				</Fragment>
+				</section>
 			))}
 		</>
 	);

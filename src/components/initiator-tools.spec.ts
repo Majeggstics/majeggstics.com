@@ -91,4 +91,29 @@ describe('parseNotInMessage', () => {
 			threadUrl: 'link',
 		});
 	});
+
+	it.only('parses from-timeslot players to their signup, not assignment', () => {
+		const parsed = parseNotInMessage(stripIndent`
+			Not in :egg_supermaterial: **Federal Reggserve** :egg_supermaterial: - \`federal-reggserve\`:
+
+			Timeslot :one::
+			<:grade_aaa:11> [coop1](<carpet>) ([thread](<coop1>)): <@11> (\`foo\`) (from timeslot 2)
+			<:grade_aaa:11> [coop2](<carpet>) ([thread](<coop2>)): <@22> (\`bar\`)
+
+			Timeslot :two::
+			<:grade_aaa:11> [coop3](<carpet>) ([thread](<coop3>)): <@33> (\`baz\`)
+
+			(no pings were sent)
+		`);
+		const userFoo = { discordId: '11', ign: 'foo', combinedIdentifier: '<@11> (`foo`)' };
+		expect(parsed).to.have.keys(':one:', ':two:');
+		expect(parsed[':one:']).not.to.deep.include({
+			users: [userFoo],
+			threadUrl: 'coop1',
+		});
+		expect(parsed[':two:']).to.deep.include({
+			users: [userFoo],
+			threadUrl: 'coop1',
+		});
+	});
 });
