@@ -7,23 +7,26 @@ export type Props = {
 };
 const { title } = Astro.props.frontmatter ?? Astro.props;
 import 'normalize.css';
+
+// fonts:
+// https://fonts.google.com/specimen/Montserrat
+// https://fonts.google.com/specimen/Courier+Prime
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="256x256" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="generator" content={Astro.generator} />
 
-		{/* https://fonts.google.com/specimen/Montserrat */}
-		{/* https://fonts.google.com/specimen/Courier+Prime */}
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
 			href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
 			rel="stylesheet"
 		/>
+		<script src="https://kit.fontawesome.com/06ab336092.js" crossorigin="anonymous"></script>
 
 		<title>{title}</title>
 	</head>
@@ -41,7 +44,7 @@ import 'normalize.css';
 		font-family: Montserrat, sans-serif;
 		line-height: 1.9;
 		font-weight: 350;
-		color: rgba(0,0,0,0.75)
+		color: rgba(0, 0, 0, 0.75);
 	}
 
 	main {
@@ -55,30 +58,33 @@ import 'normalize.css';
 			max-width: 80%;
 		}
 	}
-	
+
 	strong {
 		font-weight: 500;
 	}
-	
-	mark, em {
-		background-color: rgba(0,0,0,0.05);
+
+	mark,
+	em {
+		background-color: rgba(0, 0, 0, 0.05);
 		font-style: normal;
 		padding: 3px;
 		font-weight: 400;
 	}
-	
+
 	a {
 		text-decoration: none;
 		font-weight: 450;
-		color: rgba(80,80,255,0.8);
+		color: rgba(80, 80, 255, 0.8);
 	}
-	
-	a:hover, a:active, a:focus {
-		color: rgba(140,140,255,0.8);
-	}	
-	
+
+	a:hover,
+	a:active,
+	a:focus {
+		color: rgba(140, 140, 255, 0.8);
+	}
+
 	code {
-		font-family: "Courier Prime", monospace;
+		font-family: 'Courier Prime', monospace;
 	}
 
 	img {
