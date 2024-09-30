@@ -7,19 +7,18 @@ import { useEventSetState, useToggleState } from '/lib/utils';
 
 type MinsProps = {
 	readonly contract: string;
-	readonly minsMessage: string;
 };
 type CoopsInDangerProps = MinsProps & {
+	readonly inDangerLines: string[];
 	readonly nitro: boolean;
 };
-const CoopsInDanger = ({ nitro, contract, minsMessage }: CoopsInDangerProps) => {
+const CoopsInDanger = ({ nitro, contract, inDangerLines }: CoopsInDangerProps) => {
 	const coopsInDanger = useMemo(
 		() =>
-			minsMessage
-				.split('\n')
-				.filter((row) => row.toLowerCase().includes(':warning:'))
-				.map((row) => /^(?<emoji><?:\w+:(?:\d+>)?) (?<markdown>.*)/.exec(row)?.groups ?? {}),
-		[minsMessage],
+			inDangerLines.map(
+				(row) => /^(?<emoji><?:\w+:(?:\d+>)?) (?<markdown>.*)/.exec(row)?.groups ?? {},
+			),
+		[inDangerLines],
 	);
 
 	const copyCoopsInDanger = useMemo(
@@ -51,14 +50,14 @@ const CoopsInDanger = ({ nitro, contract, minsMessage }: CoopsInDangerProps) => 
 	);
 };
 
-const Notins = ({ contract, minsMessage }: MinsProps) => {
+type NotinsProps = MinsProps & { readonly notinLines: string[] };
+const Notins = ({ contract, notinLines }: NotinsProps) => {
 	const twentyFourHourNotins = useMemo(
 		() =>
-			minsMessage
-				.split('\n')
-				.filter((row) => row.toLowerCase().includes('missing'))
-				.map((row) => row.replace(/^\*| is missing./g, '') + ', failure to join after 24 hours'),
-		[minsMessage],
+			notinLines.map(
+				(row) => row.replace(/^\*| is missing./g, '') + ', failure to join after 24 hours',
+			),
+		[notinLines],
 	);
 
 	const copyText = useCallback(() => {
@@ -113,19 +112,17 @@ const grid = css`
 	align-items: center;
 `;
 
-const MinimumFails = ({ contract, minsMessage }: MinsProps) => {
+type MinFailsProps = MinsProps & { readonly minFailLines: string[] };
+const MinimumFails = ({ contract, minFailLines }: MinFailsProps) => {
 	const fails = useMemo(
 		() =>
-			minsMessage
-				.split('\n')
-				.filter((elem) => elem?.toLowerCase().includes('spent'))
-				.map((elem) =>
-					elem
-						.replace(/<:b_icon_token:\d+>/, ':b_icon_token:')
-						.replace(/<:clock:\d+>/, ':clock:')
-						.replace('* ', '- '),
-				),
-		[minsMessage],
+			minFailLines.map((elem) =>
+				elem
+					.replace(/<:b_icon_token:\d+>/, ':b_icon_token:')
+					.replace(/<:clock:\d+>/, ':clock:')
+					.replace('* ', '- '),
+			),
+		[minFailLines],
 	);
 
 	const copyAll = useCallback(() => {
@@ -153,6 +150,38 @@ const MinimumFails = ({ contract, minsMessage }: MinsProps) => {
 	);
 };
 
+const parseMinsMessage = (minsMessage: string) => {
+	const inDanger = [];
+	const notins = [];
+	const minFails = [];
+
+	let scrolled_coop = false;
+	for (const line of minsMessage.split('\n')) {
+		if (scrolled_coop) {
+			if (/^<?:grade_\w+:(?:\d+>)?/.test(line)) {
+				scrolled_coop = false;
+			} else {
+				continue;
+			}
+		}
+
+		if (/:(?:green|yellow)_scroll:/.test(line)) {
+			scrolled_coop = true;
+			continue;
+		}
+
+		if (line.includes(':warning:')) {
+			inDanger.push(line);
+		} else if (/is missing.$/.test(line)) {
+			notins.push(line);
+		} else if (/\. Spent \d+ .+\d+h\d+m.(?: Ongoing boosts: .+)?$/.test(line)) {
+			minFails.push(line);
+		}
+	}
+
+	return { inDanger, notins, minFails };
+};
+
 const fullWidth = css`
 	width: 100%;
 `;
@@ -170,6 +199,8 @@ export default function MinFailsGeneratorPage() {
 		contractName ?
 			`${nitroMode ? contractEgg + ' ' : ''}${contractName} ${timeslot?.format('eggst')} `
 		:	'Unknown Contract';
+
+	const { inDanger, notins, minFails } = parseMinsMessage(minsMessage);
 
 	return (
 		<div className={column}>
@@ -193,17 +224,17 @@ export default function MinFailsGeneratorPage() {
 				<div className={column}>
 					<CoopsInDanger
 						contract={contractNameWithTimeslot}
-						minsMessage={minsMessage}
+						inDangerLines={inDanger}
 						nitro={nitroMode}
 					/>
 
 					<hr />
 
-					<Notins contract={contractNameWithTimeslot} minsMessage={minsMessage} />
+					<Notins contract={contractNameWithTimeslot} notinLines={notins} />
 
 					<hr />
 
-					<MinimumFails contract={contractNameWithTimeslot} minsMessage={minsMessage} />
+					<MinimumFails contract={contractNameWithTimeslot} minFailLines={minFails} />
 				</div>
 			)}
 		</div>
