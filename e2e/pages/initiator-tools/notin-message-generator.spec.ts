@@ -25,8 +25,10 @@ test('displays from-timeslot players where they signed up', async ({ page }) => 
 
 	const timeslotOne = page.locator('section').filter({ hasText: /Timeslot 1/ });
 	await expect(timeslotOne).toContainText('@22');
+	await expect(timeslotOne).toContainText('you don’t join by +6');
 
 	const timeslotTwo = page.locator('section').filter({ hasText: /Timeslot 2/ });
 	await expect(timeslotTwo).toContainText('@33');
 	await expect(timeslotTwo).toContainText('@11');
+	await expect(timeslotTwo).toContainText('you don’t join by +11');
 });
