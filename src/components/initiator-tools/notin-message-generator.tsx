@@ -15,7 +15,7 @@ const NotIn = ({ timeslotEmoji, user, threadUrl }: NotInProps) => {
 	const [copied, setCopied] = useState<Boolean>(false);
 	const text = useMemo(
 		() =>
-			`${user}. Courtesy reminder to join your coop ASAP! You will receive a strike if you don’t join by ${timeslot.format('eggst')} (${timeslot.format('join_deadline')} in your time zone).`,
+			`${user}. Courtesy reminder to join your coop ASAP! You will receive a strike if you don’t join by ${timeslot.format('join_deadline_eggst')} (${timeslot.format('join_deadline')} in your time zone).`,
 		[user, timeslot],
 	);
 	const handleCopy = useCallback(() => {

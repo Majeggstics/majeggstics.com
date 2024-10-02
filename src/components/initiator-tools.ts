@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 const timeslotFormatMap = {
 	emoji: [':one:', ':two:', ':three:'],
 	eggst: ['+1', '+6', '+12'],
+	join_deadline_eggst: ['+6', '+11', '+17'],
 	header: ['Timeslot 1', 'Timeslot 2', 'Timeslot 3'],
 } as const;
 
@@ -22,7 +23,7 @@ export class Timeslot {
 		this.index = index;
 	}
 
-	format(as: 'eggst' | 'emoji' | 'header' | 'join_deadline'): string {
+	format(as: 'eggst' | 'emoji' | 'header' | 'join_deadline_eggst' | 'join_deadline'): string {
 		if (as === 'join_deadline') {
 			const offset = [6, 11, 17][this.index];
 			const time = DateTime.fromISO('09:00', { zone: 'America/Los_Angeles' }).plus({
