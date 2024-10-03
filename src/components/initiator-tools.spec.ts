@@ -147,7 +147,35 @@ describe('parseMinsMessage', () => {
 			## Minimum check for <:egg_edible:11> Contract Name Here
 			### Formula \`Majeggstics 24h\`, Timeslot :one:
 			<:grade_aaa:11> [**\`coop1\`**](<link>) ([**thread**](<link>))
-			* \`ign\` (@ user) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>, <:clock:11> 42m
+			* \`ign\` (@ user) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>, <:clock:11> 7h42m
+		`);
+
+		expect(parsed.inDanger).to.deep.equal([]);
+		expect(parsed.minFails).to.have.length(1);
+		expect(parsed.minFails[0]).to.include('ign');
+		expect(parsed.notins).to.deep.equal([]);
+	});
+
+	it('parses a min-fail with a short offline time', () => {
+		const parsed = parseMinsMessage(stripIndent`
+			## Minimum check for <:egg_edible:11> Contract Name Here
+			### Formula \`Majeggstics 24h\`, Timeslot :one:
+			<:grade_aaa:11> [**\`coop1\`**](<link>) ([**thread**](<link>))
+			* \`ign\` (@ user) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>, <:clock:11> 1m
+		`);
+
+		expect(parsed.inDanger).to.deep.equal([]);
+		expect(parsed.minFails).to.have.length(1);
+		expect(parsed.minFails[0]).to.include('ign');
+		expect(parsed.notins).to.deep.equal([]);
+	});
+
+	it('parses a min-fail with no offline time', () => {
+		const parsed = parseMinsMessage(stripIndent`
+			## Minimum check for <:egg_edible:11> Contract Name Here
+			### Formula \`Majeggstics 24h\`, Timeslot :one:
+			<:grade_aaa:11> [**\`coop1\`**](<link>) ([**thread**](<link>))
+			* \`ign\` (@ user) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>
 		`);
 
 		expect(parsed.inDanger).to.deep.equal([]);
@@ -204,7 +232,7 @@ describe('parseMinsMessage', () => {
 			* \`ign1\` (@ user1) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>, <:clock:11> 7h42m
 
 			<:grade_aaa:11> [**\`scroll min fail\`**](<link>) <:green_scroll:11> ([**thread**](<link>))
-			* \`ign2\` (@ user2) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>, <:clock:11> 7h42m
+			* \`ign2\` (@ user2) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>
 
 			<:grade_aaa:11> [**\`in danger and notin\`**](<link>) <:warning:11> ([**thread**](<link>))
 			* Missing Egger is missing.
