@@ -196,7 +196,7 @@ export const parseMinsMessage = (minsMessage: string): ParsedMins => {
 			inDanger.push(trim);
 		} else if (/is missing.$/.test(trim)) {
 			notins.push(trim);
-		} else if (/\. Spent \d+ .+(?:\d+h)?\d+m\.?(?: Ongoing boosts: .+)?$/.test(trim)) {
+		} else if (/^\* `.+` \(@ .+\).+Spent \d+/.test(trim)) {
 			minFails.push(trim);
 		}
 	}
