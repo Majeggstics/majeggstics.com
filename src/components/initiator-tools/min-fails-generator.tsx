@@ -2,7 +2,7 @@ import copy from 'copy-to-clipboard';
 import Markdown from 'markdown-to-jsx';
 import { css } from '@acab/ecsstatic';
 import { useState, useCallback, useMemo, type ReactNode } from 'react';
-import { Timeslot } from '/components/initiator-tools';
+import { Timeslot, parseMinsMessage } from '/components/initiator-tools';
 import { useEventSetState, useToggleState } from '/lib/utils';
 
 type MinsProps = {
@@ -148,38 +148,6 @@ const MinimumFails = ({ contract, minFailLines }: MinFailsProps) => {
 			</div>
 		</section>
 	);
-};
-
-const parseMinsMessage = (minsMessage: string) => {
-	const inDanger = [];
-	const notins = [];
-	const minFails = [];
-
-	let scrolled_coop = false;
-	for (const line of minsMessage.split('\n')) {
-		if (scrolled_coop) {
-			if (/^<?:grade_\w+:(?:\d+>)?/.test(line)) {
-				scrolled_coop = false;
-			} else {
-				continue;
-			}
-		}
-
-		if (/:(?:green|yellow)_scroll:/.test(line)) {
-			scrolled_coop = true;
-			continue;
-		}
-
-		if (line.includes(':warning:')) {
-			inDanger.push(line);
-		} else if (/is missing.$/.test(line)) {
-			notins.push(line);
-		} else if (/\. Spent \d+ .+\d+h\d+m.(?: Ongoing boosts: .+)?$/.test(line)) {
-			minFails.push(line);
-		}
-	}
-
-	return { inDanger, notins, minFails };
 };
 
 const fullWidth = css`

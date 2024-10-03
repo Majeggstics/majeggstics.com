@@ -1,8 +1,9 @@
 import * as chai from 'chai';
 import { stripIndent } from 'common-tags';
-import { Timeslot, parseNotInMessage } from './initiator-tools';
+import { Timeslot, parseNotInMessage, parseMinsMessage } from './initiator-tools';
 
 chai.config.truncateThreshold = 0;
+
 const expect = chai.expect;
 
 describe('Timeslot#fromWonkyMessage', () => {
@@ -92,7 +93,7 @@ describe('parseNotInMessage', () => {
 		});
 	});
 
-	it.only('parses from-timeslot players to their signup, not assignment', () => {
+	it('parses from-timeslot players to their signup, not assignment', () => {
 		const parsed = parseNotInMessage(stripIndent`
 			Not in :egg_supermaterial: **Federal Reggserve** :egg_supermaterial: - \`federal-reggserve\`:
 
@@ -115,5 +116,156 @@ describe('parseNotInMessage', () => {
 			users: [userFoo],
 			threadUrl: 'coop1',
 		});
+	});
+});
+
+describe('parseMinsMessage', () => {
+	it('parses an empty message', () => {
+		const parsed = parseMinsMessage('');
+		expect(parsed).to.deep.equal({
+			inDanger: [],
+			minFails: [],
+			notins: [],
+		});
+	});
+
+	it('parses a coop in danger', () => {
+		const parsed = parseMinsMessage(stripIndent`
+			## Minimum check for <:egg_edible:11> Contract Name Here
+			### Formula \`Majeggstics 24h\`, Timeslot :one:
+			<:grade_aaa:11> [**\`coop1\`**](<link>) <:warning:11> ([**thread**](<link>))
+		`);
+
+		expect(parsed.inDanger).to.have.length(1);
+		expect(parsed.inDanger[0]).to.include('coop1');
+		expect(parsed.minFails).to.deep.equal([]);
+		expect(parsed.notins).to.deep.equal([]);
+	});
+
+	it('parses a non-scrolled min fail', () => {
+		const parsed = parseMinsMessage(stripIndent`
+			## Minimum check for <:egg_edible:11> Contract Name Here
+			### Formula \`Majeggstics 24h\`, Timeslot :one:
+			<:grade_aaa:11> [**\`coop1\`**](<link>) ([**thread**](<link>))
+			* \`ign\` (@ user) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>, <:clock:11> 7h42m
+		`);
+
+		expect(parsed.inDanger).to.deep.equal([]);
+		expect(parsed.minFails).to.have.length(1);
+		expect(parsed.minFails[0]).to.include('ign');
+		expect(parsed.notins).to.deep.equal([]);
+	});
+
+	it('parses a min-fail with a short offline time', () => {
+		const parsed = parseMinsMessage(stripIndent`
+			## Minimum check for <:egg_edible:11> Contract Name Here
+			### Formula \`Majeggstics 24h\`, Timeslot :one:
+			<:grade_aaa:11> [**\`coop1\`**](<link>) ([**thread**](<link>))
+			* \`ign\` (@ user) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>, <:clock:11> 1m
+		`);
+
+		expect(parsed.inDanger).to.deep.equal([]);
+		expect(parsed.minFails).to.have.length(1);
+		expect(parsed.minFails[0]).to.include('ign');
+		expect(parsed.notins).to.deep.equal([]);
+	});
+
+	it('parses a min-fail with no offline time', () => {
+		const parsed = parseMinsMessage(stripIndent`
+			## Minimum check for <:egg_edible:11> Contract Name Here
+			### Formula \`Majeggstics 24h\`, Timeslot :one:
+			<:grade_aaa:11> [**\`coop1\`**](<link>) ([**thread**](<link>))
+			* \`ign\` (@ user) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>
+		`);
+
+		expect(parsed.inDanger).to.deep.equal([]);
+		expect(parsed.minFails).to.have.length(1);
+		expect(parsed.minFails[0]).to.include('ign');
+		expect(parsed.notins).to.deep.equal([]);
+	});
+
+	it('parses a min-fail with byzantime usernames', () => {
+		const parsed = parseMinsMessage(stripIndent`
+			## Minimum check for <:egg_edible:11> Contract Name Here
+			### Formula \`Majeggstics 24h\`, Timeslot :one:
+			<:grade_aaa:11> [**\`coop1\`**](<link>) ([**thread**](<link>))
+			* \`:green_scroll:\` (@ qa_engineer) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>
+			* \`:warning:\` (@ user) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>
+		`);
+
+		expect(parsed.inDanger).to.deep.equal([]);
+		expect(parsed.minFails).to.have.length(2);
+		expect(parsed.minFails[0]).to.include(':green_scroll:');
+		expect(parsed.minFails[1]).to.include(':warning:');
+		expect(parsed.notins).to.deep.equal([]);
+	});
+
+	it('parses a scrolled min fail', () => {
+		const parsed = parseMinsMessage(stripIndent`
+			## Minimum check for <:egg_edible:11> Contract Name Here
+			### Formula \`Majeggstics 24h\`, Timeslot :one:
+			<:grade_aaa:11> [**\`coop4\`**](<link>) <:green_scroll:11> ([**thread**](<link>))
+			* \`ign\` (@ user) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>, <:clock:11> 7h42m
+		`);
+
+		expect(parsed.inDanger).to.deep.equal([]);
+		expect(parsed.minFails).to.have.length(0);
+		expect(parsed.notins).to.deep.equal([]);
+	});
+
+	it('parses a non-scrolled notin', () => {
+		const parsed = parseMinsMessage(stripIndent`
+			## Minimum check for <:egg_edible:11> Contract Name Here
+			### Formula \`Majeggstics 24h\`, Timeslot :one:
+			<:grade_aaa:11> [**\`coop1\`**](<link>) ([**thread**](<link>))
+			* Missing Egger is missing.
+		`);
+
+		expect(parsed.inDanger).to.deep.equal([]);
+		expect(parsed.minFails).to.deep.equal([]);
+		expect(parsed.notins).to.have.length(1);
+		expect(parsed.notins[0]).to.include('Missing Egger');
+	});
+
+	it('parses a scrolled notin', () => {
+		const parsed = parseMinsMessage(stripIndent`
+			## Minimum check for <:egg_edible:11> Contract Name Here
+			### Formula \`Majeggstics 24h\`, Timeslot :one:
+			<:grade_aaa:11> [**\`coop1\`**](<link>) <:green_scroll:11> ([**thread**](<link>))
+			* Missing Egger is missing.
+		`);
+
+		expect(parsed.inDanger).to.deep.equal([]);
+		expect(parsed.minFails).to.deep.equal([]);
+		expect(parsed.notins).to.deep.equal([]);
+	});
+
+	it('parses a message with all of those', () => {
+		const parsed = parseMinsMessage(stripIndent`
+			## Minimum check for <:egg_edible:11> Contract Name Here
+			### Formula \`Majeggstics 24h\`, Timeslot :one:
+			<:grade_aaa:11> [**\`no-scroll min fail\`**](<link>) ([**thread**](<link>))
+			* \`ign1\` (@ user1) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>, <:clock:11> 7h42m
+
+			<:grade_aaa:11> [**\`scroll min fail\`**](<link>) <:green_scroll:11> ([**thread**](<link>))
+			* \`ign2\` (@ user2) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>
+
+			<:grade_aaa:11> [**\`in danger and notin\`**](<link>) <:warning:11> ([**thread**](<link>))
+			* Missing Egger is missing.
+			* Gone Gamer is missing.
+
+			<:grade_aaa:11> [**\`scroll not in\`**](<link>) <:green_scroll:11> ([**thread**](<link>))
+			* Missing Egger's Alt is missing.
+		 `);
+
+		expect(parsed.inDanger).to.have.length(1);
+		expect(parsed.inDanger[0]).to.include('in danger and notin');
+		expect(parsed.minFails).to.have.length(1);
+		expect(parsed.minFails[0]).to.include('ign1');
+		expect(parsed.notins).to.have.length(2);
+		expect(parsed.notins).to.include.members([
+			'* Missing Egger is missing.',
+			'* Gone Gamer is missing.',
+		]);
 	});
 });
