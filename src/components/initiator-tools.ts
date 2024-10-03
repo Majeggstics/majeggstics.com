@@ -165,3 +165,38 @@ export const parseNotInMessage = (input: string): NotInsPerTimeslot => {
 
 export const useExtractNotins = (input: string): NotInsPerTimeslot =>
 	useMemo(() => parseNotInMessage(input), [input]);
+
+type ParsedMins = {
+	inDanger: string[];
+	minFails: string[];
+	notins: string[];
+};
+export const parseMinsMessage = (minsMessage: string): ParsedMins => {
+	const inDanger = [];
+	const notins = [];
+	const minFails = [];
+
+	let scrolled_coop = false;
+	for (const line of minsMessage.split('\n')) {
+		const trim = line.trim();
+		if (/^<?:grade_\w+:(?:\d+>)?.+/.test(trim)) {
+			scrolled_coop = /:(?:green|yellow)_scroll:/.test(trim);
+
+			if (trim.includes(':warning:')) {
+				inDanger.push(trim);
+			}
+		}
+
+		if (scrolled_coop) {
+			continue;
+		}
+
+		if (/is missing.$/.test(trim)) {
+			notins.push(trim);
+		} else if (/^\* `.+` \(@ .+\).+Spent \d+/.test(trim)) {
+			minFails.push(trim);
+		}
+	}
+
+	return { inDanger, notins, minFails };
+};
