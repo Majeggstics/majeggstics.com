@@ -179,20 +179,15 @@ export const parseMinsMessage = (minsMessage: string): ParsedMins => {
 	let scrolled_coop = false;
 	for (const line of minsMessage.split('\n')) {
 		const trim = line.trim();
-		if (scrolled_coop) {
-			if (/^<?:grade_\w+:(?:\d+>)?/.test(trim)) {
-				scrolled_coop = false;
-			} else {
-				continue;
-			}
+		if (/^<?:grade_\w+:(?:\d+>)?.+/.test(trim)) {
+			scrolled_coop = /:(?:green|yellow)_scroll:/.test(trim);
 		}
 
-		if (/:(?:green|yellow)_scroll:/.test(trim)) {
-			scrolled_coop = true;
+		if (scrolled_coop) {
 			continue;
 		}
 
-		if (trim.includes(':warning:')) {
+		if (/^<?:grade_\w+:(?:\d+>)?.+:warning:/.test(trim)) {
 			inDanger.push(trim);
 		} else if (/is missing.$/.test(trim)) {
 			notins.push(trim);
