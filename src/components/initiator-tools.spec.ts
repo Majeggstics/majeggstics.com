@@ -147,7 +147,7 @@ describe('parseMinsMessage', () => {
 			## Minimum check for <:egg_edible:11> Contract Name Here
 			### Formula \`Majeggstics 24h\`, Timeslot :one:
 			<:grade_aaa:11> [**\`coop1\`**](<link>) ([**thread**](<link>))
-			* \`ign\` (@ user) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>, <:clock:11> 7h42m
+			* \`ign\` (@ user) (X1): \`0\`/\`2.53q\` (\`0%\`). Spent 1 <:b_icon_token:11>, <:clock:11> 42m
 		`);
 
 		expect(parsed.inDanger).to.deep.equal([]);
