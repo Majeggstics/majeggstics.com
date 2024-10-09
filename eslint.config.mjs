@@ -50,6 +50,10 @@ const typeScriptRuleset = merge(...typescript, {
 
 		// i don't prefer that, sorry
 		'unicorn/prefer-string-replace-all': 'off',
+		'unicorn/no-zero-fractions': 'off',
+		'typescript-sort-keys/interface': 'off',
+		'@typescript-eslint/sort-type-constituents': 'off',
+		'react/jsx-sort-props': 'off',
 	},
 	settings: {
 		'import/resolver': {
