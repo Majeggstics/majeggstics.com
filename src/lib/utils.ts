@@ -47,7 +47,7 @@ export function notify(message: string, type = 'default') {
 	}
 }
 
-type DefinedButNotAFunction =
+export type DefinedButNotAFunction =
 	| bigint
 	| boolean
 	| number

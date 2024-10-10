@@ -44,6 +44,7 @@ const typeScriptRuleset = merge(...typescript, {
 		'@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
 		'@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
 		'@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+		'@typescript-eslint/method-signature-style': ['error', 'property'],
 
 		// those aren't absolute paths; ref tsconfig .compilerOptions.paths
 		'import-x/no-absolute-path': 'off',
