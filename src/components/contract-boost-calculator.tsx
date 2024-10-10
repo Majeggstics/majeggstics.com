@@ -1,19 +1,16 @@
-// this lint rule is completely accurate but i cba to deal with it right now
-
-import { css } from '@acab/ecsstatic';
 import { useCallback, createContext, useContext, useMemo } from 'react';
-import type { ChangeEvent, Dispatch, SetStateAction } from 'react';
-import { usePersistentState } from '/lib/utils';
+import type { ChangeEvent } from 'react';
 import type { Artifact, ArtifactIntensity, Stone } from '/lib/ei_data';
 import {
 	artifactRarity,
-	Boost,
 	ArtifactSpec,
 	PossibleArtifactIntensity,
 	chaliceMultiplier,
 	monocleMultiplier,
 	gussetMultiplier,
 } from '/lib/ei_data';
+import { Boost } from '/components/Boosts';
+import { generateCalculator, type WithSetter } from '/components/calculator.tsx';
 
 type SlottedArtifact = {
 	spec: Artifact;
@@ -60,98 +57,19 @@ const defaultCalcData = () => ({
 	diliT4: 0,
 	boost: 'boost8',
 });
-type CalcDataAndSetter = { calcData: CalcData; setCalcData: Dispatch<SetStateAction<CalcData>> };
-const CalcDataContext = createContext<CalcDataAndSetter>({
-	calcData: defaultCalcData(),
-	setCalcData: () => {},
-});
 
-const flex = css`
-	display: flex;
-	flex-direction: inherit;
-`;
-
-const column = css`
-	display: flex;
-	flex-direction: column;
-`;
-
-type InputCellProps = { readonly datakey: keyof CalcData; readonly label: string };
-const InputCell = ({
-	datakey,
-	label,
-	...rest
-}: InputCellProps & React.InputHTMLAttributes<HTMLInputElement>) => {
-	const { calcData, setCalcData } = useContext(CalcDataContext);
-
-	const handleInput = useCallback(
-		(event: ChangeEvent<HTMLInputElement>) => {
-			setCalcData((data) => ({ ...data, [datakey]: event.target.value }));
-		},
-		[setCalcData, datakey],
-	);
-
-	const value =
-		typeof calcData[datakey] === 'string' || typeof calcData[datakey] === 'number' ?
-			calcData[datakey]
-		:	`${datakey} is not a good key`;
-
-	return (
-		<div className={flex}>
-			<label htmlFor={`input-${datakey}`}>{label}</label>
-			<input
-				id={`input-${datakey}`}
-				name={datakey}
-				onChange={handleInput}
-				value={value}
-				{...rest}
-			/>
-		</div>
-	);
-};
-
-type OutputCellProps = {
-	readonly label: string;
-} & (
-	| { readonly datakey: keyof CalcData }
-	| { readonly children: React.ReactNode }
-	| { readonly value: string }
-);
-const OutputCell = (props: OutputCellProps) => {
-	const { calcData } = useContext(CalcDataContext);
-
-	let value;
-	if ('datakey' in props) {
-		const data = calcData[props.datakey];
-		value =
-			typeof data === 'string' || typeof data === 'number' ?
-				data
-			:	`${props.datakey} is not a good key`;
-	} else if ('value' in props) {
-		value = props.value;
-	} else {
-		value = props.children;
-	}
-
-	return (
-		<>
-			<span>{props.label}</span>
-			<span>{value}</span>
-		</>
-	);
-};
+const Calculator = generateCalculator<CalcData>(defaultCalcData());
+const { Input, Output } = Calculator;
 
 type FetchCoopDataProps = { readonly children: React.ReactNode };
 const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 	const apiUri = useContext(ApiUriContext);
-	const { calcData, setCalcData } = useContext(CalcDataContext);
+	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
 
 	const fetchCoopData = useCallback(async () => {
-		const rawEIResponse: EIBackupResponse = await fetch(
-			`${apiUri}/backup?EID=${calcData.eid}`,
-		).then(async (res) => res.json());
-
-		console.log({ rawEIResponse });
+		const rawEIResponse: EIBackupResponse = await fetch(`${apiUri}/backup?EID=${data.eid}`).then(
+			async (res) => res.json(),
+		);
 
 		const resolveItemId = (itemId: number): SlottedArtifact => {
 			const items = rawEIResponse.artifactsDb.inventoryItemsList;
@@ -217,14 +135,15 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			)
 			.map((set) => ({ set, ihr: ihrForSet(set), dili: diliForSet(set) }));
 
+		const byName = (want: ArtifactSpec.Name) => (arti: { spec: { name: ArtifactSpec.Name } }) =>
+			arti.spec.name === want;
+
 		const ihrSets = sets.toSorted((a, b) => {
 			const ihrDiff = b.ihr.effect - a.ihr.effect;
 			if (ihrDiff === 0) {
 				const noGus = { level: 0, rarity: -1 };
-				const aGus =
-					a.set.find((a) => a.spec.name === ArtifactSpec.Name.ORNATE_GUSSET)?.spec ?? noGus;
-				const bGus =
-					b.set.find((a) => a.spec.name === ArtifactSpec.Name.ORNATE_GUSSET)?.spec ?? noGus;
+				const aGus = a.set.find(byName(ArtifactSpec.Name.ORNATE_GUSSET))?.spec ?? noGus;
+				const bGus = b.set.find(byName(ArtifactSpec.Name.ORNATE_GUSSET))?.spec ?? noGus;
 
 				// 8 is chosen arbitrarily but larger than max rarity
 				return bGus.level * 8 + bGus.rarity - (aGus.level * 8 + aGus.rarity);
@@ -232,24 +151,14 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 			return ihrDiff;
 		});
-		console.log(ihrSets);
 		const ihrSet = ihrSets[0];
 		const diliSet = sets.toSorted((a, b) => b.dili.effect - a.dili.effect)[0];
 
-		const monocle = ihrSet?.set.find(
-			(arti) => arti.spec.name === ArtifactSpec.Name.DILITHIUM_MONOCLE,
-		)?.spec;
+		const monocle = ihrSet?.set.find(byName(ArtifactSpec.Name.DILITHIUM_MONOCLE))?.spec;
+		const chalice = ihrSet?.set.find(byName(ArtifactSpec.Name.THE_CHALICE))?.spec;
+		const gusset = ihrSet?.set.find(byName(ArtifactSpec.Name.ORNATE_GUSSET))?.spec;
 
-		const chalice = ihrSet?.set.find(
-			(arti) => arti.spec.name === ArtifactSpec.Name.THE_CHALICE,
-		)?.spec;
-
-		const gusset = ihrSet?.set.find(
-			(arti) => arti.spec.name === ArtifactSpec.Name.ORNATE_GUSSET,
-		)?.spec;
-
-		setCalcData((data) => ({
-			...data,
+		updateData({
 			ign: rawEIResponse.userName,
 			lifeT2: ihrSet?.ihr.stones[0] ?? 0,
 			lifeT3: ihrSet?.ihr.stones[1] ?? 0,
@@ -260,8 +169,8 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			chalice,
 			monocle,
 			gusset,
-		}));
-	}, [calcData.eid, apiUri, setCalcData]);
+		});
+	}, [data.eid, apiUri, updateData]);
 
 	return <button onClick={fetchCoopData}>{children}</button>;
 };
@@ -270,27 +179,25 @@ type ArtifactSelectorProps = {
 	readonly kind: 'monocle' | 'gusset' | 'chalice';
 };
 const ArtifactSelector = ({ kind }: ArtifactSelectorProps) => {
-	const { calcData, setCalcData } = useContext(CalcDataContext);
+	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
 
 	const handleChange = useCallback(
 		(event: ChangeEvent<HTMLSelectElement>) => {
 			const [level, rarity] = event.target.value.split('-').map((val) => Number.parseInt(val, 10));
-			setCalcData((data) => ({
-				...data,
+			updateData({
 				[kind]: {
 					level,
 					rarity,
 				},
-			}));
+			});
 		},
-		[setCalcData, kind],
+		[updateData, kind],
 	);
 
-	const current = calcData[kind] ? `${calcData[kind].level}-${calcData[kind].rarity}` : '-';
-	console.log({ current, is: calcData[kind] });
+	const current = data[kind] ? `${data[kind].level}-${data[kind].rarity}` : '-';
 
 	return (
-		<div className={column}>
+		<div className="artifactSelect">
 			<label htmlFor={`select-${kind}`}>{kind.charAt(0).toUpperCase() + kind.slice(1)}</label>
 			<select id={`select-${kind}`} onChange={handleChange} value={current}>
 				<option value="-">None</option>
@@ -305,69 +212,6 @@ const ArtifactSelector = ({ kind }: ArtifactSelectorProps) => {
 	);
 };
 
-const gapRow = css`
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	#input-eid-artifacts {
-		display: flex;
-		flex-direction: column;
-		.spacer {
-			flex: 1;
-		}
-	}
-	#input-stones {
-		flex: 1;
-	}
-`;
-
-const gapColumn = css`
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-`;
-
-const inputsColumn = css`
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	> div,
-	button {
-		width: min(100%, 12em);
-	}
-`;
-
-const radioRow = css`
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(min(15em, 100%), 1fr));
-	gap: 1rem;
-	div {
-		display: flex;
-		flex-direction: row;
-		gap: 0.5em;
-		width: fit-content;
-	}
-	label {
-		width: max-content;
-	}
-`;
-
-const stoneInputRow = css`
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	div {
-		display: flex;
-		flex-direction: row;
-		gap: 0.5em;
-		width: fit-content;
-		align-items: center;
-	}
-	label {
-		width: max-content;
-	}
-`;
-
 const boostRadios = [
 	{ id: 'boost8', label: '8-token' },
 	{ id: 'boost6', label: '6-token (Dubson)' },
@@ -379,17 +223,17 @@ const boostRadios = [
 	{ id: 'boost0', label: '0-token (five large)' },
 ] as const;
 const BoostPresetButtons = () => {
-	const { calcData, setCalcData } = useContext(CalcDataContext);
+	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
 
 	const handleChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>) => {
-			setCalcData((data) => ({ ...data, boost: event.target.value }));
+			updateData({ boost: event.target.value });
 		},
-		[setCalcData],
+		[updateData],
 	);
 
 	return (
-		<fieldset className={radioRow}>
+		<fieldset id="boostSets">
 			<legend>Boost Set</legend>
 			{boostRadios.map(({ id, label }) => (
 				<div key={id}>
@@ -398,7 +242,7 @@ const BoostPresetButtons = () => {
 						name="boostSet"
 						id={id}
 						value={id}
-						checked={calcData.boost === id}
+						checked={data.boost === id}
 						onChange={handleChange}
 					/>
 					<label htmlFor={id}>{label}</label>
@@ -408,68 +252,42 @@ const BoostPresetButtons = () => {
 	);
 };
 
-const outputGrid = css`
-	font-size: 120%;
-
-	display: grid;
-	grid-template-columns: max-content max-content;
-	column-gap: 1rem;
-
-	:nth-child(odd) {
-		justify-self: end;
-	}
-
-	:nth-child(even) {
-		justify-self: start;
-	}
-`;
 export default function ContractBoostCalculator({ api }: { readonly api: string }) {
-	const [calcData, setCalcData] = usePersistentState<CalcData>('calcData', defaultCalcData());
-	const calcState = useMemo<CalcDataAndSetter>(
-		() => ({ calcData, setCalcData }),
-		[calcData, setCalcData],
+	const calc = Calculator.useCreateState();
+
+	const boosts = useMemo(
+		() =>
+			({
+				boost8: [Boost.LegendaryTach, Boost.EpicBeacon],
+				boost6: [Boost.LegendaryTach, Boost.Beacon, Boost.Beacon],
+				boost6s: [Boost.SupremeTach, Boost.Beacon, Boost.Beacon],
+				boost5: [Boost.LegendaryTach, Boost.Beacon],
+				boost4: [Boost.EpicTach, Boost.EpicTach],
+				boost4s: [Boost.SupremeTach],
+				boost2: [Boost.EpicTach],
+			})[calc.data.boost] ?? [
+				Boost.LargeTach,
+				Boost.LargeTach,
+				Boost.LargeTach,
+				Boost.LargeTach,
+				Boost.LargeTach,
+			],
+		[calc.data.boost],
 	);
 
-	const boosts = useMemo(() => {
-		switch (calcData.boost) {
-			case 'boost8':
-				return [Boost.LegendaryTach, Boost.EpicBeacon];
-			case 'boost6':
-				return [Boost.LegendaryTach, Boost.Beacon, Boost.Beacon];
-			case 'boost6s':
-				return [Boost.SupremeTach, Boost.Beacon, Boost.Beacon];
-			case 'boost5':
-				return [Boost.LegendaryTach, Boost.Beacon];
-			case 'boost4':
-				return [Boost.EpicTach, Boost.EpicTach];
-			case 'boost4s':
-				return [Boost.SupremeTach];
-			case 'boost2':
-				return [Boost.EpicTach];
-			default:
-				return [
-					Boost.LargeTach,
-					Boost.LargeTach,
-					Boost.LargeTach,
-					Boost.LargeTach,
-					Boost.LargeTach,
-				];
-		}
-	}, [calcData.boost]);
-
 	const diliBonus = useMemo(
-		() => 1.03 ** calcData.diliT2 * 1.06 ** calcData.diliT3 * 1.08 ** calcData.diliT4,
-		[calcData.diliT2, calcData.diliT3, calcData.diliT4],
+		() => 1.03 ** calc.data.diliT2 * 1.06 ** calc.data.diliT3 * 1.08 ** calc.data.diliT4,
+		[calc.data.diliT2, calc.data.diliT3, calc.data.diliT4],
 	);
 
 	const lifeBonus = useMemo(
-		() => 1.02 ** calcData.lifeT2 * 1.03 ** calcData.lifeT3 * 1.04 ** calcData.lifeT4,
-		[calcData.lifeT2, calcData.lifeT3, calcData.lifeT4],
+		() => 1.02 ** calc.data.lifeT2 * 1.03 ** calc.data.lifeT3 * 1.04 ** calc.data.lifeT4,
+		[calc.data.lifeT2, calc.data.lifeT3, calc.data.lifeT4],
 	);
 
 	const maxHabSpace = useMemo(
-		() => 11_340_000_000 * gussetMultiplier(calcData.gusset ?? { level: 0, rarity: 0 }),
-		[calcData.gusset],
+		() => 11_340_000_000 * gussetMultiplier(calc.data.gusset ?? { level: 0, rarity: 0 }),
+		[calc.data.gusset],
 	);
 
 	const [onlineChickens, timeToMaxHabs] = useMemo(() => {
@@ -493,10 +311,8 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 					baseIhr *
 					lifeBonus *
 					Math.max(1, tachMult * Math.max(1, beaconMult)) *
-					chaliceMultiplier(calcData.chalice ?? { level: 0, rarity: 0 }) *
-					monocleMultiplier(calcData.monocle ?? { level: 0, rarity: 0 });
-
-				console.log({ time, diliBonus, lifeBonus, tachMult, beaconMult });
+					chaliceMultiplier(calc.data.chalice ?? { level: 0, rarity: 0 }) *
+					monocleMultiplier(calc.data.monocle ?? { level: 0, rarity: 0 });
 
 				const chickens = time * ihr * 4;
 
@@ -531,7 +347,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 			.filter(Boolean)
 			.join(' ');
 		return [Math.floor(population), formattedTime];
-	}, [boosts, calcData.chalice, diliBonus, lifeBonus, calcData.monocle, maxHabSpace]);
+	}, [boosts, calc.data.chalice, diliBonus, lifeBonus, calc.data.monocle, maxHabSpace]);
 
 	const boostDurationRaw = useMemo(() => {
 		const minDuration = boosts.reduce((min, b) => Math.min(min, b.durationMins), Infinity);
@@ -556,63 +372,52 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 
 	return (
 		<ApiUriContext.Provider value={api}>
-			<CalcDataContext.Provider value={calcState}>
-				<div className={gapColumn}>
-					<section>
-						<h1>Contract Boost Calculator</h1>
-						<h2>Calculates the number of chickens for a boost set. Assumes max ER.</h2>
+			<Calculator.Context.Provider value={calc}>
+				<section>
+					<h1>Contract Boost Calculator</h1>
+					<h2>Calculates the number of chickens for a boost set. Assumes max ER.</h2>
+				</section>
+				<section id="inputs">
+					<section id="input-eid-artifacts">
+						<Input datakey="eid" label="EID (Optional)" />
+						<FetchCoopDataButton>Fetch account data</FetchCoopDataButton>
+						<div className="spacer" />
+						<ArtifactSelector kind="monocle" />
+						<ArtifactSelector kind="chalice" />
+						<ArtifactSelector kind="gusset" />
 					</section>
-					<div className={gapRow}>
-						<section id="input-eid-artifacts" className={inputsColumn}>
-							<InputCell datakey="eid" label="EID (Optional)" />
-							<FetchCoopDataButton>Fetch account data</FetchCoopDataButton>
-							<div className="spacer" />
-							<ArtifactSelector kind="monocle" />
-							<ArtifactSelector kind="chalice" />
-							<ArtifactSelector kind="gusset" />
-						</section>
-						<section id="input-stones" className={gapColumn}>
-							<fieldset>
-								<legend>Life stones in IHR set:</legend>
-								<div className={stoneInputRow}>
-									<InputCell datakey="lifeT2" label="T2:" max="12" min="0" size={2} type="number" />
-									<InputCell datakey="lifeT3" label="T3:" max="12" min="0" size={2} type="number" />
-									<InputCell datakey="lifeT4" label="T4:" max="12" min="0" size={2} type="number" />
-								</div>
-							</fieldset>
-							<fieldset>
-								<legend>Dilithium stones in dili set:</legend>
-								<div className={stoneInputRow}>
-									<InputCell datakey="diliT2" label="T2:" max="12" min="0" size={2} type="number" />
-									<InputCell datakey="diliT3" label="T3:" max="12" min="0" size={2} type="number" />
-									<InputCell datakey="diliT4" label="T4:" max="12" min="0" size={2} type="number" />
-								</div>
-							</fieldset>
-						</section>
-					</div>
-					<hr />
-					<BoostPresetButtons />
-					<hr />
-					<section id="output">
-						<div className={outputGrid}>
-							<OutputCell label="Boosts">
-								{boosts.map((boost: Boost, id: number) => (
-									<img key={id} src={boost.iconPath()} width="20" title={boost.descriptor()} />
-								))}
-							</OutputCell>
-							<OutputCell label="First boost runs out after" value={boostDuration} />
-							<OutputCell label="GE cost (buying in 5s)" value={boostCost.toLocaleString()} />
-							<OutputCell label="Population (online)" value={onlineChickens.toLocaleString()} />
-							<OutputCell
-								label="Population (offline)"
-								value={(onlineChickens * 3).toLocaleString()}
-							/>
-							<OutputCell label="Max hab space" value={maxHabSpace.toLocaleString()} />
-							<OutputCell label="Time to fill habs" value={timeToMaxHabs || '∞'} />
-						</div>
+					<section id="input-stones">
+						<fieldset>
+							<legend>Life stones in IHR set:</legend>
+							<Input datakey="lifeT2" label="T2:" max="12" min="0" size={2} type="number" />
+							<Input datakey="lifeT3" label="T3:" max="12" min="0" size={2} type="number" />
+							<Input datakey="lifeT4" label="T4:" max="12" min="0" size={2} type="number" />
+						</fieldset>
+						<fieldset>
+							<legend>Dilithium stones in dili set:</legend>
+							<Input datakey="diliT2" label="T2:" max="12" min="0" size={2} type="number" />
+							<Input datakey="diliT3" label="T3:" max="12" min="0" size={2} type="number" />
+							<Input datakey="diliT4" label="T4:" max="12" min="0" size={2} type="number" />
+						</fieldset>
 					</section>
-				</div>
-			</CalcDataContext.Provider>
+				</section>
+				<hr />
+				<BoostPresetButtons />
+				<hr />
+				<section id="output">
+					<Output label="Boosts">
+						{boosts.map((boost: Boost, id: number) => (
+							<Boost.Image key={id} boost={boost} />
+						))}
+					</Output>
+					<Output label="First boost runs out after" value={boostDuration} />
+					<Output label="GE cost (buying in 5s)" value={boostCost.toLocaleString()} />
+					<Output label="Population (online)" value={onlineChickens.toLocaleString()} />
+					<Output label="Population (offline)" value={(onlineChickens * 3).toLocaleString()} />
+					<Output label="Max hab space" value={maxHabSpace.toLocaleString()} />
+					<Output label="Time to fill habs" value={timeToMaxHabs || '∞'} />
+				</section>
+			</Calculator.Context.Provider>
 		</ApiUriContext.Provider>
 	);
 }
