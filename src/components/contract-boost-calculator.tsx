@@ -285,7 +285,7 @@ const boostRadios = [
 	{ id: 'boost8', label: '8-token' },
 	{ id: 'boost6', label: '6-token (Dubson)' },
 	{ id: 'boost6s', label: '6-token (Dubson Supreme)' },
-	{ id: 'boost5', label: '5-token (Benson Supreme)' },
+	{ id: 'boost5', label: '5-token (Benson)' },
 	{ id: 'boost4', label: '4-token (Epic)' },
 	{ id: 'boost4s', label: '4-token (Supreme)' },
 	{ id: 'boost2', label: '2-token (Single Epic)' },
