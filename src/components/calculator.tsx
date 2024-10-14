@@ -56,6 +56,46 @@ export function generateCalculator<Data extends NonCallableObject>(initial: Data
 		);
 	};
 
+	type CheckboxProps = { readonly datakey: keyof Data; readonly label: string };
+	const Checkbox = ({
+		datakey,
+		label,
+		...rest
+	}: CheckboxProps & React.InputHTMLAttributes<HTMLInputElement>) => {
+		const { data, updateData } = useContext<WithSetter<Data>>(Context);
+
+		const handleChange = useCallback(
+			(event: ChangeEvent<HTMLInputElement>) => {
+				updateData({ [datakey]: event.target.checked } as Partial<Data>);
+			},
+			[updateData, datakey],
+		);
+
+		const checked = data[datakey] ?? false;
+		if (typeof checked !== 'boolean') {
+			return (
+				<div>
+					Illegal checkbox: <code>data["{datakey.toString()}"]</code> is{' '}
+					<code>{typeof checked}</code>, expected <code>boolean</code>.
+				</div>
+			);
+		}
+
+		return (
+			<div className="calculatorCheckbox">
+				<input
+					id={`input-${String(datakey)}`}
+					type="checkbox"
+					name={String(datakey)}
+					onChange={handleChange}
+					checked={checked}
+					{...rest}
+				/>
+				<label htmlFor={`input-${String(datakey)}`}>{label}</label>
+			</div>
+		);
+	};
+
 	type OutputProps = {
 		readonly label: string;
 	} & (
@@ -92,5 +132,6 @@ export function generateCalculator<Data extends NonCallableObject>(initial: Data
 		Context,
 		Input,
 		Output,
+		Checkbox,
 	};
 }
