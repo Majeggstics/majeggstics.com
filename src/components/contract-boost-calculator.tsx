@@ -46,24 +46,24 @@ type CalcData = {
 	gusset?: ArtifactIntensity | undefined;
 	monocle?: ArtifactIntensity | undefined;
 	chalice?: ArtifactIntensity | undefined;
-	lifeT2: number;
-	lifeT3: number;
-	lifeT4: number;
-	diliT2: number;
-	diliT3: number;
-	diliT4: number;
+	lifeT2: string;
+	lifeT3: string;
+	lifeT4: string;
+	diliT2: string;
+	diliT3: string;
+	diliT4: string;
 	boost: string;
 	fetchState: FetchState;
 	fetchRetryIn: number;
 };
 const defaultCalcData = () => ({
 	eid: '',
-	lifeT2: 0,
-	lifeT3: 0,
-	lifeT4: 0,
-	diliT2: 0,
-	diliT3: 0,
-	diliT4: 0,
+	lifeT2: '0',
+	lifeT3: '0',
+	lifeT4: '0',
+	diliT2: '0',
+	diliT3: '0',
+	diliT4: '0',
 	boost: 'boost8',
 	fetchState: FetchState.IDLE,
 	fetchRetryIn: 0,
@@ -195,12 +195,12 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 		updateData({
 			fetchState: FetchState.SUCCESS,
-			lifeT2: ihrSet?.ihr.stones[0] ?? 0,
-			lifeT3: ihrSet?.ihr.stones[1] ?? 0,
-			lifeT4: ihrSet?.ihr.stones[2] ?? 0,
-			diliT2: diliSet?.dili.stones[0] ?? 0,
-			diliT3: diliSet?.dili.stones[1] ?? 0,
-			diliT4: diliSet?.dili.stones[2] ?? 0,
+			lifeT2: String(ihrSet?.ihr.stones[0] ?? 0),
+			lifeT3: String(ihrSet?.ihr.stones[1] ?? 0),
+			lifeT4: String(ihrSet?.ihr.stones[2] ?? 0),
+			diliT2: String(diliSet?.dili.stones[0] ?? 0),
+			diliT3: String(diliSet?.dili.stones[1] ?? 0),
+			diliT4: String(diliSet?.dili.stones[2] ?? 0),
 			chalice,
 			monocle,
 			gusset,
@@ -344,14 +344,29 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 		[calc.data.boost],
 	);
 
+	const parseInts = useCallback(
+		<T extends string[], U extends number[]>(ns: T): U =>
+			ns.map((num) => Number.parseInt(num || '0', 10)) as U,
+		[],
+	);
+	const lifeCounts: [number, number, number] = useMemo(
+		() => parseInts([calc.data.lifeT2, calc.data.lifeT3, calc.data.lifeT4]),
+		[parseInts, calc.data.lifeT2, calc.data.lifeT3, calc.data.lifeT4],
+	);
+
+	const diliCounts: [number, number, number] = useMemo(
+		() => parseInts([calc.data.diliT2, calc.data.diliT3, calc.data.diliT4]),
+		[parseInts, calc.data.diliT2, calc.data.diliT3, calc.data.diliT4],
+	);
+
 	const diliBonus = useMemo(
-		() => 1.03 ** calc.data.diliT2 * 1.06 ** calc.data.diliT3 * 1.08 ** calc.data.diliT4,
-		[calc.data.diliT2, calc.data.diliT3, calc.data.diliT4],
+		() => 1.03 ** diliCounts[0] * 1.06 ** diliCounts[1] * 1.08 ** diliCounts[2],
+		[diliCounts],
 	);
 
 	const lifeBonus = useMemo(
-		() => 1.02 ** calc.data.lifeT2 * 1.03 ** calc.data.lifeT3 * 1.04 ** calc.data.lifeT4,
-		[calc.data.lifeT2, calc.data.lifeT3, calc.data.lifeT4],
+		() => 1.02 ** lifeCounts[0] * 1.03 ** lifeCounts[1] * 1.04 ** lifeCounts[2],
+		[lifeCounts],
 	);
 
 	const maxHabSpace = useMemo(
@@ -439,6 +454,12 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 		return sum * 0.8;
 	}, [boosts]);
 
+	const totalLifeStones = useMemo(() => lifeCounts.reduce((sum, each) => sum + each), [lifeCounts]);
+
+	const totalDiliStones = useMemo(() => diliCounts.reduce((sum, each) => sum + each), [diliCounts]);
+
+	const enableOutput = totalLifeStones <= 12 && totalDiliStones <= 12;
+
 	// when any input in this section emits a `change` event, reset fetchState
 	// back to idle and then remove the event listener. because the useEffect
 	// has fetchState in the dependency list, when the button is clicked and
@@ -489,31 +510,43 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 							<Input datakey="lifeT2" label="T2:" max="12" min="0" size={2} type="number" />
 							<Input datakey="lifeT3" label="T3:" max="12" min="0" size={2} type="number" />
 							<Input datakey="lifeT4" label="T4:" max="12" min="0" size={2} type="number" />
+							{totalLifeStones > 12 && (
+								<div className="error">
+									More stones ({totalLifeStones}) than max possible slots (12)!
+								</div>
+							)}
 						</fieldset>
 						<fieldset>
 							<legend>Dilithium stones in dili set:</legend>
 							<Input datakey="diliT2" label="T2:" max="12" min="0" size={2} type="number" />
 							<Input datakey="diliT3" label="T3:" max="12" min="0" size={2} type="number" />
 							<Input datakey="diliT4" label="T4:" max="12" min="0" size={2} type="number" />
+							{totalDiliStones > 12 && (
+								<div className="error">
+									More stones ({totalDiliStones}) than max possible slots (12)!
+								</div>
+							)}
 						</fieldset>
 					</section>
 				</section>
 				<hr />
 				<BoostPresetButtons />
 				<hr />
-				<section id="output">
-					<Output label="Boosts">
-						{boosts.map((boost: Boost, id: number) => (
-							<Boost.Image key={id} boost={boost} />
-						))}
-					</Output>
-					<Output label="First boost runs out after" value={boostDuration} />
-					<Output label="GE cost (buying in 5s)" value={boostCost.toLocaleString()} />
-					<Output label="Population (online)" value={onlineChickens.toLocaleString()} />
-					<Output label="Population (offline)" value={(onlineChickens * 3).toLocaleString()} />
-					<Output label="Max hab space" value={maxHabSpace.toLocaleString()} />
-					<Output label="Time to fill habs" value={timeToMaxHabs || '∞'} />
-				</section>
+				{enableOutput && (
+					<section id="output">
+						<Output label="Boosts">
+							{boosts.map((boost: Boost, id: number) => (
+								<Boost.Image key={id} boost={boost} />
+							))}
+						</Output>
+						<Output label="First boost runs out after" value={boostDuration} />
+						<Output label="GE cost (buying in 5s)" value={boostCost.toLocaleString()} />
+						<Output label="Population (online)" value={onlineChickens.toLocaleString()} />
+						<Output label="Population (offline)" value={(onlineChickens * 3).toLocaleString()} />
+						<Output label="Max hab space" value={maxHabSpace.toLocaleString()} />
+						<Output label="Time to fill habs" value={timeToMaxHabs || '∞'} />
+					</section>
+				)}
 			</Calculator.Context.Provider>
 		</ApiUriContext.Provider>
 	);
