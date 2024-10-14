@@ -19,6 +19,10 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 		flex-direction: inherit;
 	}
 
+	.calculatorCheckbox label {
+		padding-left: 0.5em;
+	}
+
 	.artifactSelect {
 		display: flex;
 		flex-direction: column;
@@ -50,10 +54,13 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 		flex-direction: column;
 		gap: 1rem;
 
+		container-type: inline-size;
+
 		& fieldset {
 			display: flex;
 			flex-direction: column;
 			gap: 1rem;
+
 			& div {
 				display: flex;
 				flex-direction: row;
@@ -64,6 +71,12 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 			& label {
 				width: max-content;
 			}
+		}
+	}
+
+	@container (min-width: 25em) {
+		#input-stones fieldset {
+			flex-direction: row;
 		}
 	}
 

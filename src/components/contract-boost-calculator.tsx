@@ -55,6 +55,7 @@ type CalcData = {
 	boost: string;
 	fetchState: FetchState;
 	fetchRetryIn: number;
+	doubleDuration: boolean;
 };
 const defaultCalcData = () => ({
 	eid: '',
@@ -67,6 +68,7 @@ const defaultCalcData = () => ({
 	boost: 'boost8',
 	fetchState: FetchState.IDLE,
 	fetchRetryIn: 0,
+	doubleDuration: false,
 });
 
 const Calculator = generateCalculator<CalcData>(defaultCalcData());
@@ -360,8 +362,12 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	);
 
 	const diliBonus = useMemo(
-		() => 1.03 ** diliCounts[0] * 1.06 ** diliCounts[1] * 1.08 ** diliCounts[2],
-		[diliCounts],
+		() =>
+			1.03 ** diliCounts[0] *
+			1.06 ** diliCounts[1] *
+			1.08 ** diliCounts[2] *
+			(calc.data.doubleDuration ? 2 : 1),
+		[diliCounts, calc.data.doubleDuration],
 	);
 
 	const lifeBonus = useMemo(
@@ -455,7 +461,6 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	}, [boosts]);
 
 	const totalLifeStones = useMemo(() => lifeCounts.reduce((sum, each) => sum + each), [lifeCounts]);
-
 	const totalDiliStones = useMemo(() => diliCounts.reduce((sum, each) => sum + each), [diliCounts]);
 
 	const enableOutput = totalLifeStones <= 12 && totalDiliStones <= 12;
@@ -527,6 +532,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 								</div>
 							)}
 						</fieldset>
+						<Calculator.Checkbox datakey="doubleDuration" label="2× boost duration modifier?" />
 					</section>
 				</section>
 				<hr />
