@@ -235,7 +235,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 						</>
 					: data.fetchState === FetchState.SUCCESS ?
 						<>
-							<span>✔️</span>Loaded backup!
+							<span>✔️</span>Loaded artifacts and stones from saved sets!
 						</>
 					:	null}
 				</div>
@@ -461,6 +461,11 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 
 		return () => el.removeEventListener('change', resetFetchState);
 	}, [listenerRef, calc, calc.data.fetchState]);
+
+	// on reload, any active requests are canceled, so empty dependency array is on
+	// purpose: only set idle unconditionally on FIRST load
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	useEffect(() => calc.updateData({ fetchState: FetchState.IDLE }), []);
 
 	return (
 		<ApiUriContext.Provider value={api}>
