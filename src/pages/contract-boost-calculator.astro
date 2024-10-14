@@ -67,6 +67,33 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 		}
 	}
 
+	#fetch-state {
+		font-size: 70%;
+		& span {
+			margin-right: 0.5em;
+		}
+	}
+
+	.spinner {
+		display: inline-block;
+		width: calc(1em / 1.414213);
+		height: calc(1em / 1.414213);
+		border-radius: 50%;
+		border-top: 2px solid black;
+		border-right: 2px solid transparent;
+		box-sizing: border-box;
+		animation: rotation 1s linear infinite;
+	}
+
+	@keyframes rotation {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+
 	#boostSets {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(15em, 100%), 1fr));
