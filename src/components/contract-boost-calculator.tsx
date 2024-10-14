@@ -54,6 +54,7 @@ type CalcData = {
 	diliT4: number;
 	boost: string;
 	fetchState: FetchState;
+	fetchRetryIn: number;
 };
 const defaultCalcData = () => ({
 	eid: '',
@@ -65,6 +66,7 @@ const defaultCalcData = () => ({
 	diliT4: 0,
 	boost: 'boost8',
 	fetchState: FetchState.IDLE,
+	fetchRetryIn: 0,
 });
 
 const Calculator = generateCalculator<CalcData>(defaultCalcData());
@@ -76,20 +78,26 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
 
 	const fetchData = useCallback(async () => {
-		updateData({ fetchState: FetchState.PENDING });
-		const backoffs = [1, 2, 5, 8, 13] as const;
+		const backoffs = [1, 2, 5, 8, 13, 0] as const;
 		let eIResponse: EIBackupResponse | null = null;
 		for (const backoff of backoffs) {
+			updateData({ fetchState: FetchState.PENDING });
 			const rawEIResponse = await fetch(`${apiUri}/backup?EID=${data.eid}`);
 
 			if (rawEIResponse.ok) {
 				eIResponse = await rawEIResponse.json();
 				break;
-			} else {
-				updateData({ fetchState: FetchState.RETRY });
-				// no-loop-func is worried about `setTimeout` here ಠ_ಠ
-				// eslint-disable-next-line @typescript-eslint/no-loop-func
-				await new Promise((resolve) => void setTimeout(resolve, 1_000 * backoff));
+			} else if (backoff > 0) {
+				updateData({ fetchState: FetchState.RETRY, fetchRetryIn: backoff });
+				// we're doing this as a bunch of 1-second sleeps to get a countdown text
+				// this is technically not that accurate and it should be a setInterval
+				// but that was gnarly to write out
+				for (let remaining = backoff; remaining > 0; remaining--) {
+					updateData({ fetchRetryIn: remaining });
+					// no-loop-func is worried about `setTimeout` here ಠ_ಠ
+					// eslint-disable-next-line @typescript-eslint/no-loop-func
+					await new Promise((resolve) => void setTimeout(resolve, 1_000));
+				}
 			}
 		}
 
@@ -219,7 +227,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 					: data.fetchState === FetchState.RETRY ?
 						<>
 							<span className="spinner" />
-							Retrying...
+							Retrying in {data.fetchRetryIn}s...
 						</>
 					: data.fetchState === FetchState.FAILURE ?
 						<>
