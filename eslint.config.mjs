@@ -41,6 +41,7 @@ const typeScriptRuleset = merge(...typescript, {
 		},
 	},
 	rules: {
+		'no-promise-executor-return': ['error', { allowVoid: true }],
 		'@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
 		'@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
 		'@typescript-eslint/consistent-type-definitions': ['error', 'type'],
@@ -53,6 +54,7 @@ const typeScriptRuleset = merge(...typescript, {
 		'unicorn/prefer-string-replace-all': 'off',
 		'unicorn/no-zero-fractions': 'off',
 		'typescript-sort-keys/interface': 'off',
+		'typescript-sort-keys/string-enum': 'off',
 		'@typescript-eslint/sort-type-constituents': 'off',
 		'react/jsx-sort-props': 'off',
 	},

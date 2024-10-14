@@ -1,4 +1,4 @@
-import { useCallback, createContext, useContext, useMemo } from 'react';
+import { useCallback, createContext, useContext, useMemo, useEffect, useRef } from 'react';
 import type { ChangeEvent } from 'react';
 import type { Artifact, ArtifactIntensity, Stone } from '/lib/ei_data';
 import {
@@ -33,9 +33,16 @@ type EIBackupResponse = {
 };
 const ApiUriContext = createContext<string>('missing api uri');
 
+const enum FetchState {
+	IDLE = 'idle',
+	PENDING = 'pending',
+	RETRY = 'retry',
+	SUCCESS = 'success',
+	FAILURE = 'failure',
+}
+
 type CalcData = {
 	eid: string;
-	ign?: string | undefined;
 	gusset?: ArtifactIntensity | undefined;
 	monocle?: ArtifactIntensity | undefined;
 	chalice?: ArtifactIntensity | undefined;
@@ -46,6 +53,7 @@ type CalcData = {
 	diliT3: number;
 	diliT4: number;
 	boost: string;
+	fetchState: FetchState;
 };
 const defaultCalcData = () => ({
 	eid: '',
@@ -56,6 +64,7 @@ const defaultCalcData = () => ({
 	diliT3: 0,
 	diliT4: 0,
 	boost: 'boost8',
+	fetchState: FetchState.IDLE,
 });
 
 const Calculator = generateCalculator<CalcData>(defaultCalcData());
@@ -66,13 +75,31 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 	const apiUri = useContext(ApiUriContext);
 	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
 
-	const fetchCoopData = useCallback(async () => {
-		const rawEIResponse: EIBackupResponse = await fetch(`${apiUri}/backup?EID=${data.eid}`).then(
-			async (res) => res.json(),
-		);
+	const fetchData = useCallback(async () => {
+		updateData({ fetchState: FetchState.PENDING });
+		const backoffs = [1, 2, 5, 8, 13] as const;
+		let eIResponse: EIBackupResponse | null = null;
+		for (const backoff of backoffs) {
+			const rawEIResponse = await fetch(`${apiUri}/backup?EID=${data.eid}`);
+
+			if (rawEIResponse.ok) {
+				eIResponse = await rawEIResponse.json();
+				break;
+			} else {
+				updateData({ fetchState: FetchState.RETRY });
+				// no-loop-func is worried about `setTimeout` here ಠ_ಠ
+				// eslint-disable-next-line @typescript-eslint/no-loop-func
+				await new Promise((resolve) => void setTimeout(resolve, 1_000 * backoff));
+			}
+		}
+
+		if (!eIResponse) {
+			updateData({ fetchState: FetchState.FAILURE });
+			return;
+		}
 
 		const resolveItemId = (itemId: number): SlottedArtifact => {
-			const items = rawEIResponse.artifactsDb.inventoryItemsList;
+			const items = eIResponse.artifactsDb.inventoryItemsList;
 			let lo = 0;
 			let hi = items.length;
 			while (lo <= hi) {
@@ -129,7 +156,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			};
 		};
 
-		const sets = rawEIResponse.artifactsDb.savedArtifactSetsList
+		const sets = eIResponse.artifactsDb.savedArtifactSetsList
 			.map(({ slotsList }) =>
 				slotsList.filter(({ occupied }) => occupied).map(({ itemId }) => resolveItemId(itemId)),
 			)
@@ -159,7 +186,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 		const gusset = ihrSet?.set.find(byName(ArtifactSpec.Name.ORNATE_GUSSET))?.spec;
 
 		updateData({
-			ign: rawEIResponse.userName,
+			fetchState: FetchState.SUCCESS,
 			lifeT2: ihrSet?.ihr.stones[0] ?? 0,
 			lifeT3: ihrSet?.ihr.stones[1] ?? 0,
 			lifeT4: ihrSet?.ihr.stones[2] ?? 0,
@@ -172,7 +199,41 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 		});
 	}, [data.eid, apiUri, updateData]);
 
-	return <button onClick={fetchCoopData}>{children}</button>;
+	return (
+		<>
+			<button
+				id="fetch-data"
+				onClick={fetchData}
+				disabled={[FetchState.RETRY, FetchState.PENDING].includes(data.fetchState)}
+				className={`fetch-state-pending fetch-state${data.fetchState}`}
+			>
+				{children}
+			</button>
+			{data.fetchState !== FetchState.IDLE && (
+				<div id="fetch-state">
+					{data.fetchState === FetchState.PENDING ?
+						<>
+							<span className="spinner" />
+							Loading...
+						</>
+					: data.fetchState === FetchState.RETRY ?
+						<>
+							<span className="spinner" />
+							Retrying...
+						</>
+					: data.fetchState === FetchState.FAILURE ?
+						<>
+							<span>❌</span>Failed.
+						</>
+					: data.fetchState === FetchState.SUCCESS ?
+						<>
+							<span>✔️</span>Loaded backup!
+						</>
+					:	null}
+				</div>
+			)}
+		</>
+	);
 };
 
 type ArtifactSelectorProps = {
@@ -370,6 +431,29 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 		return sum * 0.8;
 	}, [boosts]);
 
+	// when any input in this section emits a `change` event, reset fetchState
+	// back to idle and then remove the event listener. because the useEffect
+	// has fetchState in the dependency list, when the button is clicked and
+	// fetchState becomes something other than IDLE, the event listener gets
+	// added (and then re-removed and re-added for every other state transition,
+	// but that's okay & i think unavoidable with this approach)
+	const listenerRef = useRef<HTMLElement>(null);
+	useEffect(() => {
+		const el = listenerRef.current;
+		if (!el) return;
+
+		const resetFetchState = () => {
+			calc.updateData({ fetchState: FetchState.IDLE });
+			el.removeEventListener('change', resetFetchState);
+		};
+
+		if (calc.data.fetchState !== FetchState.IDLE) {
+			el.addEventListener('change', resetFetchState);
+		}
+
+		return () => el.removeEventListener('change', resetFetchState);
+	}, [listenerRef, calc, calc.data.fetchState]);
+
 	return (
 		<ApiUriContext.Provider value={api}>
 			<Calculator.Context.Provider value={calc}>
@@ -377,7 +461,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 					<h1>Contract Boost Calculator</h1>
 					<h2>Calculates the number of chickens for a boost set. Assumes max ER.</h2>
 				</section>
-				<section id="inputs">
+				<section id="inputs" ref={listenerRef}>
 					<section id="input-eid-artifacts">
 						<Input datakey="eid" label="EID (Optional)" />
 						<FetchCoopDataButton>Fetch account data</FetchCoopDataButton>
