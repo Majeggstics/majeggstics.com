@@ -533,7 +533,15 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 
 	const canHideExtra =
 		!calc.data.doubleDuration && calc.data.baseIhr === '7440' && calc.data.hatcheryCalm === '20';
-	const [showExtra, toggleShowExtra] = useToggleState(canHideExtra);
+	const [showExtra, toggleShowExtra, setShowExtra] = useToggleState(!canHideExtra);
+	useEffect(() => {
+		if (!canHideExtra && !showExtra) {
+			setShowExtra(true);
+		}
+	}, [canHideExtra, showExtra, setShowExtra]);
+
+	const eggFormat = (num: number) =>
+		Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 3 }).format(num);
 
 	return (
 		<ApiUriContext.Provider value={api}>
@@ -612,12 +620,9 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 						</Output>
 						<Output label="First boost runs out after" value={boostDuration} />
 						<Output label="GE cost (buying in 5s)" value={boostCost.toLocaleString()} />
-						<Output label="Population (online)" value={onlineChickens.toLocaleString()} />
-						<Output
-							label="Population (offline)"
-							value={(onlineChickens * ihcMult).toLocaleString()}
-						/>
-						<Output label="Max hab space" value={maxHabSpace.toLocaleString()} />
+						<Output label="Population (online)" value={eggFormat(onlineChickens)} />
+						<Output label="Population (offline)" value={eggFormat(onlineChickens * ihcMult)} />
+						<Output label="Max hab space" value={eggFormat(maxHabSpace)} />
 						<Output label="Time to fill habs" value={timeToMaxHabs || '∞'} />
 					</section>
 				)}
