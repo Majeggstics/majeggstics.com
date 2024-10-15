@@ -149,9 +149,11 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 				}
 			}
 
+			const [t1, t2, t3] = life;
+
 			return {
 				stones: life,
-				effect: chalice * 1.02 ** life[0]! * 1.03 ** life[1]! * 1.04 ** life[2]!,
+				effect: chalice * 1.02 ** t1! * 1.03 ** t2! * 1.04 ** t3!,
 			};
 		};
 
@@ -165,9 +167,11 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 				}
 			}
 
+			const [t1, t2, t3] = dili;
+
 			return {
 				stones: dili,
-				effect: 1.03 ** dili[0]! * 1.06 ** dili[1]! * 1.08 ** dili[2]!,
+				effect: 1.03 ** t1! * 1.06 ** t2! * 1.08 ** t3!,
 			};
 		};
 
