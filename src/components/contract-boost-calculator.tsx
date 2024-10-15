@@ -10,6 +10,7 @@ import {
 	gussetMultiplier,
 } from '/lib/ei_data';
 import { Boost } from '/components/Boosts';
+import { useToggleState } from '/lib/utils';
 import { generateCalculator, type WithSetter } from '/components/calculator.tsx';
 
 type SlottedArtifact = {
@@ -56,6 +57,8 @@ type CalcData = {
 	fetchState: FetchState;
 	fetchRetryIn: number;
 	doubleDuration: boolean;
+	baseIhr: string;
+	hatcheryCalm: string;
 };
 const defaultCalcData = () => ({
 	eid: '',
@@ -69,6 +72,8 @@ const defaultCalcData = () => ({
 	fetchState: FetchState.IDLE,
 	fetchRetryIn: 0,
 	doubleDuration: false,
+	baseIhr: '7440',
+	hatcheryCalm: '20',
 });
 
 const Calculator = generateCalculator<CalcData>(defaultCalcData());
@@ -380,9 +385,12 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 		[calc.data.gusset],
 	);
 
-	const [onlineChickens, timeToMaxHabs] = useMemo(() => {
-		const baseIhr = 7_440;
+	const ihcMult = useMemo(
+		() => 1 + Number.parseInt(calc.data.hatcheryCalm || '0', 10) * 0.1,
+		[calc.data.hatcheryCalm],
+	);
 
+	const [onlineChickens, timeToMaxHabs] = useMemo(() => {
 		let tachMult = boosts
 			.filter((b) => b.name.includes('Tachyon'))
 			.reduce((sum, b) => sum + b.multiplier, 0);
@@ -398,7 +406,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 			if (boost.durationMins > elapsed) {
 				const time = diliBonus * (boost.durationMins - elapsed);
 				const ihr =
-					baseIhr *
+					Number.parseInt(calc.data.baseIhr || '0', 10) *
 					lifeBonus *
 					Math.max(1, tachMult * Math.max(1, beaconMult)) *
 					chaliceMultiplier(calc.data.chalice ?? { level: 0, rarity: 0 }) *
@@ -406,9 +414,9 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 
 				const chickens = time * ihr * 4;
 
-				if (timeToMaxHabs === 0 && maxHabSpace <= (population + chickens) * 3) {
-					const missing = maxHabSpace - population * 3;
-					const percentOfBoostUsed = missing / (chickens * 3);
+				if (timeToMaxHabs === 0 && maxHabSpace <= (population + chickens) * ihcMult) {
+					const missing = maxHabSpace - population * ihcMult;
+					const percentOfBoostUsed = missing / (chickens * ihcMult);
 					const timeUsed = percentOfBoostUsed * time;
 					timeToMaxHabs = elapsed * diliBonus + timeUsed;
 				}
@@ -437,7 +445,16 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 			.filter(Boolean)
 			.join(' ');
 		return [Math.floor(population), formattedTime];
-	}, [boosts, calc.data.chalice, diliBonus, lifeBonus, calc.data.monocle, maxHabSpace]);
+	}, [
+		boosts,
+		calc.data.baseIhr,
+		calc.data.chalice,
+		diliBonus,
+		lifeBonus,
+		calc.data.monocle,
+		maxHabSpace,
+		ihcMult,
+	]);
 
 	const boostDurationRaw = useMemo(() => {
 		const minDuration = boosts.reduce((min, b) => Math.min(min, b.durationMins), Infinity);
@@ -493,12 +510,36 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => calc.updateData({ fetchState: FetchState.IDLE }), []);
 
+	// TEMPORARY: override new vars for my beta testers. Remove before merge.
+	useEffect(
+		() =>
+			calc.updateData({
+				baseIhr: calc.data.baseIhr || '7440',
+				hatcheryCalm: calc.data.hatcheryCalm || '20',
+			}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[],
+	);
+
+	const resetExtras = useCallback(
+		() =>
+			calc.updateData({
+				doubleDuration: false,
+				baseIhr: '7440',
+				hatcheryCalm: '20',
+			}),
+		[calc],
+	);
+
+	const canHideExtra =
+		!calc.data.doubleDuration && calc.data.baseIhr === '7440' && calc.data.hatcheryCalm === '20';
+	const [showExtra, toggleShowExtra] = useToggleState(canHideExtra);
+
 	return (
 		<ApiUriContext.Provider value={api}>
 			<Calculator.Context.Provider value={calc}>
 				<section>
 					<h1>Contract Boost Calculator</h1>
-					<h2>Calculates the number of chickens for a boost set. Assumes max ER.</h2>
 				</section>
 				<section id="inputs" ref={listenerRef}>
 					<section id="input-eid-artifacts">
@@ -532,9 +573,33 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 								</div>
 							)}
 						</fieldset>
-						<Calculator.Checkbox datakey="doubleDuration" label="2× boost duration modifier?" />
+						<div>
+							<button
+								onClick={toggleShowExtra}
+								id="show-extra"
+								disabled={showExtra && !canHideExtra}
+							>
+								{showExtra ? '- Hide' : '+ Show'} bonus inputs
+							</button>
+							{showExtra && !canHideExtra && <div>Reset bonus inputs to default to hide</div>}
+						</div>
 					</section>
 				</section>
+				{showExtra && (
+					<fieldset id="extra-inputs">
+						<legend>Bonus inputs</legend>
+						<Calculator.Checkbox datakey="doubleDuration" label="2× boost duration modifier?" />
+						<div>
+							<Input datakey="baseIhr" label="IHR:" max="7440" min="0" size={4} type="number" />
+							<span>(Menu → Stats → Int. Hatchery Rate)</span>
+						</div>
+						<div>
+							<Input datakey="hatcheryCalm" label="IHC:" max="20" min="0" size={4} type="number" />
+							<span>(Research → Epic → Internal Hatchery Calm)</span>
+						</div>
+						<button onClick={resetExtras}>Reset bonus inputs to default</button>
+					</fieldset>
+				)}
 				<hr />
 				<BoostPresetButtons />
 				<hr />
@@ -548,7 +613,10 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 						<Output label="First boost runs out after" value={boostDuration} />
 						<Output label="GE cost (buying in 5s)" value={boostCost.toLocaleString()} />
 						<Output label="Population (online)" value={onlineChickens.toLocaleString()} />
-						<Output label="Population (offline)" value={(onlineChickens * 3).toLocaleString()} />
+						<Output
+							label="Population (offline)"
+							value={(onlineChickens * ihcMult).toLocaleString()}
+						/>
 						<Output label="Max hab space" value={maxHabSpace.toLocaleString()} />
 						<Output label="Time to fill habs" value={timeToMaxHabs || '∞'} />
 					</section>
