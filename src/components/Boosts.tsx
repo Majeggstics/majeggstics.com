@@ -12,7 +12,7 @@ export class Boost {
 	static EpicBeacon    = new Boost('Epic Boost Beacon',       10,    10,  8_000);
 	/* eslint-enable */
 
-	constructor(
+	private constructor(
 		public name: string,
 		public multiplier: number,
 		public durationMins: number,
