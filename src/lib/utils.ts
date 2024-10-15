@@ -6,7 +6,7 @@ import type {
 	SetStateAction,
 	SyntheticEvent,
 } from 'react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 type HTMLElementWithValue = HTMLInputElement | HTMLTextAreaElement;
@@ -46,3 +46,33 @@ export function notify(message: string, type = 'default') {
 			toast(message);
 	}
 }
+
+export type DefinedButNotAFunction =
+	| bigint
+	| boolean
+	| number
+	| string
+	| symbol
+	| { [k: string]: unknown; apply?: never }; // an approximation
+export const usePersistentState = <T extends DefinedButNotAFunction>(
+	key: string,
+	initial: T,
+): [T, Dispatch<SetStateAction<T>>] => {
+	const [rawState, setRawState] = useState<T>(initial);
+	useEffect(() => {
+		const stored = localStorage.getItem(key);
+		if (stored) setRawState(JSON.parse(stored));
+	}, [key]);
+	const setState = useCallback(
+		(newState: T | ((old: T) => T)) => {
+			setRawState((prev) => {
+				const toStore: T = (typeof newState === 'function' ? newState(prev) : newState) ?? prev;
+				localStorage.setItem(key, JSON.stringify(toStore));
+				return toStore;
+			});
+		},
+		[setRawState, key],
+	);
+
+	return [rawState, setState];
+};
