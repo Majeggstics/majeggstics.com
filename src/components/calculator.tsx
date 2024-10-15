@@ -22,7 +22,7 @@ export function generateCalculator<Data extends NonCallableObject>(initial: Data
 
 	const Context = createContext<WithSetter<Data>>({ data: initial, updateData: () => {} });
 
-	type InputProps = { readonly datakey: keyof Data; readonly label: string };
+	type InputProps = Readonly<{ datakey: keyof Data; label: string }>;
 	const Input = ({
 		datakey,
 		label,
@@ -56,7 +56,7 @@ export function generateCalculator<Data extends NonCallableObject>(initial: Data
 		);
 	};
 
-	type CheckboxProps = { readonly datakey: keyof Data; readonly label: string };
+	type CheckboxProps = Readonly<{ datakey: keyof Data; label: string }>;
 	const Checkbox = ({
 		datakey,
 		label,
