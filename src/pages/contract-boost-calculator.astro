@@ -12,6 +12,8 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 <style is:global>
 	main {
 		gap: 1rem;
+
+		container-type: inline-size;
 	}
 
 	.calculatorInput {
@@ -29,13 +31,17 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 	}
 
 	#inputs {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: wrap;
-		row-gap: 1rem;
+		display: grid;
+		grid-template-columns: min-content auto;
+
+		width: 100%;
+		height: max-content;
 	}
 
 	#input-eid-artifacts {
+		grid-column: 1;
+		grid-row: 1 / span 2;
+
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
@@ -48,36 +54,36 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 		}
 	}
 
-	#input-stones {
+	#input-right {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
 
-		container-type: inline-size;
 		min-width: 14.5em;
 
 		& fieldset {
 			display: flex;
 			flex-direction: column;
+			height: min-content;
 			gap: 1rem;
+			padding: 1em;
 
-			& div {
+			& .input-stones {
 				display: flex;
-				flex-direction: row;
-				gap: 0.5em;
-				width: fit-content;
-				align-items: center;
+				flex-direction: column;
+				gap: 0.5rem;
+				& div {
+					display: flex;
+					flex-direction: row;
+					gap: 0.5em;
+					width: fit-content;
+					align-items: center;
+				}
+				& label {
+					width: max-content;
+				}
 			}
-			& label {
-				width: max-content;
-			}
-		}
-	}
-
-	@container (min-width: 25em) {
-		#input-stones fieldset {
-			flex-direction: row;
 		}
 	}
 
@@ -156,6 +162,8 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 	}
 
 	#extra-inputs {
+		grid-column: 1 / span 2;
+		margin-top: 1rem;
 		display: flex;
 		flex-direction: column;
 		gap: 0.5em;
@@ -173,6 +181,30 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 		& button {
 			font-size: small;
 			margin-top: 1em;
+		}
+	}
+
+	#container-colleggtibleIhr::after {
+		content: '%';
+		margin-left: -0.5em;
+		color: #888;
+	}
+
+	@container (min-width: 42em) {
+		#input-right fieldset .input-stones {
+			flex-direction: row;
+		}
+
+		#extra-inputs {
+			grid-column: 2;
+		}
+	}
+
+	@container (max-width: 32em) {
+		#inputs {
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
 		}
 	}
 </style>
