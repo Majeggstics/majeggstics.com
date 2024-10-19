@@ -43,7 +43,7 @@ export function generateCalculator<Data extends NonCallableObject>(initial: Data
 			:	`${String(datakey)} has type ${typeof data[datakey]} and cannot be passed to Input`;
 
 		return (
-			<div className="calculatorInput">
+			<div className="calculatorInput" id={`container-${String(datakey)}`}>
 				<label htmlFor={`input-${String(datakey)}`}>{label}</label>
 				<input
 					id={`input-${String(datakey)}`}

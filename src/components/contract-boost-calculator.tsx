@@ -59,6 +59,7 @@ type CalcData = {
 	doubleDuration: boolean;
 	baseIhr: string;
 	hatcheryCalm: string;
+	colleggtibleIhr: string;
 };
 const defaultCalcData = () => ({
 	eid: '',
@@ -74,6 +75,7 @@ const defaultCalcData = () => ({
 	doubleDuration: false,
 	baseIhr: '7440',
 	hatcheryCalm: '20',
+	colleggtibleIhr: '5',
 });
 
 const Calculator = generateCalculator<CalcData>(defaultCalcData());
@@ -411,6 +413,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 				const time = diliBonus * (boost.durationMins - elapsed);
 				const ihr =
 					Number.parseInt(calc.data.baseIhr || '0', 10) *
+					(1 + Number.parseInt(calc.data.colleggtibleIhr || '0', 10) / 100) *
 					lifeBonus *
 					Math.max(1, tachMult * Math.max(1, beaconMult)) *
 					chaliceMultiplier(calc.data.chalice ?? { level: 0, rarity: 0 }) *
@@ -452,6 +455,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	}, [
 		boosts,
 		calc.data.baseIhr,
+		calc.data.colleggtibleIhr,
 		calc.data.chalice,
 		diliBonus,
 		lifeBonus,
@@ -520,6 +524,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 			calc.updateData({
 				baseIhr: calc.data.baseIhr || '7440',
 				hatcheryCalm: calc.data.hatcheryCalm || '20',
+				colleggtibleIhr: calc.data.colleggtibleIhr || '5',
 			}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[],
@@ -562,23 +567,27 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 						<ArtifactSelector kind="chalice" />
 						<ArtifactSelector kind="gusset" />
 					</section>
-					<section id="input-stones">
-						<fieldset>
+					<section id="input-right">
+						<fieldset className="stones">
 							<legend>Life stones in IHR set:</legend>
-							<Input datakey="lifeT2" label="T2:" max="12" min="0" size={2} type="number" />
-							<Input datakey="lifeT3" label="T3:" max="12" min="0" size={2} type="number" />
-							<Input datakey="lifeT4" label="T4:" max="12" min="0" size={2} type="number" />
+							<div className="input-stones">
+								<Input datakey="lifeT2" label="T2:" max="12" min="0" size={2} type="number" />
+								<Input datakey="lifeT3" label="T3:" max="12" min="0" size={2} type="number" />
+								<Input datakey="lifeT4" label="T4:" max="12" min="0" size={2} type="number" />
+							</div>
 							{totalLifeStones > 12 && (
 								<div className="error">
 									More stones ({totalLifeStones}) than max possible slots (12)!
 								</div>
 							)}
 						</fieldset>
-						<fieldset>
+						<fieldset className="stones">
 							<legend>Dilithium stones in dili set:</legend>
-							<Input datakey="diliT2" label="T2:" max="12" min="0" size={2} type="number" />
-							<Input datakey="diliT3" label="T3:" max="12" min="0" size={2} type="number" />
-							<Input datakey="diliT4" label="T4:" max="12" min="0" size={2} type="number" />
+							<div className="input-stones">
+								<Input datakey="diliT2" label="T2:" max="12" min="0" size={2} type="number" />
+								<Input datakey="diliT3" label="T3:" max="12" min="0" size={2} type="number" />
+								<Input datakey="diliT4" label="T4:" max="12" min="0" size={2} type="number" />
+							</div>
 							{totalDiliStones > 12 && (
 								<div className="error">
 									More stones ({totalDiliStones}) than max possible slots (12)!
@@ -596,22 +605,35 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 							{showExtra && !canHideExtra && <div>Reset bonus inputs to default to hide</div>}
 						</div>
 					</section>
+					{showExtra && (
+						<fieldset id="extra-inputs">
+							<legend>Bonus inputs</legend>
+							<Calculator.Checkbox datakey="doubleDuration" label="2× boost duration modifier?" />
+							<div>
+								<Input datakey="baseIhr" label="IHR:" max="7440" min="0" size={4} type="number" />
+								<span>(Menu → Stats → Int. Hatchery Rate)</span>
+							</div>
+							<div>
+								<Input
+									datakey="hatcheryCalm"
+									label="IHC:"
+									max="20"
+									min="0"
+									size={4}
+									type="number"
+								/>
+								<span>(Research → Epic → Internal Hatchery Calm)</span>
+							</div>
+							<div>
+								<Input datakey="colleggtibleIhr" label="CIHR:" max="5" min="0" type="number" />
+								<span>
+									(Current egg → Contracts → Colleggtibles → total Internal Hatchery Rate)
+								</span>
+							</div>
+							<button onClick={resetExtras}>Reset bonus inputs to default</button>
+						</fieldset>
+					)}
 				</section>
-				{showExtra && (
-					<fieldset id="extra-inputs">
-						<legend>Bonus inputs</legend>
-						<Calculator.Checkbox datakey="doubleDuration" label="2× boost duration modifier?" />
-						<div>
-							<Input datakey="baseIhr" label="IHR:" max="7440" min="0" size={4} type="number" />
-							<span>(Menu → Stats → Int. Hatchery Rate)</span>
-						</div>
-						<div>
-							<Input datakey="hatcheryCalm" label="IHC:" max="20" min="0" size={4} type="number" />
-							<span>(Research → Epic → Internal Hatchery Calm)</span>
-						</div>
-						<button onClick={resetExtras}>Reset bonus inputs to default</button>
-					</fieldset>
-				)}
 				<hr />
 				<BoostPresetButtons />
 				<hr />
