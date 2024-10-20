@@ -110,10 +110,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			}
 		}
 
-		if (!eIResponse) {
-			updateData({ fetchState: FetchState.FAILURE });
-			return;
-		}
+		if (!eIResponse) return void updateData({ fetchState: FetchState.FAILURE });
 
 		const resolveItemId = (itemId: number): SlottedArtifact => {
 			const items = eIResponse.artifactsDb.inventoryItemsList;
