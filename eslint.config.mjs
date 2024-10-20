@@ -41,15 +41,24 @@ const typeScriptRuleset = merge(...typescript, {
 		},
 	},
 	rules: {
+		'no-promise-executor-return': ['error', { allowVoid: true }],
 		'@typescript-eslint/explicit-member-accessibility': ['error', { accessibility: 'no-public' }],
 		'@typescript-eslint/array-type': ['error', { default: 'array-simple' }],
 		'@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+		'@typescript-eslint/method-signature-style': ['error', 'property'],
+		'@typescript-eslint/no-confusing-void-expression': ['error', { ignoreVoidOperator: true }],
 
 		// those aren't absolute paths; ref tsconfig .compilerOptions.paths
 		'import-x/no-absolute-path': 'off',
 
 		// i don't prefer that, sorry
 		'unicorn/prefer-string-replace-all': 'off',
+		'unicorn/no-zero-fractions': 'off',
+		'typescript-sort-keys/interface': 'off',
+		'typescript-sort-keys/string-enum': 'off',
+		'@typescript-eslint/sort-type-constituents': 'off',
+		'@typescript-eslint/no-meaningless-void-operator': 'off',
+		'react/jsx-sort-props': 'off',
 	},
 	settings: {
 		'import/resolver': {

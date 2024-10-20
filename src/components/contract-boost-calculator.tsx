@@ -1,484 +1,655 @@
-// this lint rule is completely accurate but i cba to deal with it right now
-/* eslint-disable react/jsx-no-bind */
-
-import * as Accordion from '@radix-ui/react-accordion';
-import { ChevronDownIcon } from '@radix-ui/react-icons';
-import * as Tooltip from '@radix-ui/react-tooltip';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, createContext, useContext, useMemo, useEffect, useRef } from 'react';
 import type { ChangeEvent } from 'react';
-import CustomTextInput, { CustomNumberInput, CustomSelectInput } from '/components/CustomInput';
+import type { Artifact, ArtifactIntensity, Stone } from '/lib/ei_data';
 import {
 	artifactRarity,
-	BASE_MAX_HAB_SPACE,
-	boostSetPresets,
-	chaliceOptions,
-	formInitialState,
-	gussetOptions,
-	monocleOptions,
-	stonesCountOptions,
-} from '/lib/data/contract-boost-constants';
+	ArtifactSpec,
+	PossibleArtifactIntensity,
+	chaliceMultiplier,
+	monocleMultiplier,
+	gussetMultiplier,
+} from '/lib/ei_data';
+import { Boost } from '/components/Boosts';
+import { useToggleState } from '/lib/utils';
+import { generateCalculator, type WithSetter } from '/components/calculator.tsx';
 
-type EquippedArtifact = {
-	spec: {
-		// what
-		level: number;
-		name: number;
-		rarity: number;
+type SlottedArtifact = {
+	spec: Artifact;
+	stonesList: Stone[];
+};
+type EIBackupResponse = {
+	userName: string;
+	artifactsDb: {
+		savedArtifactSetsList: Array<{
+			slotsList: Array<{
+				occupied: boolean;
+				itemId: number;
+			}>;
+		}>;
+		inventoryItemsList: Array<{
+			itemId: number;
+			artifact: SlottedArtifact;
+		}>;
 	};
 };
-export default function ContractBoostCalculator() {
-	const [formState, setFormState] = useState(() => {
-		const savedFormState = typeof window === 'undefined' ? null : localStorage.getItem('formState');
-		return savedFormState ? JSON.parse(savedFormState) : formInitialState;
-	});
+const ApiUriContext = createContext<string>('missing api uri');
 
-	const [equippedArtifactsByIGN, setEquippedArtifactsByIGN] = useState([]);
-	const [equippedArtifactsListForSelectedIGN, setEquippedArtifactsListForSelectedIGN] = useState(
-		{} as any,
-	);
+const enum FetchState {
+	IDLE = 'idle',
+	PENDING = 'pending',
+	RETRY = 'retry',
+	SUCCESS = 'success',
+	FAILURE = 'failure',
+}
 
-	const [selectedBoostPreset, setSelectedBoostPreset] = useState('1');
-	const [availableIGNOptions, setAvailableIGNOptions] = useState([
-		{ text: 'Select an option', value: '' },
-	]);
+type CalcData = {
+	eid: string;
+	gusset?: ArtifactIntensity | undefined;
+	monocle?: ArtifactIntensity | undefined;
+	chalice?: ArtifactIntensity | undefined;
+	lifeT2: string;
+	lifeT3: string;
+	lifeT4: string;
+	diliT2: string;
+	diliT3: string;
+	diliT4: string;
+	boost: string;
+	fetchState: FetchState;
+	fetchRetryIn: number;
+	doubleDuration: boolean;
+	baseIhr: string;
+	hatcheryCalm: string;
+	colleggtibleIhr: string;
+};
+const defaultCalcData = () => ({
+	eid: '',
+	lifeT2: '0',
+	lifeT3: '0',
+	lifeT4: '0',
+	diliT2: '0',
+	diliT3: '0',
+	diliT4: '0',
+	boost: 'boost8',
+	fetchState: FetchState.IDLE,
+	fetchRetryIn: 0,
+	doubleDuration: false,
+	baseIhr: '7440',
+	hatcheryCalm: '20',
+	colleggtibleIhr: '5',
+});
 
-	const getEquippedArtifactById = useCallback(
-		(artifactId: number) => {
-			const artifactData = equippedArtifactsListForSelectedIGN?.equippedArtifactsList?.find(
-				(artifact: EquippedArtifact) => artifact.spec.name === artifactId,
-			);
+const Calculator = generateCalculator<CalcData>(defaultCalcData());
+const { Input, Output } = Calculator;
 
-			if (artifactData) {
-				const tier = artifactData.spec.level + 1;
-				const rarity = artifactRarity(artifactData.spec.rarity);
-				return `T${tier}${rarity}`;
+type FetchCoopDataProps = { readonly children: React.ReactNode };
+const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
+	const apiUri = useContext(ApiUriContext);
+	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
+
+	const fetchData = useCallback(async () => {
+		const backoffs = [1, 2, 5, 8, 13, 0] as const;
+		let eIResponse: EIBackupResponse | null = null;
+		for (const backoff of backoffs) {
+			updateData({ fetchState: FetchState.PENDING });
+			const rawEIResponse = await fetch(`${apiUri}/backup?EID=${data.eid}`);
+
+			if (rawEIResponse.ok) {
+				eIResponse = await rawEIResponse.json();
+				break;
+			} else if (backoff > 0) {
+				updateData({ fetchState: FetchState.RETRY, fetchRetryIn: backoff });
+				// we're doing this as a bunch of 1-second sleeps to get a countdown text
+				// this is technically not that accurate and it should be a setInterval
+				// but that was gnarly to write out
+				for (let remaining = backoff; remaining > 0; remaining--) {
+					updateData({ fetchRetryIn: remaining });
+					// no-loop-func is worried about `setTimeout` here ಠ_ಠ
+					// eslint-disable-next-line @typescript-eslint/no-loop-func
+					await new Promise((resolve) => void setTimeout(resolve, 1_000));
+				}
+			}
+		}
+
+		if (!eIResponse) return void updateData({ fetchState: FetchState.FAILURE });
+
+		const resolveItemId = (itemId: number): SlottedArtifact => {
+			const items = eIResponse.artifactsDb.inventoryItemsList;
+			let lo = 0;
+			let hi = items.length;
+			while (lo <= hi) {
+				const mid = Math.floor((lo + hi) / 2);
+				const item = items[mid]!;
+				if (item.itemId === itemId) {
+					return item.artifact;
+				} else if (item.itemId > itemId) {
+					hi = mid - 1;
+				} else {
+					lo = mid + 1;
+				}
 			}
 
-			return '';
-		},
-		[equippedArtifactsListForSelectedIGN],
-	);
+			throw new Error(
+				`Egg, Inc. backup contained an item ID (${itemId}) that is missing from itself`,
+			);
+		};
 
-	useEffect(() => {
-		localStorage.setItem('formState', JSON.stringify(formState));
-	}, [formState]);
+		const ihrForSet = (set: SlottedArtifact[]) => {
+			const life = [0, 0, 0];
+			let chalice = 1;
+			for (const artifact of set) {
+				for (const stone of artifact.stonesList) {
+					if (stone.name === ArtifactSpec.Name.LIFE_STONE) {
+						life[stone.level]! += 1;
+					}
+				}
 
-	useEffect(() => {
-		setEquippedArtifactsListForSelectedIGN(
-			// because equippedArtifactsByIGN is not typed, it will throw some crap
-			// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-			equippedArtifactsByIGN.find((contributor: any) => contributor.userName === formState.IGN),
-		);
-	}, [equippedArtifactsByIGN, formState.IGN]);
+				if (artifact.spec.name === ArtifactSpec.Name.THE_CHALICE) {
+					chalice = chaliceMultiplier(artifact.spec);
+				}
+			}
 
-	useEffect(() => {
-		// because equippedArtifactsByIGN is not typed, it will throw some crap
-		// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-		const selectedIGN = equippedArtifactsByIGN.find(
-			(contributor: any) => contributor.isSelectedIGN,
-		);
-		if (selectedIGN) {
-			setFormState((prevState: any) => ({
-				...prevState,
-				IGN: (selectedIGN as { userName: string }).userName,
-			}));
-		}
-	}, [equippedArtifactsByIGN]);
+			const [t1, t2, t3] = life;
 
-	useEffect(() => {
-		// <p>Monocle: {getEquippedArtifactById(28)}</p>
-		//         <p>Chalice: {getEquippedArtifactById(9)}</p>
-		//         <p>Gusset: {getEquippedArtifactById(8)}</p>
-		const monocleText = getEquippedArtifactById(28);
-		const monocleOptionValue = monocleOptions.find((option) => option.text === monocleText)?.value;
+			return {
+				stones: life,
+				effect: chalice * 1.02 ** t1! * 1.03 ** t2! * 1.04 ** t3!,
+			};
+		};
 
-		const chaliceText = getEquippedArtifactById(9);
-		const chaliceOptionValue = chaliceOptions.find((option) => option.text === chaliceText)?.value;
+		const diliForSet = (set: SlottedArtifact[]) => {
+			const dili = [0, 0, 0];
+			for (const artifact of set) {
+				for (const stone of artifact.stonesList) {
+					if (stone.name === ArtifactSpec.Name.DILITHIUM_STONE) {
+						dili[stone.level]! += 1;
+					}
+				}
+			}
 
-		const gussetText = getEquippedArtifactById(8);
-		const gussetOptionValue = gussetOptions.find((option) => option.text === gussetText)?.value;
+			const [t1, t2, t3] = dili;
 
-		const stonesList = equippedArtifactsListForSelectedIGN?.equippedArtifactsList
-			?.map((artifact: any) => artifact.stonesList)
-			.flat();
+			return {
+				stones: dili,
+				effect: 1.03 ** t1! * 1.06 ** t2! * 1.08 ** t3!,
+			};
+		};
 
-		// Life stone is 38
-		const t2LifeStonesCount = stonesList?.filter(
-			(stone: any) => stone.name === 38 && stone.level === 0,
-		).length;
-		const t3LifeStonesCount = stonesList?.filter(
-			(stone: any) => stone.name === 38 && stone.level === 1,
-		).length;
-		const t4LifeStonesCount = stonesList?.filter(
-			(stone: any) => stone.name === 38 && stone.level === 2,
-		).length;
+		const sets = eIResponse.artifactsDb.savedArtifactSetsList
+			.map(({ slotsList }) =>
+				slotsList.filter(({ occupied }) => occupied).map(({ itemId }) => resolveItemId(itemId)),
+			)
+			.map((set) => ({ set, ihr: ihrForSet(set), dili: diliForSet(set) }));
 
-		setFormState((prevState: any) => ({
-			...prevState,
-			// update the form state with the equipped artifacts only if they come back from the API
-			monocle: monocleOptionValue ? monocleOptionValue : prevState.monocle,
-			chalice: chaliceOptionValue ? chaliceOptionValue : prevState.chalice,
-			gusset: gussetOptionValue ? gussetOptionValue : prevState.gusset,
-			t2LifeStonesCount: t2LifeStonesCount ? t2LifeStonesCount : prevState.t2LifeStonesCount,
-			t3LifeStonesCount: t3LifeStonesCount ? t3LifeStonesCount : prevState.t3LifeStonesCount,
-			t4LifeStonesCount: t4LifeStonesCount ? t4LifeStonesCount : prevState.t4LifeStonesCount,
-		}));
-	}, [equippedArtifactsListForSelectedIGN, getEquippedArtifactById]);
+		const byName = (want: ArtifactSpec.Name) => (arti: { spec: { name: ArtifactSpec.Name } }) =>
+			arti.spec.name === want;
 
-	const improvedIhr =
-		formState.ihr *
-		formState.chalice *
-		formState.tachPrismMultiplier *
-		formState.boostBeaconMultiplier *
-		(1.02 ** formState.t2LifeStonesCount *
-			1.03 ** formState.t3LifeStonesCount *
-			1.04 ** formState.t4LifeStonesCount);
+		const ihrSets = sets.toSorted((a, b) => {
+			const ihrDiff = b.ihr.effect - a.ihr.effect;
+			if (ihrDiff === 0) {
+				const noGus = { level: 0, rarity: -1 };
+				const aGus = a.set.find(byName(ArtifactSpec.Name.ORNATE_GUSSET))?.spec ?? noGus;
+				const bGus = b.set.find(byName(ArtifactSpec.Name.ORNATE_GUSSET))?.spec ?? noGus;
 
-	const improvedBoostTime =
-		formState.baseBoostTime *
-		formState.boostEventDurationMultiplier *
-		(1.03 ** formState.t2DiliStonesCount *
-			1.06 ** formState.t3DiliStonesCount *
-			1.08 ** formState.t4DiliStonesCount);
+				// 8 is chosen arbitrarily but larger than max rarity
+				return bGus.level * 8 + bGus.rarity - (aGus.level * 8 + aGus.rarity);
+			}
 
-	const population = improvedIhr * improvedBoostTime * formState.monocle * 3 * 4;
+			return ihrDiff;
+		});
+		const ihrSet = ihrSets[0];
+		const diliSet = sets.toSorted((a, b) => b.dili.effect - a.dili.effect)[0];
 
-	const habSpace = BASE_MAX_HAB_SPACE * formState.gusset;
+		const monocle = ihrSet?.set.find(byName(ArtifactSpec.Name.DILITHIUM_MONOCLE))?.spec;
+		const chalice = ihrSet?.set.find(byName(ArtifactSpec.Name.THE_CHALICE))?.spec;
+		const gusset = ihrSet?.set.find(byName(ArtifactSpec.Name.ORNATE_GUSSET))?.spec;
 
-	const timeToMaxHabsInSeconds = (habSpace / population) * improvedBoostTime * 60;
-
-	function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-		const { name, value } = event.target;
-
-		setFormState((prevState: any) => ({
-			...prevState,
-			[name]: value,
-		}));
-	}
-
-	function handleBoostPresetClick(presetId: string) {
-		const preset = boostSetPresets.find((preset) => preset.id === presetId);
-
-		if (preset) {
-			setFormState((prevState: any) => ({
-				...prevState,
-				tachPrismMultiplier: preset.tachPrismMultiplier,
-				boostBeaconMultiplier: preset.boostBeaconMultiplier,
-				baseBoostTime: preset.baseBoostTime,
-			}));
-			setSelectedBoostPreset(presetId);
-		}
-
-		setTimeout(() => {
-			window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-		}, 500);
-	}
-
-	async function handleGetCoopDataClick() {
-		const rawData = await fetch(
-			`${process.env.NEXT_PUBLIC_API_URL}/contract?EID=${formState.EID}&contract=${formState.contract}&coop=${formState.coop}`,
-		).then(async (res) => res.json());
-		const coopData = rawData?.contributorsList?.map((item: any) => ({
-			// ...item,
-			userName: item.userName,
-			isSelectedIGN: item.userId === formState.EID,
-			equippedArtifactsList: item.farmInfo.equippedArtifactsList,
-		}));
-		setEquippedArtifactsByIGN(coopData);
-
-		const availableIGNOptionsData = coopData.map((contributor: any) => ({
-			value: contributor.userName,
-			text: contributor.userName,
-		}));
-		setAvailableIGNOptions([{ text: 'Select an option', value: '' }, ...availableIGNOptionsData]);
-	}
+		updateData({
+			fetchState: FetchState.SUCCESS,
+			lifeT2: String(ihrSet?.ihr.stones[0] ?? 0),
+			lifeT3: String(ihrSet?.ihr.stones[1] ?? 0),
+			lifeT4: String(ihrSet?.ihr.stones[2] ?? 0),
+			diliT2: String(diliSet?.dili.stones[0] ?? 0),
+			diliT3: String(diliSet?.dili.stones[1] ?? 0),
+			diliT4: String(diliSet?.dili.stones[2] ?? 0),
+			chalice,
+			monocle,
+			gusset,
+		});
+	}, [data.eid, apiUri, updateData]);
 
 	return (
-		<Tooltip.Provider delayDuration={10}>
-			<main className="main">
+		<>
+			<button
+				id="fetch-data"
+				onClick={fetchData}
+				disabled={[FetchState.RETRY, FetchState.PENDING].includes(data.fetchState)}
+				className={`fetch-state-pending fetch-state${data.fetchState}`}
+			>
+				{children}
+			</button>
+			{data.fetchState !== FetchState.IDLE && (
+				<div id="fetch-state">
+					{data.fetchState === FetchState.PENDING ?
+						<>
+							<span className="spinner" />
+							Loading...
+						</>
+					: data.fetchState === FetchState.RETRY ?
+						<>
+							<span className="spinner" />
+							Retrying in {data.fetchRetryIn}s...
+						</>
+					: data.fetchState === FetchState.FAILURE ?
+						<>
+							<span>❌</span>Failed.
+						</>
+					: data.fetchState === FetchState.SUCCESS ?
+						<>
+							<span>✔️</span>Loaded artifacts and stones from saved sets!
+						</>
+					:	null}
+				</div>
+			)}
+		</>
+	);
+};
+
+type ArtifactSelectorProps = {
+	readonly kind: 'monocle' | 'gusset' | 'chalice';
+};
+const ArtifactSelector = ({ kind }: ArtifactSelectorProps) => {
+	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
+
+	const handleChange = useCallback(
+		(event: ChangeEvent<HTMLSelectElement>) => {
+			const [level, rarity] = event.target.value.split('-').map((val) => Number.parseInt(val, 10));
+			updateData({
+				[kind]: {
+					level,
+					rarity,
+				},
+			});
+		},
+		[updateData, kind],
+	);
+
+	const current = data[kind] ? `${data[kind].level}-${data[kind].rarity}` : '-';
+
+	return (
+		<div className="artifactSelect">
+			<label htmlFor={`select-${kind}`}>{kind.charAt(0).toUpperCase() + kind.slice(1)}</label>
+			<select id={`select-${kind}`} onChange={handleChange} value={current}>
+				<option value="-">None</option>
+				{PossibleArtifactIntensity[kind].map(({ level, rarity }) => {
+					const value = `${level}-${rarity}`;
+					return (
+						<option key={value} value={value}>{`T${level + 1}${artifactRarity(rarity)}`}</option>
+					);
+				})}
+			</select>
+		</div>
+	);
+};
+
+const boostRadios = [
+	{ id: 'boost8', label: '8-token' },
+	{ id: 'boost6', label: '6-token (Dubson)' },
+	{ id: 'boost6s', label: '6-token (Dubson Supreme)' },
+	{ id: 'boost5', label: '5-token (Benson)' },
+	{ id: 'boost4', label: '4-token (Epic)' },
+	{ id: 'boost4s', label: '4-token (Supreme)' },
+	{ id: 'boost2', label: '2-token (Single Epic)' },
+	{ id: 'boost0', label: '0-token (five large)' },
+] as const;
+const BoostPresetButtons = () => {
+	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
+
+	const handleChange = useCallback(
+		(event: ChangeEvent<HTMLInputElement>) => {
+			updateData({ boost: event.target.value });
+		},
+		[updateData],
+	);
+
+	return (
+		<fieldset id="boostSets">
+			<legend>Boost Set</legend>
+			{boostRadios.map(({ id, label }) => (
+				<div key={id}>
+					<input
+						type="radio"
+						name="boostSet"
+						id={id}
+						value={id}
+						checked={data.boost === id}
+						onChange={handleChange}
+					/>
+					<label htmlFor={id}>{label}</label>
+				</div>
+			))}
+		</fieldset>
+	);
+};
+
+export default function ContractBoostCalculator({ api }: { readonly api: string }) {
+	const calc = Calculator.useCreateState();
+
+	const boosts = useMemo(
+		() =>
+			({
+				boost8: [Boost.LegendaryTach, Boost.EpicBeacon],
+				boost6: [Boost.LegendaryTach, Boost.Beacon, Boost.Beacon],
+				boost6s: [Boost.SupremeTach, Boost.Beacon, Boost.Beacon],
+				boost5: [Boost.LegendaryTach, Boost.Beacon],
+				boost4: [Boost.EpicTach, Boost.EpicTach],
+				boost4s: [Boost.SupremeTach],
+				boost2: [Boost.EpicTach],
+			})[calc.data.boost] ?? [
+				Boost.LargeTach,
+				Boost.LargeTach,
+				Boost.LargeTach,
+				Boost.LargeTach,
+				Boost.LargeTach,
+			],
+		[calc.data.boost],
+	);
+
+	const parseInts = useCallback(
+		<T extends string[], U extends number[]>(ns: T): U =>
+			ns.map((num) => Number.parseInt(num || '0', 10)) as U,
+		[],
+	);
+	const lifeCounts: [number, number, number] = useMemo(
+		() => parseInts([calc.data.lifeT2, calc.data.lifeT3, calc.data.lifeT4]),
+		[parseInts, calc.data.lifeT2, calc.data.lifeT3, calc.data.lifeT4],
+	);
+
+	const diliCounts: [number, number, number] = useMemo(
+		() => parseInts([calc.data.diliT2, calc.data.diliT3, calc.data.diliT4]),
+		[parseInts, calc.data.diliT2, calc.data.diliT3, calc.data.diliT4],
+	);
+
+	const diliBonus = useMemo(
+		() =>
+			1.03 ** diliCounts[0] *
+			1.06 ** diliCounts[1] *
+			1.08 ** diliCounts[2] *
+			(calc.data.doubleDuration ? 2 : 1),
+		[diliCounts, calc.data.doubleDuration],
+	);
+
+	const lifeBonus = useMemo(
+		() => 1.02 ** lifeCounts[0] * 1.03 ** lifeCounts[1] * 1.04 ** lifeCounts[2],
+		[lifeCounts],
+	);
+
+	const maxHabSpace = useMemo(
+		() => 11_340_000_000 * gussetMultiplier(calc.data.gusset ?? { level: 0, rarity: 0 }),
+		[calc.data.gusset],
+	);
+
+	const ihcMult = useMemo(
+		() => 1 + Number.parseInt(calc.data.hatcheryCalm || '0', 10) * 0.1,
+		[calc.data.hatcheryCalm],
+	);
+
+	const [onlineChickens, timeToMaxHabs] = useMemo(() => {
+		let tachMult = boosts
+			.filter((b) => b.name.includes('Tachyon'))
+			.reduce((sum, b) => sum + b.multiplier, 0);
+		let beaconMult = boosts
+			.filter((b) => b.name.includes('Beacon'))
+			.reduce((sum, b) => sum + b.multiplier, 0);
+
+		const timeOrdered = boosts.toSorted((a, b) => a.durationMins - b.durationMins);
+		let timeToMaxHabs = 0;
+		let population = 0;
+		let elapsed = 0;
+		for (const boost of timeOrdered) {
+			if (boost.durationMins > elapsed) {
+				const time = diliBonus * (boost.durationMins - elapsed);
+				const ihr =
+					Number.parseInt(calc.data.baseIhr || '0', 10) *
+					(1 + Number.parseInt(calc.data.colleggtibleIhr || '0', 10) / 100) *
+					lifeBonus *
+					Math.max(1, tachMult * Math.max(1, beaconMult)) *
+					chaliceMultiplier(calc.data.chalice ?? { level: 0, rarity: 0 }) *
+					monocleMultiplier(calc.data.monocle ?? { level: 0, rarity: 0 });
+
+				const chickens = time * ihr * 4;
+
+				if (timeToMaxHabs === 0 && maxHabSpace <= (population + chickens) * ihcMult) {
+					const missing = maxHabSpace - population * ihcMult;
+					const percentOfBoostUsed = missing / (chickens * ihcMult);
+					const timeUsed = percentOfBoostUsed * time;
+					timeToMaxHabs = elapsed * diliBonus + timeUsed;
+				}
+
+				population += chickens;
+				elapsed = boost.durationMins;
+			}
+
+			if (boost.name.includes('Tachyon')) {
+				tachMult -= boost.multiplier;
+			} else if (boost.name.includes('Beacon')) {
+				beaconMult -= boost.multiplier;
+			}
+		}
+
+		let sec = timeToMaxHabs * 60;
+		const hr = Math.floor(sec / 3_600);
+		sec -= hr * 3_600;
+		const min = Math.floor(sec / 60);
+		sec = Math.round(sec - min * 60);
+		const formattedTime = [
+			hr > 0 ? hr + 'hr' : '',
+			min > 0 ? min + 'min' : '',
+			sec > 0 ? sec + 'sec' : '',
+		]
+			.filter(Boolean)
+			.join(' ');
+		return [Math.floor(population), formattedTime];
+	}, [
+		boosts,
+		calc.data.baseIhr,
+		calc.data.colleggtibleIhr,
+		calc.data.chalice,
+		diliBonus,
+		lifeBonus,
+		calc.data.monocle,
+		maxHabSpace,
+		ihcMult,
+	]);
+
+	const boostDurationRaw = useMemo(() => {
+		const minDuration = boosts.reduce((min, b) => Math.min(min, b.durationMins), Infinity);
+		return minDuration * diliBonus;
+	}, [boosts, diliBonus]);
+
+	const boostDuration = useMemo(() => {
+		const mins = boostDurationRaw;
+
+		let boostDuration = mins >= 60 ? Math.floor(mins / 60) + 'hr' : '';
+		if (mins % 60 > 0) {
+			boostDuration += Math.round(mins % 60) + 'min';
+		}
+
+		return boostDuration;
+	}, [boostDurationRaw]);
+
+	const boostCost = useMemo(() => {
+		const sum = boosts.reduce((sum, b) => sum + b.geCost, 0);
+		return sum * 0.8;
+	}, [boosts]);
+
+	const totalLifeStones = useMemo(() => lifeCounts.reduce((sum, each) => sum + each), [lifeCounts]);
+	const totalDiliStones = useMemo(() => diliCounts.reduce((sum, each) => sum + each), [diliCounts]);
+
+	const enableOutput = totalLifeStones <= 12 && totalDiliStones <= 12;
+
+	// when any input in this section emits a `change` event, reset fetchState
+	// back to idle and then remove the event listener. because the useEffect
+	// has fetchState in the dependency list, when the button is clicked and
+	// fetchState becomes something other than IDLE, the event listener gets
+	// added (and then re-removed and re-added for every other state transition,
+	// but that's okay & i think unavoidable with this approach)
+	const listenerRef = useRef<HTMLElement>(null);
+	useEffect(() => {
+		const el = listenerRef.current;
+		if (!el) return;
+
+		const resetFetchState = () => {
+			calc.updateData({ fetchState: FetchState.IDLE });
+			el.removeEventListener('change', resetFetchState);
+		};
+
+		if (calc.data.fetchState !== FetchState.IDLE) {
+			el.addEventListener('change', resetFetchState);
+		}
+
+		return () => el.removeEventListener('change', resetFetchState);
+	}, [listenerRef, calc, calc.data.fetchState]);
+
+	// on reload, any active requests are canceled, so empty dependency array is on
+	// purpose: only set idle unconditionally on FIRST load
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	useEffect(() => calc.updateData({ fetchState: FetchState.IDLE }), []);
+
+	// TEMPORARY: override new vars for my beta testers. Remove before merge.
+	useEffect(
+		() =>
+			calc.updateData({
+				baseIhr: calc.data.baseIhr || '7440',
+				hatcheryCalm: calc.data.hatcheryCalm || '20',
+				colleggtibleIhr: calc.data.colleggtibleIhr || '5',
+			}),
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[],
+	);
+
+	const resetExtras = useCallback(
+		() =>
+			calc.updateData({
+				doubleDuration: false,
+				baseIhr: '7440',
+				hatcheryCalm: '20',
+			}),
+		[calc],
+	);
+
+	const canHideExtra =
+		!calc.data.doubleDuration && calc.data.baseIhr === '7440' && calc.data.hatcheryCalm === '20';
+	const [showExtra, toggleShowExtra, setShowExtra] = useToggleState(!canHideExtra);
+	useEffect(() => {
+		if (!canHideExtra && !showExtra) {
+			setShowExtra(true);
+		}
+	}, [canHideExtra, showExtra, setShowExtra]);
+
+	const eggFormat = (num: number) =>
+		Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 3 }).format(num);
+
+	return (
+		<ApiUriContext.Provider value={api}>
+			<Calculator.Context.Provider value={calc}>
 				<section>
 					<h1>Contract Boost Calculator</h1>
-					<h2>Calculates the number of chickens for a boost set. Assumes max ER.</h2>
 				</section>
-				<section>
-					<h3>Inputs</h3>
-					<div>
-						<div className="inputContainer">
-							<label htmlFor="EID">EID (Optional)</label>
-							<CustomTextInput
-								handleChange={(event: ChangeEvent<HTMLInputElement>) => {
-									handleChange(event);
-								}}
-								name="EID"
-								value={formState.EID}
-							/>
-						</div>
-						<div className="inputContainer">
-							<label htmlFor="contract">Contract code</label>
-							<CustomTextInput
-								handleChange={(event: ChangeEvent<HTMLInputElement>) => {
-									handleChange(event);
-								}}
-								name="contract"
-								value={formState.contract}
-							/>
-						</div>
-						<div className="inputContainer">
-							<label htmlFor="coop">Coop code</label>
-							<CustomTextInput
-								handleChange={(event: ChangeEvent<HTMLInputElement>) => {
-									handleChange(event);
-								}}
-								name="coop"
-								value={formState.coop}
-							/>
-						</div>
-
+				<section id="inputs" ref={listenerRef}>
+					<section id="input-eid-artifacts">
+						<Input datakey="eid" label="EID (Optional)" />
+						<FetchCoopDataButton>Fetch account data</FetchCoopDataButton>
+						<div className="spacer" />
+						<ArtifactSelector kind="monocle" />
+						<ArtifactSelector kind="chalice" />
+						<ArtifactSelector kind="gusset" />
+					</section>
+					<section id="input-right">
+						<fieldset className="stones">
+							<legend>Life stones in IHR set:</legend>
+							<div className="input-stones">
+								<Input datakey="lifeT2" label="T2:" max="12" min="0" size={2} type="number" />
+								<Input datakey="lifeT3" label="T3:" max="12" min="0" size={2} type="number" />
+								<Input datakey="lifeT4" label="T4:" max="12" min="0" size={2} type="number" />
+							</div>
+							{totalLifeStones > 12 && (
+								<div className="error">
+									More stones ({totalLifeStones}) than max possible slots (12)!
+								</div>
+							)}
+						</fieldset>
+						<fieldset className="stones">
+							<legend>Dilithium stones in dili set:</legend>
+							<div className="input-stones">
+								<Input datakey="diliT2" label="T2:" max="12" min="0" size={2} type="number" />
+								<Input datakey="diliT3" label="T3:" max="12" min="0" size={2} type="number" />
+								<Input datakey="diliT4" label="T4:" max="12" min="0" size={2} type="number" />
+							</div>
+							{totalDiliStones > 12 && (
+								<div className="error">
+									More stones ({totalDiliStones}) than max possible slots (12)!
+								</div>
+							)}
+						</fieldset>
 						<div>
 							<button
-								className="boostBtn activeBoostBtn"
-								onClick={async () => handleGetCoopDataClick()}
+								onClick={toggleShowExtra}
+								id="show-extra"
+								disabled={showExtra && !canHideExtra}
 							>
-								Get coop Data
+								{showExtra ? '- Hide' : '+ Show'} bonus inputs
 							</button>
+							{showExtra && !canHideExtra && <div>Reset bonus inputs to default to hide</div>}
 						</div>
-					</div>
-
-					<div className="inputContainer" style={{ marginTop: '2rem' }}>
-						<label htmlFor="coop">
-							Select your IGN (Automatically selected if you entered your EID)
-						</label>
-						<CustomSelectInput
-							handleChange={handleChange}
-							name="IGN"
-							options={[...availableIGNOptions]}
-							value={formState.IGN}
-						/>
-					</div>
-
-					{/* {formState.IGN ? (*/}
-					<div>
-						<h4>Equipped artifacts for {formState.IGN}</h4>
-						<p>Monocle: {getEquippedArtifactById(28)}</p>
-						<p>Chalice: {getEquippedArtifactById(9)}</p>
-						<p>Gusset: {getEquippedArtifactById(8)}</p>
-					</div>
-					{/* ) : null} */}
-
-					<h4>Boost Set Presets</h4>
-					<div className="boostBtnContainer">
-						{boostSetPresets.map((preset) => (
-							<button
-								className={`boostBtn ${preset.id === selectedBoostPreset ? 'activeBoostBtn' : ''}`}
-								key={preset.id}
-								onClick={() => handleBoostPresetClick(preset.id)}
-								title={preset.description}
-							>
-								{preset.name}
-							</button>
-						))}
-					</div>
-					<div className="boostAndArtifactInputsContainer">
-						<div>
-							<Accordion.Root collapsible type="single">
-								<Accordion.Item value="CustomInputs">
-									<Accordion.Header>
-										<Accordion.Trigger className="AccordionTrigger">
-											Custom Inputs
-											<ChevronDownIcon aria-hidden className="AccordionChevron" />
-										</Accordion.Trigger>
-									</Accordion.Header>
-									<Accordion.Content className="AccordionContent">
-										<div className="inputContainer">
-											<label htmlFor="tachPrismMultiplier">
-												Tachyon Prism Multiplier (Multiple of these will stack additively)
-											</label>
-											<CustomNumberInput
-												handleChange={(event: ChangeEvent<HTMLInputElement>) => {
-													handleChange(event);
-													setSelectedBoostPreset('');
-												}}
-												name="tachPrismMultiplier"
-												value={formState.tachPrismMultiplier}
-											/>
-										</div>
-										<div className="inputContainer">
-											<label htmlFor="boostBeaconMultiplier">
-												Boost Beacon Multiplier (Multiple of these will stack additively)
-											</label>
-											<CustomNumberInput
-												handleChange={(event: ChangeEvent<HTMLInputElement>) => {
-													handleChange(event);
-													setSelectedBoostPreset('');
-												}}
-												name="boostBeaconMultiplier"
-												value={formState.boostBeaconMultiplier}
-											/>
-										</div>
-										<div className="inputContainer">
-											<label htmlFor="baseBoostTime">Base Boost Time (minutes)</label>
-											<CustomNumberInput
-												handleChange={(event: ChangeEvent<HTMLInputElement>) => {
-													handleChange(event);
-													setSelectedBoostPreset('');
-												}}
-												name="baseBoostTime"
-												value={formState.baseBoostTime}
-											/>
-										</div>
-										<div className="inputContainer">
-											<label htmlFor="boostEventDurationMultiplier">
-												Boost Event Duration Multiplier
-											</label>
-											<CustomNumberInput
-												handleChange={handleChange}
-												name="boostEventDurationMultiplier"
-												value={formState.boostEventDurationMultiplier}
-											/>
-										</div>
-										<div className="inputContainer">
-											<label htmlFor="ihr">IHR (You probably don&apos;t need to change this)</label>
-											<CustomNumberInput
-												handleChange={handleChange}
-												name="ihr"
-												value={formState.ihr}
-											/>
-										</div>
-									</Accordion.Content>
-								</Accordion.Item>
-							</Accordion.Root>
-						</div>
-						<div className="inputContainer">
-							<label htmlFor="monocle">Monocle</label>
-							<CustomSelectInput
-								handleChange={handleChange}
-								name="monocle"
-								options={[...monocleOptions]}
-								value={formState.monocle}
-							/>
-						</div>
-						<div className="inputContainer">
-							<label htmlFor="chalice">Chalice</label>
-							<CustomSelectInput
-								handleChange={handleChange}
-								name="chalice"
-								options={[...chaliceOptions]}
-								value={formState.chalice}
-							/>
-						</div>
-						<div className="inputContainer">
-							<label htmlFor="gusset">Gusset</label>
-							<CustomSelectInput
-								handleChange={handleChange}
-								name="gusset"
-								options={[...gussetOptions]}
-								value={formState.gusset}
-							/>
-						</div>
-					</div>
-					<div className="stonesInputsContainer">
-						<div>
-							<p>Enter the no. of each type of life stones equipped</p>
+					</section>
+					{showExtra && (
+						<fieldset id="extra-inputs">
+							<legend>Bonus inputs</legend>
+							<Calculator.Checkbox datakey="doubleDuration" label="2× boost duration modifier?" />
 							<div>
-								<label htmlFor="t2LifeStonesCount">T2</label>
-								<CustomSelectInput
-									handleChange={handleChange}
-									name="t2LifeStonesCount"
-									options={[...stonesCountOptions]}
-									value={formState.t2LifeStonesCount}
-								/>
-								<label htmlFor="t3LifeStonesCount">T3</label>
-								<CustomSelectInput
-									handleChange={handleChange}
-									name="t3LifeStonesCount"
-									options={[...stonesCountOptions]}
-									value={formState.t3LifeStonesCount}
-								/>
-								<label htmlFor="t4LifeStonesCount">T4</label>
-								<CustomSelectInput
-									handleChange={handleChange}
-									name="t4LifeStonesCount"
-									options={[...stonesCountOptions]}
-									value={formState.t4LifeStonesCount}
-								/>
+								<Input datakey="baseIhr" label="IHR:" max="7440" min="0" size={4} type="number" />
+								<span>(Menu → Stats → Int. Hatchery Rate)</span>
 							</div>
-						</div>
-						<div>
-							<p>Enter the no. of each type of dilithium stones equipped</p>
 							<div>
-								<label htmlFor="t2DiliStonesCount">T2</label>
-								<CustomSelectInput
-									handleChange={handleChange}
-									name="t2DiliStonesCount"
-									options={[...stonesCountOptions]}
-									value={formState.t2DiliStonesCount}
+								<Input
+									datakey="hatcheryCalm"
+									label="IHC:"
+									max="20"
+									min="0"
+									size={4}
+									type="number"
 								/>
-								<label htmlFor="t3DiliStonesCount">T3</label>
-								<CustomSelectInput
-									handleChange={handleChange}
-									name="t3DiliStonesCount"
-									options={[...stonesCountOptions]}
-									value={formState.t3DiliStonesCount}
-								/>
-								<label htmlFor="t4DiliStonesCount">T4</label>
-								<CustomSelectInput
-									handleChange={handleChange}
-									name="t4DiliStonesCount"
-									options={[...stonesCountOptions]}
-									value={formState.t4DiliStonesCount}
-								/>
+								<span>(Research → Epic → Internal Hatchery Calm)</span>
 							</div>
-						</div>
-					</div>
+							<div>
+								<Input datakey="colleggtibleIhr" label="CIHR:" max="5" min="0" type="number" />
+								<span>
+									(Current egg → Contracts → Colleggtibles → total Internal Hatchery Rate)
+								</span>
+							</div>
+							<button onClick={resetExtras}>Reset bonus inputs to default</button>
+						</fieldset>
+					)}
 				</section>
-				<section>
-					<h3>Results</h3>
-					<div>
-						{/* Improved IHR is incorrect */}
-						{/* <p>Improved IHR: {Math.round(improvedIhr)?.toLocaleString()} Min/Hab</p> */}
-						<p>
-							Selected boost preset:{' '}
-							{selectedBoostPreset ?
-								boostSetPresets.find((preset) => preset.id === selectedBoostPreset)?.description
-							:	'You are using a custom boost setup'}
-						</p>
-						<p>
-							Improved Tachyon boost time: {Math.floor(improvedBoostTime)} mins{' '}
-							{Math.floor((improvedBoostTime * 60) % 60)} seconds{' '}
-						</p>
-						<p>
-							Golden Egg cost (buying singles):{' '}
-							{selectedBoostPreset ?
-								boostSetPresets.find((preset) => preset.id === selectedBoostPreset)?.baseGeCost
-							:	'You are using a custom boost setup'}{' '}
-						</p>
-						<p>
-							Golden Egg cost (buying in 5s):{' '}
-							{selectedBoostPreset ?
-								boostSetPresets.find((preset) => preset.id === selectedBoostPreset)?.discountGeCost
-							:	'You are using a custom boost setup'}{' '}
-						</p>
-						<p>Population (online): {Math.round(population / 3)?.toLocaleString()} chickens</p>
-						<p>Population (offline): {Math.round(population)?.toLocaleString()} chickens</p>
-						<p>Max hab space: {Math.round(habSpace)?.toLocaleString()}</p>
-						<p>Maxed habs? {population > habSpace ? 'Yes ✔' : 'No ❌'}</p>
-						{population > habSpace ?
-							<p>
-								<b>Time to max. habs: </b>
-								{`${Math.floor(timeToMaxHabsInSeconds / 60)} mins ${Math.floor(timeToMaxHabsInSeconds % 60)} seconds`}
-							</p>
-						:	null}
-					</div>
-				</section>
-				<section className="footerSection">
-					<p>
-						Heavily inspired by{' '}
-						<a href="https://hashtru.netlify.app/contractboost" rel="noreferrer" target="_blank">
-							hashtru&apos;s Contract Boost Calculator
-						</a>
-					</p>
-				</section>
-			</main>
-		</Tooltip.Provider>
+				<hr />
+				<BoostPresetButtons />
+				<hr />
+				{enableOutput && (
+					<section id="output">
+						<Output label="Boosts">
+							{boosts.map((boost: Boost, id: number) => (
+								<Boost.Image key={id} boost={boost} />
+							))}
+						</Output>
+						<Output label="First boost runs out after" value={boostDuration} />
+						<Output label="GE cost (buying in 5s)" value={boostCost.toLocaleString()} />
+						<Output label="Population (online)" value={eggFormat(onlineChickens)} />
+						<Output label="Population (offline)" value={eggFormat(onlineChickens * ihcMult)} />
+						<Output label="Max hab space" value={eggFormat(maxHabSpace)} />
+						<Output label="Time to fill habs" value={timeToMaxHabs || '∞'} />
+					</section>
+				)}
+			</Calculator.Context.Provider>
+		</ApiUriContext.Provider>
 	);
 }
