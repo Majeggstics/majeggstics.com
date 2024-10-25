@@ -4,6 +4,8 @@ import type { Artifact, ArtifactIntensity, Stone } from '/lib/ei_data';
 import {
 	artifactRarity,
 	ArtifactSpec,
+	Colleggtible,
+	EpicResearch,
 	PossibleArtifactIntensity,
 	chaliceMultiplier,
 	monocleMultiplier,
@@ -11,11 +13,18 @@ import {
 } from '/lib/ei_data';
 import { Boost } from '/components/Boosts';
 import { useToggleState } from '/lib/hooks';
+import { groupBy } from '/lib/utils';
 import { generateCalculator, type WithSetter } from '/components/calculator.tsx';
 
 type SlottedArtifact = {
 	spec: Artifact;
 	stonesList: Stone[];
+};
+type Coop = {
+	contract: {
+		customEggId?: string;
+	};
+	maxFarmSizeReached: number;
 };
 type EIBackupResponse = {
 	userName: string;
@@ -30,6 +39,16 @@ type EIBackupResponse = {
 			itemId: number;
 			artifact: SlottedArtifact;
 		}>;
+	};
+	game: {
+		epicResearchList: Array<{
+			id: string;
+			level: number;
+		}>;
+	};
+	contracts: {
+		archiveList: Coop[];
+		contractsList: Coop[];
 	};
 };
 const ApiUriContext = createContext<string>('missing api uri');
@@ -203,6 +222,21 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 		const chalice = ihrSet?.set.find(byName(ArtifactSpec.Name.THE_CHALICE))?.spec;
 		const gusset = ihrSet?.set.find(byName(ArtifactSpec.Name.ORNATE_GUSSET))?.spec;
 
+		const ihcResearch = eiResponse.game.epicResearchList[EpicResearch.INT_HATCH_CALM];
+
+		const byCustomEgg = groupBy(
+			eiResponse.contracts.archiveList.concat(eiResponse.contracts.contractsList),
+
+			// || on purpose, so that empty string goes to undefined and is discarded by groupBy
+			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+			(contract) => contract.contract.customEggId || undefined,
+		);
+
+		const maxEaster = byCustomEgg.easter?.reduce(
+			(max, each) => Math.max(max, each.maxFarmSizeReached),
+			0,
+		);
+
 		updateData({
 			fetchState: FetchState.SUCCESS,
 			lifeT2: String(ihrSet?.ihr.stones[0] ?? 0),
@@ -211,6 +245,8 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			diliT2: String(diliSet?.dili.stones[0] ?? 0),
 			diliT3: String(diliSet?.dili.stones[1] ?? 0),
 			diliT4: String(diliSet?.dili.stones[2] ?? 0),
+			hatcheryCalm: String(ihcResearch?.level ?? 0),
+			colleggtibleIhr: String(Colleggtible.easterBonus(maxEaster ?? 0)),
 			chalice,
 			monocle,
 			gusset,
