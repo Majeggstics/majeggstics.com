@@ -1,8 +1,6 @@
 import copy from 'copy-to-clipboard';
 import { useState } from 'react';
-import ToastMessage from '/components/ToastMessage';
 import { Timeslot, useExtractNotins } from '/components/initiator-tools';
-import { notify } from '/lib/utils';
 
 export default function NotInFailsGeneratorPage() {
 	const [notInMessage, setNotInMessage] = useState('');
@@ -29,7 +27,6 @@ export default function NotInFailsGeneratorPage() {
 
 	return (
 		<div style={{ margin: '2rem 1rem' }}>
-			<ToastMessage />
 			<h1>NotIn Fails Generator</h1>
 
 			<p style={{ display: 'flex', flexDirection: 'column' }}>
@@ -50,16 +47,7 @@ export default function NotInFailsGeneratorPage() {
 				</button>
 
 				<textarea disabled id="failsOutput" name="failsOutput" rows={10} value={failsOutput} />
-				<button
-					onClick={() => {
-						const copyResult = copy(failsOutput);
-
-						if (copyResult) {
-							notify('Message copied');
-						}
-					}}
-					style={{ width: 'fit-content' }}
-				>
+				<button onClick={() => copy(failsOutput)} style={{ width: 'fit-content' }}>
 					Copy to Clipboard
 				</button>
 			</p>

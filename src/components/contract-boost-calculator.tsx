@@ -10,7 +10,7 @@ import {
 	gussetMultiplier,
 } from '/lib/ei_data';
 import { Boost } from '/components/Boosts';
-import { useToggleState } from '/lib/utils';
+import { useToggleState } from '/lib/hooks';
 import { generateCalculator, type WithSetter } from '/components/calculator.tsx';
 
 type SlottedArtifact = {
@@ -88,13 +88,13 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 	const fetchData = useCallback(async () => {
 		const backoffs = [1, 2, 5, 8, 13, 0] as const;
-		let eIResponse: EIBackupResponse | null = null;
+		let eiResponse: EIBackupResponse | null = null;
 		for (const backoff of backoffs) {
 			updateData({ fetchState: FetchState.PENDING });
 			const rawEIResponse = await fetch(`${apiUri}/backup?EID=${data.eid}`);
 
 			if (rawEIResponse.ok) {
-				eIResponse = await rawEIResponse.json();
+				eiResponse = await rawEIResponse.json();
 				break;
 			} else if (backoff > 0) {
 				updateData({ fetchState: FetchState.RETRY, fetchRetryIn: backoff });
@@ -110,10 +110,10 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			}
 		}
 
-		if (!eIResponse) return void updateData({ fetchState: FetchState.FAILURE });
+		if (!eiResponse) return void updateData({ fetchState: FetchState.FAILURE });
 
 		const resolveItemId = (itemId: number): SlottedArtifact => {
-			const items = eIResponse.artifactsDb.inventoryItemsList;
+			const items = eiResponse.artifactsDb.inventoryItemsList;
 			let lo = 0;
 			let hi = items.length;
 			while (lo <= hi) {
@@ -174,7 +174,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			};
 		};
 
-		const sets = eIResponse.artifactsDb.savedArtifactSetsList
+		const sets = eiResponse.artifactsDb.savedArtifactSetsList
 			.map(({ slotsList }) =>
 				slotsList.filter(({ occupied }) => occupied).map(({ itemId }) => resolveItemId(itemId)),
 			)
@@ -223,7 +223,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 				id="fetch-data"
 				onClick={fetchData}
 				disabled={[FetchState.RETRY, FetchState.PENDING].includes(data.fetchState)}
-				className={`fetch-state-pending fetch-state${data.fetchState}`}
+				className={`fetch-state-${data.fetchState}`}
 			>
 				{children}
 			</button>
@@ -623,9 +623,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 							</div>
 							<div>
 								<Input datakey="colleggtibleIhr" label="CIHR:" max="5" min="0" type="number" />
-								<span>
-									(Current egg → Contracts → Colleggtibles → total Internal Hatchery Rate)
-								</span>
+								<span>(Current egg → Contracts → Colleggtibles → Easter)</span>
 							</div>
 							<button onClick={resetExtras}>Reset bonus inputs to default</button>
 						</fieldset>
