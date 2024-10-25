@@ -1,9 +1,8 @@
-// Currently doesn't support Wonky's "(from timeslot xx)"
 import copy from 'copy-to-clipboard';
 import { useState, useCallback, useMemo } from 'react';
 import { css } from '@acab/ecsstatic';
 import { Timeslot, useExtractNotins } from '/components/initiator-tools';
-import { notify, useEventSetState } from '/lib/utils';
+import { useEventSetState } from '/lib/hooks';
 
 type NotInProps = {
 	readonly threadUrl: string | null;
@@ -20,7 +19,6 @@ const NotIn = ({ timeslotEmoji, user, threadUrl }: NotInProps) => {
 	);
 	const handleCopy = useCallback(() => {
 		if (copy(text)) {
-			notify('Message copied');
 			setCopied(true);
 		}
 	}, [text]);

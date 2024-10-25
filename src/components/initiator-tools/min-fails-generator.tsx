@@ -3,7 +3,7 @@ import Markdown from 'markdown-to-jsx';
 import { css } from '@acab/ecsstatic';
 import { useState, useCallback, useMemo, type ReactNode } from 'react';
 import { Timeslot, parseMinsMessage } from '/components/initiator-tools';
-import { useEventSetState, useToggleState } from '/lib/utils';
+import { useEventSetState, useToggleState } from '/lib/hooks';
 
 type MinsProps = {
 	readonly contract: string;
