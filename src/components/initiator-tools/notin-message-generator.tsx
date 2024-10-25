@@ -2,7 +2,7 @@
 import copy from 'copy-to-clipboard';
 import { useState, useCallback, useMemo } from 'react';
 import { css } from '@acab/ecsstatic';
-import { Timeslot, useExtractNotins, type UserSpec } from '/components/initiator-tools';
+import { Timeslot, useExtractNotins } from '/components/initiator-tools';
 import { notify, useEventSetState } from '/lib/utils';
 
 type NotInProps = {
@@ -68,10 +68,10 @@ export default function NotInMessageGeneratorPage() {
 				<section key={timeslotEmoji}>
 					<h4>{Timeslot.fromEmoji(timeslotEmoji)!.format('header')}</h4>
 					<div className={grid}>
-						{slotNotins.map(({ users, threadUrl }, userIndex) => (
+						{slotNotins.map(({ users, threadUrl }) => (
 							<NotIn
-								key={`${timeslotEmoji}-${userIndex}`}
-								user={users.map((user: UserSpec) => user.combinedIdentifier).join(', ')}
+								key={`${timeslotEmoji}-${users.map((user) => user.ign).join('-')}-${threadUrl}`}
+								user={users.map((user) => user.combinedIdentifier).join(', ')}
 								{...{ timeslotEmoji, threadUrl }}
 							/>
 						))}
