@@ -4,18 +4,27 @@ import type { Artifact, ArtifactIntensity, Stone } from '/lib/ei_data';
 import {
 	artifactRarity,
 	ArtifactSpec,
+	Colleggtible,
+	EpicResearch,
 	PossibleArtifactIntensity,
 	chaliceMultiplier,
 	monocleMultiplier,
 	gussetMultiplier,
 } from '/lib/ei_data';
 import { Boost } from '/components/Boosts';
-import { useToggleState } from '/lib/utils';
+import { useToggleState } from '/lib/hooks';
+import { groupBy } from '/lib/utils';
 import { generateCalculator, type WithSetter } from '/components/calculator.tsx';
 
 type SlottedArtifact = {
 	spec: Artifact;
 	stonesList: Stone[];
+};
+type Coop = {
+	contract: {
+		customEggId?: string;
+	};
+	maxFarmSizeReached: number;
 };
 type EIBackupResponse = {
 	userName: string;
@@ -30,6 +39,16 @@ type EIBackupResponse = {
 			itemId: number;
 			artifact: SlottedArtifact;
 		}>;
+	};
+	game: {
+		epicResearchList: Array<{
+			id: string;
+			level: number;
+		}>;
+	};
+	contracts: {
+		archiveList: Coop[];
+		contractsList: Coop[];
 	};
 };
 const ApiUriContext = createContext<string>('missing api uri');
@@ -88,13 +107,13 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 	const fetchData = useCallback(async () => {
 		const backoffs = [1, 2, 5, 8, 13, 0] as const;
-		let eIResponse: EIBackupResponse | null = null;
+		let eiResponse: EIBackupResponse | null = null;
 		for (const backoff of backoffs) {
 			updateData({ fetchState: FetchState.PENDING });
 			const rawEIResponse = await fetch(`${apiUri}/backup?EID=${data.eid}`);
 
 			if (rawEIResponse.ok) {
-				eIResponse = await rawEIResponse.json();
+				eiResponse = await rawEIResponse.json();
 				break;
 			} else if (backoff > 0) {
 				updateData({ fetchState: FetchState.RETRY, fetchRetryIn: backoff });
@@ -110,10 +129,10 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			}
 		}
 
-		if (!eIResponse) return void updateData({ fetchState: FetchState.FAILURE });
+		if (!eiResponse) return void updateData({ fetchState: FetchState.FAILURE });
 
 		const resolveItemId = (itemId: number): SlottedArtifact => {
-			const items = eIResponse.artifactsDb.inventoryItemsList;
+			const items = eiResponse.artifactsDb.inventoryItemsList;
 			let lo = 0;
 			let hi = items.length;
 			while (lo <= hi) {
@@ -174,7 +193,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			};
 		};
 
-		const sets = eIResponse.artifactsDb.savedArtifactSetsList
+		const sets = eiResponse.artifactsDb.savedArtifactSetsList
 			.map(({ slotsList }) =>
 				slotsList.filter(({ occupied }) => occupied).map(({ itemId }) => resolveItemId(itemId)),
 			)
@@ -203,6 +222,21 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 		const chalice = ihrSet?.set.find(byName(ArtifactSpec.Name.THE_CHALICE))?.spec;
 		const gusset = ihrSet?.set.find(byName(ArtifactSpec.Name.ORNATE_GUSSET))?.spec;
 
+		const ihcResearch = eiResponse.game.epicResearchList[EpicResearch.INT_HATCH_CALM];
+
+		const byCustomEgg = groupBy(
+			eiResponse.contracts.archiveList.concat(eiResponse.contracts.contractsList),
+
+			// || on purpose, so that empty string goes to undefined and is discarded by groupBy
+			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+			(contract) => contract.contract.customEggId || undefined,
+		);
+
+		const maxEaster = byCustomEgg.easter?.reduce(
+			(max, each) => Math.max(max, each.maxFarmSizeReached),
+			0,
+		);
+
 		updateData({
 			fetchState: FetchState.SUCCESS,
 			lifeT2: String(ihrSet?.ihr.stones[0] ?? 0),
@@ -211,6 +245,8 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			diliT2: String(diliSet?.dili.stones[0] ?? 0),
 			diliT3: String(diliSet?.dili.stones[1] ?? 0),
 			diliT4: String(diliSet?.dili.stones[2] ?? 0),
+			hatcheryCalm: String(ihcResearch?.level ?? 0),
+			colleggtibleIhr: String(Colleggtible.easterBonus(maxEaster ?? 0)),
 			chalice,
 			monocle,
 			gusset,
@@ -223,7 +259,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 				id="fetch-data"
 				onClick={fetchData}
 				disabled={[FetchState.RETRY, FetchState.PENDING].includes(data.fetchState)}
-				className={`fetch-state-pending fetch-state${data.fetchState}`}
+				className={`fetch-state-${data.fetchState}`}
 			>
 				{children}
 			</button>
@@ -623,9 +659,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 							</div>
 							<div>
 								<Input datakey="colleggtibleIhr" label="CIHR:" max="5" min="0" type="number" />
-								<span>
-									(Current egg → Contracts → Colleggtibles → total Internal Hatchery Rate)
-								</span>
+								<span>(Current egg → Contracts → Colleggtibles → Easter)</span>
 							</div>
 							<button onClick={resetExtras}>Reset bonus inputs to default</button>
 						</fieldset>

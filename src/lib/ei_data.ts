@@ -1,3 +1,30 @@
+export enum EpicResearch {
+	HOLD_TO_HATCH = 0,
+	EPIC_HATCHERY = 1,
+	EPIC_INTERNAL_INCUBATORS = 2,
+	VIDEO_DOUBLER_TIME = 3,
+	EPIC_CLUCKING = 4,
+	EPIC_MULTIPLIER = 5,
+	CHEAPER_CONTRACTORS = 6,
+	BUST_UNIONS = 7,
+	CHEAPER_RESEARCH = 8,
+	EPIC_SILO_QUALITY = 9,
+	SILO_CAPACITY = 10,
+	INT_HATCH_SHARING = 11,
+	INT_HATCH_CALM = 12,
+	ACCOUNTING_TRICKS = 13,
+	HOLD_TO_RESEARCH = 14,
+	SOUL_EGGS = 15,
+	PRESTIGE_BONUS = 16,
+	DRONE_REWARDS = 17,
+	EPIC_EGG_LAYING = 18,
+	TRANSPORTATION_LOBBYIST = 19,
+	WARP_SHIFT = 20,
+	PROPHECY_BONUS = 21,
+	AFX_MISSION_TIME = 22,
+	AFX_MISSION_CAPACITY = 23,
+}
+
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace ArtifactSpec {
 	export enum Name {
@@ -191,3 +218,17 @@ export const gussetMultiplier = ({ level, rarity }: ArtifactIntensity) => {
 
 	return 1;
 };
+
+export class Colleggtible {
+	private static readonly map =
+		<T>(...vals: [T, T, T, T]) =>
+		(pop: number) => {
+			if (pop < 10_000_000) return 0;
+			if (pop < 100_000_000) return vals[0];
+			if (pop < 1_000_000_000) return vals[1];
+			if (pop < 10_000_000_000) return vals[2];
+			return vals[3];
+		};
+
+	static easterBonus = Colleggtible.map(1, 2, 3, 5);
+}
