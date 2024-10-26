@@ -530,6 +530,9 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	// added (and then re-removed and re-added for every other state transition,
 	// but that's okay & i think unavoidable with this approach)
 	const listenerRef = useRef<HTMLElement>(null);
+	// eslint-disable-next-line no-warning-comments
+	// TODO: this section caused https://discord.com/channels/981390064644915251/1299574269872967752
+	/*
 	useEffect(() => {
 		const el = listenerRef.current;
 		if (!el) return;
@@ -545,6 +548,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 
 		return () => el.removeEventListener('change', resetFetchState);
 	}, [listenerRef, calc, calc.data.fetchState]);
+	*/
 
 	// on reload, any active requests are canceled, so empty dependency array is on
 	// purpose: only set idle unconditionally on FIRST load
