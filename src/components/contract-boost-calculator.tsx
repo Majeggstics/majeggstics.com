@@ -347,6 +347,9 @@ const BoostPresetButtons = () => {
 		[updateData],
 	);
 
+	// we should be able to have the `fieldset` be `#boostSets` to receive
+	// `display: grid`, but then it appears that having the `legend` there
+	// screws up the first render for iOS safari specifically ಠ_ಠ
 	return (
 		<fieldset>
 			<legend>Boost Set</legend>
