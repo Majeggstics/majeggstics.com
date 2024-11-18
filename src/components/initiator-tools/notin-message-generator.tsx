@@ -60,6 +60,7 @@ export default function NotInMessageGeneratorPage() {
 				onChange={handleNotInMessageChange}
 				rows={10}
 				value={notInMessage}
+				autoFocus
 			/>
 
 			{Object.entries(notins).map(([timeslotEmoji, slotNotins]) => (
