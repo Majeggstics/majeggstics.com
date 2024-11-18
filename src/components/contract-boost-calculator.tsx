@@ -347,22 +347,27 @@ const BoostPresetButtons = () => {
 		[updateData],
 	);
 
+	// we should be able to have the `fieldset` be `#boostSets` to receive
+	// `display: grid`, but then it appears that having the `legend` there
+	// screws up the first render for iOS safari specifically ಠ_ಠ
 	return (
-		<fieldset id="boostSets">
+		<fieldset>
 			<legend>Boost Set</legend>
-			{boostRadios.map(({ id, label }) => (
-				<div key={id}>
-					<input
-						type="radio"
-						name="boostSet"
-						id={id}
-						value={id}
-						checked={data.boost === id}
-						onChange={handleChange}
-					/>
-					<label htmlFor={id}>{label}</label>
-				</div>
-			))}
+			<div id="boostSets">
+				{boostRadios.map(({ id, label }) => (
+					<div key={id}>
+						<input
+							type="radio"
+							name="boostSet"
+							id={id}
+							value={id}
+							checked={data.boost === id}
+							onChange={handleChange}
+						/>
+						<label htmlFor={id}>{label}</label>
+					</div>
+				))}
+			</div>
 		</fieldset>
 	);
 };
