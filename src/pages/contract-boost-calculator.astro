@@ -115,20 +115,15 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 		}
 	}
 
-	.safariGridContainer {
-		display: grid;
-	}
 	#boostSets {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(15em, 100%), 1fr));
 		gap: 1rem;
-
 		& div {
 			display: flex;
 			flex-direction: row;
 			gap: 0.5em;
 			width: fit-content;
-			background-color: red;
 		}
 		& label {
 			width: max-content;
