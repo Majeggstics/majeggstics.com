@@ -38,6 +38,7 @@ export default function NotInFailsGeneratorPage() {
 					rows={10}
 					style={{ margin: '1rem 0' }}
 					value={notInMessage}
+					autoFocus
 				/>
 			</p>
 

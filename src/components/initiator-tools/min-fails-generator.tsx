@@ -185,6 +185,7 @@ export default function MinFailsGeneratorPage() {
 					onChange={handleMinsMessageChange}
 					rows={10}
 					value={minsMessage}
+					autoFocus
 				/>
 			</div>
 
