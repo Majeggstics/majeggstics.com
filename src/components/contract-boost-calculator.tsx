@@ -348,22 +348,24 @@ const BoostPresetButtons = () => {
 	);
 
 	return (
-		<fieldset id="boostSets">
-			<legend>Boost Set</legend>
-			{boostRadios.map(({ id, label }) => (
-				<div key={id}>
-					<input
-						type="radio"
-						name="boostSet"
-						id={id}
-						value={id}
-						checked={data.boost === id}
-						onChange={handleChange}
-					/>
-					<label htmlFor={id}>{label}</label>
-				</div>
-			))}
-		</fieldset>
+		<div className="safariGridContainer">
+			<fieldset id="boostSets">
+				<legend>Boost Set</legend>
+				{boostRadios.map(({ id, label }) => (
+					<div key={id}>
+						<input
+							type="radio"
+							name="boostSet"
+							id={id}
+							value={id}
+							checked={data.boost === id}
+							onChange={handleChange}
+						/>
+						<label htmlFor={id}>{label}</label>
+					</div>
+				))}
+			</fieldset>
+		</div>
 	);
 };
 
