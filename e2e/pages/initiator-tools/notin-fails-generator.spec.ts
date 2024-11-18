@@ -27,3 +27,7 @@ test('displays from-timeslot players where they signed up', async ({ page }) => 
 		/## Banana \+1 notins(?:.|\n)*bar(?:.|\n)*## Banana \+6 notins(?:.|\n)*foo/,
 	);
 });
+
+test('autofocuses textarea', async ({ page }) => {
+	await expect(page.getByRole('textbox').first()).toBeFocused();
+});
