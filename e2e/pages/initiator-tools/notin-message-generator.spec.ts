@@ -32,3 +32,35 @@ test('displays from-timeslot players where they signed up', async ({ page }) => 
 	await expect(timeslotTwo).toContainText('@11');
 	await expect(timeslotTwo).toContainText('you don’t join by +11');
 });
+
+test('keys copy-state from ign & thread url', async ({ page }) => {
+	await page.getByRole('textbox').fill(stripIndent`
+		Timeslot :one::
+		<:grade_aaa:11> [coop1](<carpet>) ([thread](<disc1>)): <@11> (\`foo\`)
+	`);
+
+	const timeslotOne = page.locator('section').filter({ hasText: /Timeslot 1/ });
+
+	await expect(timeslotOne).toContainText(/❌\s*<@11>/i);
+	await page.getByRole('button', { name: /copy/i }).first().click();
+	await expect(timeslotOne).toContainText(/✅\s*<@11>/i);
+
+	// case one: notins are split across multiple messages and pasted after copy
+	await page.getByRole('textbox').fill(stripIndent`
+		Timeslot :one::
+		<:grade_aaa:11> [coop1](<carpet>) ([thread](<disc1>)): <@11> (\`foo\`)
+		<:grade_aaa:11> [coop2](<carpet>) ([thread](<disc2>)): <@22> (\`bar\`)
+	`);
+
+	// we should _not_ reset copied state
+	await expect(timeslotOne).toContainText(/✅\s*<@11>/i);
+
+	// case two: the same user is notin in both friday contracts (note threadurl)
+	await page.getByRole('textbox').fill(stripIndent`
+		Timeslot :one::
+		<:grade_aaa:11> [coop1](<carpet>) ([thread](<disc3>)): <@11> (\`foo\`)
+	`);
+
+	// we _should_ reset copied state
+	await expect(timeslotOne).toContainText(/❌\s*<@11>/i);
+});

@@ -1,6 +1,6 @@
 import type { ChangeEvent } from 'react';
 import { createContext, useContext, useCallback } from 'react';
-import { usePersistentState } from '/lib/utils';
+import { usePersistentState } from '/lib/hooks';
 
 type NonCallableObject = { [k: string]: unknown; apply?: never };
 export type WithSetter<Data> = {
