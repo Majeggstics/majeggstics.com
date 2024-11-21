@@ -4,10 +4,11 @@ import { useMemo } from 'react';
 const timeslotFormatMap = {
 	emoji: [':one:', ':two:', ':three:'],
 	eggst: ['+1', '+6', '+12'],
+	join_deadline_eggst: ['+6', '+11', '+17'],
 	header: ['Timeslot 1', 'Timeslot 2', 'Timeslot 3'],
 } as const;
 
-const timeslotHeaderRegex = /Timeslot\s*(?<emoji>:[a-z]+:)/;
+const timeslotHeaderRegex = /Timeslot\s*(?<emoji>:[a-z]+:):?/;
 
 export class Timeslot {
 	static One = new Timeslot(0);
@@ -22,7 +23,7 @@ export class Timeslot {
 		this.index = index;
 	}
 
-	format(as: 'eggst' | 'emoji' | 'header' | 'join_deadline'): string {
+	format(as: 'eggst' | 'emoji' | 'header' | 'join_deadline_eggst' | 'join_deadline'): string {
 		if (as === 'join_deadline') {
 			const offset = [6, 11, 17][this.index];
 			const time = DateTime.fromISO('09:00', { zone: 'America/Los_Angeles' }).plus({
@@ -41,6 +42,19 @@ export class Timeslot {
 			case ':two:':
 				return Timeslot.Two;
 			case ':three:':
+				return Timeslot.Three;
+			default:
+				return null;
+		}
+	}
+
+	static fromNumeral(numeral: string | undefined): Timeslot | null {
+		switch (numeral) {
+			case '1':
+				return Timeslot.One;
+			case '2':
+				return Timeslot.Two;
+			case '3':
 				return Timeslot.Three;
 			default:
 				return null;
@@ -78,6 +92,12 @@ export const convertToDiscordUrl = (url: string) => {
 	return url;
 };
 
+type TimeslotEmoji = string;
+type ThreadUrl = string;
+type FlatNotin = UserSpec & {
+	threadUrl: ThreadUrl;
+	timeslot: TimeslotEmoji;
+};
 export const parseNotInMessage = (input: string): NotInsPerTimeslot => {
 	const timeslotRegex = zipRegex(
 		[timeslotHeaderRegex, /(?<notins>(?:.|\n)+?)/, /(?=Timeslot|\(no pings were sent\)|$)/],
@@ -86,36 +106,97 @@ export const parseNotInMessage = (input: string): NotInsPerTimeslot => {
 
 	const matches = [...input.matchAll(timeslotRegex)];
 
+	const notins: Record<TimeslotEmoji, Record<ThreadUrl, UserSpec[]>> = {};
+
+	// first, pull everything to flat objects, for ease of parsing
+	const flatNotins: FlatNotin[] = matches.flatMap((match) => {
+		const emoji = match.groups!.emoji;
+		const timeslot = Timeslot.fromEmoji(emoji);
+		if (timeslot === null) return [];
+
+		notins[timeslot.format('emoji')] ??= {};
+
+		return match
+			?.groups!.notins!.trim()
+			.split('\n')
+			.filter((line) => line.length > 0)
+			.flatMap((line) => {
+				const httpUrl = /\[thread]\(<(?<url>[^>]+)>\)/.exec(line)?.groups!.url;
+				const threadUrl = httpUrl ? convertToDiscordUrl(httpUrl.trim()) : '';
+				const userMatches = [
+					...line.matchAll(
+						/<@(?<discordId>\d+)> \(`(?<ign>[^)]+)`\)(?: \(from timeslot (?<fromTimeslot>\d)\))?/g,
+					),
+				];
+
+				return userMatches.map((match) => {
+					const { ign, discordId, fromTimeslot } = match.groups!;
+					let timeslot = null;
+					if (fromTimeslot) {
+						timeslot = Timeslot.fromNumeral(fromTimeslot);
+					}
+
+					return {
+						ign: ign!,
+						discordId: discordId!,
+						combinedIdentifier: `<@${discordId}> (\`${ign}\`)`,
+						threadUrl,
+						timeslot: timeslot ? timeslot.format('emoji') : emoji!,
+					};
+				});
+			});
+	});
+
+	// collect down to a deeply nested object for ease of grouping
+	for (const { ign, discordId, combinedIdentifier, threadUrl, timeslot } of flatNotins) {
+		notins[timeslot] ??= {};
+		notins[timeslot][threadUrl] ??= [];
+		notins[timeslot][threadUrl].push({ ign, discordId, combinedIdentifier });
+	}
+
+	// and then simplify the structure a bit
 	return Object.fromEntries(
-		matches
-			.map((match) => {
-				const emoji = match.groups!.emoji;
-				const timeslot = Timeslot.fromEmoji(emoji);
-				if (timeslot === null) return null;
-
-				const notins: NotIns[] = match
-					?.groups!.notins!.trim()
-					.split('\n')
-					.map((line) => {
-						const httpUrl = /\[thread]\(<(?<url>[^>]+)>\)/.exec(line)?.groups!.url;
-						const threadUrl = httpUrl ? convertToDiscordUrl(httpUrl.trim()) : null;
-						const userMatches = [...line.matchAll(/<@(?<discordId>\d+)> \(`(?<ign>[^)]+)`\)/g)];
-						const users: UserSpec[] = userMatches.map((match) => ({
-							ign: match.groups!.ign!,
-							discordId: match.groups!.discordId!,
-							combinedIdentifier: match[0]!, // entire match
-						}));
-
-						return {
-							users,
-							threadUrl,
-						};
-					});
-				return [timeslot.format('emoji'), notins];
-			})
-			.filter((res) => res !== null),
+		Object.entries(notins).map(([timeslot, threads]) => [
+			timeslot,
+			Object.entries(threads).map(([threadUrl, users]) => ({ threadUrl, users })),
+		]),
 	);
 };
 
 export const useExtractNotins = (input: string): NotInsPerTimeslot =>
 	useMemo(() => parseNotInMessage(input), [input]);
+
+type ParsedMins = {
+	inDanger: string[];
+	minFails: string[];
+	notins: string[];
+};
+export const parseMinsMessage = (minsMessage: string): ParsedMins => {
+	const inDanger = [];
+	const notins = [];
+	const minFails = [];
+
+	let scrolled_coop = false;
+	for (const line of minsMessage.split('\n')) {
+		const trim = line.trim();
+		if (/^<?:grade_\w+:(?:\d+>)?.+/.test(trim)) {
+			scrolled_coop = /:(?:green|yellow)_scroll:/.test(trim);
+
+			if (trim.includes(':warning:')) {
+				inDanger.push(trim);
+			}
+		}
+
+		if (scrolled_coop) {
+			continue;
+		}
+
+		if (/is missing.$/.test(trim)) {
+			notins.push(trim);
+		} else if (/^\* `.+` \(@ .+\).+Spent \d+/.test(trim)) {
+			minFails.push(trim);
+		}
+	}
+
+	return { inDanger, notins, minFails };
+};

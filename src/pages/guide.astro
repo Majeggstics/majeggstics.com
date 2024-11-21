@@ -24,76 +24,82 @@ import { Content } from '/components/guide.mdx';
 				<li><a href="#joining_majeggstics">Joining Majeggstics</a></li>
 			</ul>
 		</div>
-		<button class="toggle-btn" id="sidebar-toggle"><i class='fa-solid fa-angle-right'></i></button>
+		<button class="toggle-btn" id="sidebar-toggle"><i class="fa-solid fa-angle-right"></i></button>
 	</div>
 	<main>
 		<Content />
 	</main>
 </Layout>
-	<script>
-		const button = document.getElementById("sidebar-toggle");
-		const sidebar = document.getElementById('sidebar');
-		const toggleBtn = document.getElementById("sidebar-toggle");
-		button.addEventListener("click", (event) => {
-			sidebar.classList.toggle('sidebar-closed');
-		
+<script>
+	const button = document.getElementById('sidebar-toggle');
+	const sidebar = document.getElementById('sidebar');
+	const toggleBtn = document.getElementById('sidebar-toggle');
+	button.addEventListener('click', (event) => {
+		sidebar.classList.toggle('sidebar-closed');
+
 		if (sidebar.classList.contains('sidebar-closed')) {
 			toggleBtn.innerHTML = "<i class='fa-solid fa-angle-right'></i>";
 		} else {
 			toggleBtn.innerHTML = "<i class='fa-solid fa-angle-left'></i>";
-		}});
-	</script>
+		}
+	});
+</script>
 
 <style is:global>
 	table {
 		border: 2px solid;
 		padding: 1em;
 	}
-	
+
 	thead {
 		text-align: left;
 	}
-	
-	thead, tbody {
+
+	thead,
+	tbody {
 		line-height: 2.5;
 	}
-	
-	thead tr, tbody tr:nth-child(even) {
-		background-color: rgba(0,0,0,0.05);
+
+	thead tr,
+	tbody tr:nth-child(even) {
+		background-color: rgba(0, 0, 0, 0.05);
 	}
-	
-	th, td {
+
+	th,
+	td {
 		padding: 0 1em;
 	}
-	
+
 	td.time {
 		text-align: right;
 	}
-	
+
 	.note {
 		font-size: smaller;
 	}
-	
-	.infobox, .alertbox, .advicebox {
+
+	.infobox,
+	.alertbox,
+	.advicebox {
 		padding: 1em 3em;
 		margin: 2.25em 0;
 	}
-	
+
 	.infobox {
-		background-color: rgba(0,0,0,0.1);
-		border-left: 15px solid rgba(0,0,0,0.2);
+		background-color: rgba(0, 0, 0, 0.1);
+		border-left: 15px solid rgba(0, 0, 0, 0.2);
 	}
-	
+
 	.alertbox {
-		background-color: rgba(255,21,0,0.2);
-		border-left: 15px solid rgba(255,21,0,0.2);
+		background-color: rgba(255, 21, 0, 0.2);
+		border-left: 15px solid rgba(255, 21, 0, 0.2);
 	}
-	
+
 	.advicebox {
-		background-color: rgba(61,255,61,0.2);
-		border-left: 15px solid rgba(61,255,61,0.2);
+		background-color: rgba(61, 255, 61, 0.2);
+		border-left: 15px solid rgba(61, 255, 61, 0.2);
 	}
-	
+
 	.token_icon {
 		background-image: url('images/B_token.png');
 		background-size: contain;
@@ -101,21 +107,21 @@ import { Content } from '/components/guide.mdx';
 		width: 1.2em;
 		display: inline-block;
 	}
-	
+
 	/* ----- Sidebar ----- */
 	.wrapper {
 		display: flex;
 		width: 100%;
 		height: 100%;
 	}
-	
+
 	.sidebar {
 		height: 100vh;
 		width: 250px;
 		position: fixed;
 		top: 0;
 		left: 0;
-		box-shadow: 4px 0px 10px rgba(0,0,0,0.1);
+		box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.1);
 		padding: 2em 15px;
 		transition: transform 0.3s ease;
 		overflow-y: auto;
@@ -131,20 +137,21 @@ import { Content } from '/components/guide.mdx';
 	}
 
 	.sidebar ul li a {
-		color: rgba(0,0,0,0.75);
+		color: rgba(0, 0, 0, 0.75);
 		display: block;
 	}
 
-	.sidebar ul li a:hover, .sidebar ul li a:active {
-		color: rgba(140,140,255,0.8);
+	.sidebar ul li a:hover,
+	.sidebar ul li a:active {
+		color: rgba(140, 140, 255, 0.8);
 	}
 
 	.toggle-btn {
 		position: fixed;
 		left: 250px;
-		color: rgba(0,0,0,0.75);
+		color: rgba(0, 0, 0, 0.75);
 		background-color: #fff;
-		box-shadow: 4px 0px 10px rgba(0,0,0,0.1);
+		box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.1);
 		border: none;
 		border-radius: 50%;
 		width: 2.2em;
@@ -155,11 +162,11 @@ import { Content } from '/components/guide.mdx';
 		z-index: 1000;
 		transition: left 0.3s ease;
 	}
-	
+
 	.toggle-btn:hover {
-		box-shadow: 4px 0px 10px rgba(0,0,0,0.3);
+		box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.3);
 	}
-	
+
 	.sidebar-closed {
 		transform: translateX(-250px);
 	}
@@ -167,35 +174,36 @@ import { Content } from '/components/guide.mdx';
 	.sidebar-closed ~ .toggle-btn {
 		left: 0;
 	}
-	
+
+	.boostIcon {
+		height: 1em;
+		vertical-align: middle;
+	}
+
 	/* ----- Media Queries ----- */
 
 	/* Extra large devices (large desktops, 1201px and above) */
 	@media only screen and (min-width: 1201px) {
-
 	}
-		
+
 	/* Large devices (laptops/desktops, 993px - 1200px) */
 	@media only screen and (max-width: 1200px) {
-
 	}
-	
+
 	/* Medium devices (tablets, 769px - 992px) */
 	@media only screen and (max-width: 992px) {
-
 	}
-	
+
 	/* Small devices (phones in landscape, 481px - 768px) */
 	@media only screen and (max-width: 768px) {
-
 	}
-	
+
 	/* Extra small devices (phones, 0px - 480px) */
 	@media only screen and (max-width: 480px) {
-		.infobox, .alertbox, .advicebox {
+		.infobox,
+		.alertbox,
+		.advicebox {
 			padding: 1em 1em;
 		}
 	}
-
-	
 </style>

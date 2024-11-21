@@ -1,8 +1,6 @@
 import copy from 'copy-to-clipboard';
 import { useState } from 'react';
-import ToastMessage from '/components/ToastMessage';
 import { Timeslot, useExtractNotins } from '/components/initiator-tools';
-import { notify } from '/lib/utils';
 
 export default function NotInFailsGeneratorPage() {
 	const [notInMessage, setNotInMessage] = useState('');
@@ -10,7 +8,8 @@ export default function NotInFailsGeneratorPage() {
 
 	const contractEgg = /Not in\s<(?<egg>:[^:]+:)\d+>/.exec(notInMessage)?.groups!.egg ?? '';
 	const contractName =
-		/Not in\s<:[^:]+:\d+> \*\*(?<contract>.+?)\*\*/.exec(notInMessage)?.groups!.contract ?? '';
+		/Not in\s<?:[^:]+:(?:\d+>)? \*\*(?<contract>.+?)\*\*/.exec(notInMessage)?.groups!.contract ??
+		'';
 	const contract = `${nitroMode ? contractEgg : ''} ${contractName}`.trim();
 
 	const notins = useExtractNotins(notInMessage);
@@ -28,7 +27,6 @@ export default function NotInFailsGeneratorPage() {
 
 	return (
 		<div style={{ margin: '2rem 1rem' }}>
-			<ToastMessage />
 			<h1>NotIn Fails Generator</h1>
 
 			<p style={{ display: 'flex', flexDirection: 'column' }}>
@@ -40,6 +38,7 @@ export default function NotInFailsGeneratorPage() {
 					rows={10}
 					style={{ margin: '1rem 0' }}
 					value={notInMessage}
+					autoFocus
 				/>
 			</p>
 
@@ -49,16 +48,7 @@ export default function NotInFailsGeneratorPage() {
 				</button>
 
 				<textarea disabled id="failsOutput" name="failsOutput" rows={10} value={failsOutput} />
-				<button
-					onClick={() => {
-						const copyResult = copy(failsOutput);
-
-						if (copyResult) {
-							notify('Message copied');
-						}
-					}}
-					style={{ width: 'fit-content' }}
-				>
+				<button onClick={() => copy(failsOutput)} style={{ width: 'fit-content' }}>
 					Copy to Clipboard
 				</button>
 			</p>

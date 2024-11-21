@@ -59,14 +59,37 @@ yarn e2e:ui
 `BASE_URL` is respected. Your mileage may vary on whether this launches a UI or errors
 out, depending on your host OS. See `./Taskfile` for more details.
 
+## commits & pull requests
+
+Work should be done in a descriptively named feature branch, usually something like
+`feat--responsive-guide` or `bug--min-generator-newlines`. That particular format is
+not _required_ — just don't call your branch `fixes` or `<your username>` or something
+unhelpful like that.
+
+Individual commits should follow the [conventional commits][] format.
+
+PRs that are not documentation-only changes _must_ include tests. They _should_ get at
+least one review. All open comments _should_ be Resolved before merging. Any party _may_
+Resolve a comment thread, but it is preferred that the original commenter make the
+decision that the response fully addresses the comment, rather than the responder making
+that decision.
+
+Selecting between normal Merge, Squash, and Rebase options should be a conscious
+decision: pick the one that strikes the best balance between commit cleanliness and
+historical accuracy. For example, a PR with one feature commit and three followup lints
+is a good candidate to be Squashed; a PR with a bugfix and a style improvement might
+look nice as a Rebase, and a meaty PR with extensive time in draft is probably best left
+as a normal Merge — or by rewriting the history of the feature branch to clean up the
+commit history into a few tidy Rebase-able commits.
+
 ## deploying
 
-Commits to the `main` branch are deployed to https://beta.majeggstics.com/ via
+Commits to the `stable` branch are deployed to https://majeggstics.com/ via
 Cloudflare Pages. Configuration happens in the Cloudflare UI; it runs `yarn build`
 to build statics and expects the results to be in `out/`.
 
-Commits to the `stable` branch are deployed to https://majeggstics.com/ via Github
-Pages. Deploy configuration is in `.github/workflows/deploy-stable.yaml`.
+Commits to the `main` branch are deployed to https://beta.majeggstics.com/ via Github
+Pages. Deploy configuration is in `.github/workflows/deploy-beta.yaml`.
 
 In both static build systems, `NEXT_PUBLIC_API_URL` must be set to an EI-api proto to
 json forwarder.
@@ -76,6 +99,7 @@ json forwarder.
 The domain is registered with Namecheap; DNS goes to Cloudflare nameservers.
 
 [chai]: https://www.chaijs.com/
+[conventional commits]: https://www.conventionalcommits.org/en/v1.0.0/
 [mocha]: https://mochajs.org/
 [playwright]: http://playwright.dev/
 [volta]: https://docs.volta.sh/guide/getting-started

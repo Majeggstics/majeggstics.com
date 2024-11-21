@@ -1,14 +1,15 @@
 import { expect, test } from '@playwright/test';
+import { stripIndent } from 'common-tags';
 
 test.beforeEach(async ({ page }) => void (await page.goto('/initiator-tools/min-fails-generator')));
 
 test('has title', async ({ page }) => {
-	await expect(page).toHaveTitle(/Min Fails Generator/i);
+	await expect(page).toHaveTitle(/min fails generator/i);
 });
 
 test('generates output', async ({ page }) => {
-	await page.getByRole('textbox').fill(`
-		## Minimum check for <:egg_unknown:> Contract Name
+	await page.getByRole('textbox').fill(stripIndent`
+		## Minimum check for <:egg_unknown:111> Contract Name
 		### Formula \`Majeggstics 24h\`, Timeslot :two:
 		** **
 		<:grade_aaa:111> [**\`coop\`**](<carpet>) ([**thread**](<discord_url_1>))
@@ -22,10 +23,31 @@ test('generates output', async ({ page }) => {
 });
 
 test('extracts timeslot', async ({ page }) => {
-	await page.getByRole('textbox').fill(`
+	await page.getByRole('textbox').fill(stripIndent`
 		## Minimum check for :egg_unknown: Contract Name
 		### Formula \`Majeggstics 24h\`, Timeslot :one:
 	`);
 
 	await expect(page.getByRole('heading', { name: /coops in danger/i })).toContainText('+1');
+});
+
+test('skips green- and yellow-scrolled contracts', async ({ page }) => {
+	await page.getByRole('textbox').fill(stripIndent`
+		## Minimum check for <:egg_prodigy:444> Example Contract!
+		### Formula \`Majeggstics 24h\`, Timeslot :three:
+		** **
+		<:grade_aaa:11> [**\`coop1\`**](<carpet>) <:green_scroll:11> ([**thread**](<link1>))
+		* \`JoeySlowboost\` (@ large\\_tach\\_user) (Z1): \`1.00q\`/\`3.41q\` (\`29%\`). Spent 0 <:b_icon_token:11> <:clock:11> 8h0m
+
+		<:grade_aaa:11> [**\`coop2\`**](<carpet>) ([**thread**](<link2>))
+		* \`30hroffline\` (@ nocheckin) (Z3): \`72.6T\`/\`3.41q\` (\`2%\`). Spent 4 <:b_icon_token:1135903700389466182> <:clock:11> 30h12m
+
+		<:grade_aaa:11> [**\`coop3\`**](<carpet>) <:yellow_scroll:11> ([**thread**](<link3>))
+		* \`JackSlowboost\` (@ large\\_tach\\_my\\_beloved) (Z1): \`1.00q\`/\`3.41q\` (\`29%\`). Spent 0 <:b_icon_token:11> <:clock:11> 12h0m
+	`);
+
+	const minFails = page.locator('section').filter({ hasText: '+12 Minimum Fails' });
+	await expect(minFails).toContainText('30hroffline');
+	await expect(minFails).not.toContainText('JoeySlowboost');
+	await expect(minFails).not.toContainText('JackSlowboost');
 });
