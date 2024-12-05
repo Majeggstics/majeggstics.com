@@ -26,6 +26,6 @@ export class Boost {
 		const time = boost.durationMins > 60 ? `${boost.durationMins / 60}hr` : `${boost.durationMins}min`;
 		const descriptor = `${boost.name} (${boost.multiplier}×, ${time})`;
 
-		return <img src={iconPath} title={descriptor} className="boostIcon" />;
+		return <img src={iconPath} title={descriptor} className="icon" />;
 	}
 }
