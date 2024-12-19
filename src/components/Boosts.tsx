@@ -10,6 +10,8 @@ export class Boost {
 	static SupremeTach   = new Boost('Supreme Tachyon Prism',   1_000, 60,  25_000);
 	static Beacon        = new Boost('Boost Beacon',            2,     30,  1_000);
 	static EpicBeacon    = new Boost('Epic Boost Beacon',       10,    10,  8_000);
+
+	static Mirror        = new Boost('Soul Mirror',             1,     10,  100);
 	/* eslint-enable */
 
 	private constructor(
@@ -19,17 +21,13 @@ export class Boost {
 		public geCost: number,
 	) { }
 
-	iconPath(): string {
-		const name = this.name.replace(/ /g, '_');
-		return `/images/gameResources/boosts/Boosts_${name}.png`;
-	}
-
-	descriptor(): string {
-		const time = this.durationMins > 60 ? `${this.durationMins / 60}hr` : `${this.durationMins}min`;
-		return `${this.name} (${this.multiplier}×, ${time})`;
-	}
-
 	static Image({ boost }: { boost: Boost }): React.ReactNode {
-		return <img src={boost.iconPath()} title={boost.descriptor()} />;
+		const name = boost.name.replace(/ /g, '_');
+		const iconPath = `/images/gameResources/boosts/Boosts_${name}.png`;
+
+		const time = boost.durationMins > 60 ? `${boost.durationMins / 60}hr` : `${boost.durationMins}min`;
+		const descriptor = `${boost.name} (${boost.multiplier}×, ${time})`;
+
+		return <img src={iconPath} title={descriptor} className="icon" />;
 	}
 }
