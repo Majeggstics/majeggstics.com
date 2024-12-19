@@ -10,6 +10,8 @@ export class Boost {
 	static SupremeTach   = new Boost('Supreme Tachyon Prism',   1_000, 60,  25_000);
 	static Beacon        = new Boost('Boost Beacon',            2,     30,  1_000);
 	static EpicBeacon    = new Boost('Epic Boost Beacon',       10,    10,  8_000);
+
+	static Mirror        = new Boost('Soul Mirror',             1,     10,  100);
 	/* eslint-enable */
 
 	private constructor(
