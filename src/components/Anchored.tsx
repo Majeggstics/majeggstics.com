@@ -28,10 +28,10 @@ export const Anchored = ({ anchor, ...component }: Props): React.ReactNode => {
 
 	const [Tag, content] = entries[0]! as [keyof JSX.IntrinsicElements, string];
 
-	const href = '#' + (anchor ?? content).toLowerCase().replace(/\s+/g, '_').replace(/\W/g, '');
+	const href = (anchor ?? content).toLowerCase().replace(/\s+/g, '_').replace(/\W/g, '');
 	return (
-		<Tag id={anchor}>
-			<a className="anchor" href={href}>
+		<Tag id={href}>
+			<a className="anchor" href={`#${href}`}>
 				#
 			</a>
 			{content}
