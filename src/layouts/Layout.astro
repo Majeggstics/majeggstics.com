@@ -7,22 +7,27 @@ export type Props = {
 };
 const { title } = Astro.props.frontmatter ?? Astro.props;
 import 'normalize.css';
+
+// fonts:
+// https://fonts.google.com/specimen/Montserrat
+// https://fonts.google.com/specimen/Courier+Prime
 ---
 
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="/favicon.ico" type="image/x-icon" sizes="256x256" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<meta name="generator" content={Astro.generator} />
 
-		{/* https://fonts.google.com/specimen/Inter */}
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
 			rel="stylesheet"
 		/>
+		<script src="https://kit.fontawesome.com/06ab336092.js" crossorigin="anonymous"></script>
 
 		<title>{title}</title>
 	</head>
@@ -37,7 +42,10 @@ import 'normalize.css';
 	body {
 		max-width: 90vw;
 		margin: 0 auto;
-		font-family: inter, sans-serif;
+		font-family: Montserrat, sans-serif;
+		line-height: 1.9;
+		font-weight: 350;
+		color: rgba(0, 0, 0, 0.75);
 	}
 
 	main {
@@ -52,9 +60,83 @@ import 'normalize.css';
 		}
 	}
 
+	strong {
+		font-weight: 500;
+	}
+
+	mark {
+		background-color: rgba(0, 0, 0, 0.05);
+		font-style: normal;
+		padding: 3px;
+		font-weight: 400;
+	}
+
+	a {
+		text-decoration: underline;
+		font-weight: 450;
+		color: rgba(80, 80, 255, 0.8);
+	}
+
+	/* anchor-links inside headers get scooted out to the left;
+	 * auto implementation in src/components/Anchored.tsx.
+	 *
+	 * prettier wants to put each tag on its own line :eyeroll: */
+	/* prettier-ignore */
+	h1, h2, h3, h4, h5, h6 {
+		position: relative;
+		& a.anchor {
+			opacity: 0;
+			position: absolute;
+			left: -1em;
+			padding-right: 1em;
+		}
+		&:hover a {
+			opacity: 1;
+		}
+	}
+
+	a:hover,
+	a:active,
+	a:focus {
+		color: rgba(140, 140, 255, 0.8);
+	}
+
+	code {
+		font-family: 'Courier Prime', monospace;
+	}
+
 	img {
 		object-fit: contain;
 		max-width: 75vw;
+		&.icon {
+			height: 1.3em;
+			vertical-align: middle;
+		}
+	}
+
+	/* ----- Media Queries ----- */
+
+	/* Extra large devices (large desktops, 1201px and above) */
+	@media only screen and (min-width: 1201px) {
+	}
+
+	/* Large devices (laptops/desktops, 993px - 1200px) */
+	@media only screen and (max-width: 1200px) {
+	}
+
+	/* Medium devices (tablets, 769px - 992px) */
+	@media only screen and (max-width: 992px) {
+		main {
+			max-width: 90%;
+		}
+	}
+
+	/* Small devices (phones in landscape, 481px - 768px) */
+	@media only screen and (max-width: 768px) {
+	}
+
+	/* Extra small devices (phones, 0px - 480px) */
+	@media only screen and (max-width: 480px) {
 	}
 
 	hr {
@@ -75,7 +157,8 @@ import 'normalize.css';
 	h4,
 	h5,
 	h6 {
-		margin-top: 0;
+		margin-top: 20px;
+		margin-bottom: 0;
 	}
 
 	code {
@@ -83,6 +166,5 @@ import 'normalize.css';
 		border-radius: 0.25em;
 		padding: 0.125em 0.25em;
 		line-height: 1.6;
-		font-size: 80%;
 	}
 </style>

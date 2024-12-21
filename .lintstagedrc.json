@@ -1,6 +1,6 @@
 {
 	"$schema": "https://json.schemastore.org/lintstagedrc.schema.json",
-	"*": "prettier --ignore-unknown --write",
+	"**/*.{mjs,js,cjs,ts,tsx,astro,json}": "prettier --ignore-unknown --write",
 	"**/*.{mjs,js,cjs,ts,tsx,astro}": "eslint --fix",
 	"src/**.ts": "yarn typecheck && mocha src/**/*.spec.ts"
 }
