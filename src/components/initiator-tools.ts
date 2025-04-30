@@ -82,16 +82,6 @@ export type NotInsPerTimeslot = Record<string, NotIns[]>;
 export const zipRegex = (res: RegExp[], flags: string) =>
 	new RegExp(res.map((re) => re.source).join(''), flags);
 
-export const convertToDiscordUrl = (url: string) => {
-	const match = /discord.com\/channels\/(?<channelId>\d+)\/(?<messageId>\d+)/.exec(url);
-	if (match?.groups) {
-		const { channelId, messageId } = match.groups;
-		return `discord://-/channels/${channelId}/${messageId}`;
-	}
-
-	return url;
-};
-
 type TimeslotEmoji = string;
 type ThreadUrl = string;
 type FlatNotin = UserSpec & {
@@ -122,7 +112,7 @@ export const parseNotInMessage = (input: string): NotInsPerTimeslot => {
 			.filter((line) => line.length > 0)
 			.flatMap((line) => {
 				const httpUrl = /\[thread]\(<(?<url>[^>]+)>\)/.exec(line)?.groups!.url;
-				const threadUrl = httpUrl ? convertToDiscordUrl(httpUrl.trim()) : '';
+				const threadUrl = httpUrl?.trim() ?? '';
 				const userMatches = [
 					...line.matchAll(
 						/<@(?<discordId>\d+)> \(`(?<ign>[^)]+)`\)(?: \(from timeslot (?<fromTimeslot>\d)\))?/g,
