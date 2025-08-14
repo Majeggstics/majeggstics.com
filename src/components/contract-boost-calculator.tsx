@@ -80,6 +80,8 @@ type CalcData = {
 	hatcheryCalm: string;
 	colleggtibleIhr: string;
 };
+
+const nullArtifact = { level: Number.NaN, rarity: Number.NaN };
 const defaultCalcData = () => ({
 	eid: '',
 	lifeT2: '0',
@@ -95,6 +97,9 @@ const defaultCalcData = () => ({
 	baseIhr: '7440',
 	hatcheryCalm: '20',
 	colleggtibleIhr: '5',
+	monocle: nullArtifact,
+	gusset: nullArtifact,
+	chalice: nullArtifact,
 });
 
 const Calculator = generateCalculator<CalcData>(defaultCalcData());
@@ -427,7 +432,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	);
 
 	const maxHabSpace = useMemo(
-		() => 11_340_000_000 * gussetMultiplier(calc.data.gusset ?? { level: 0, rarity: 0 }),
+		() => 11_340_000_000 * gussetMultiplier(calc.data.gusset ?? nullArtifact),
 		[calc.data.gusset],
 	);
 
@@ -456,8 +461,8 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 					(1 + Number.parseInt(calc.data.colleggtibleIhr || '0', 10) / 100) *
 					lifeBonus *
 					Math.max(1, tachMult * Math.max(1, beaconMult)) *
-					chaliceMultiplier(calc.data.chalice ?? { level: 0, rarity: 0 }) *
-					monocleMultiplier(calc.data.monocle ?? { level: 0, rarity: 0 });
+					chaliceMultiplier(calc.data.chalice ?? nullArtifact) *
+					monocleMultiplier(calc.data.monocle ?? nullArtifact);
 
 				const chickens = time * ihr * 4;
 
@@ -562,24 +567,13 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => calc.updateData({ fetchState: FetchState.IDLE }), []);
 
-	// TEMPORARY: override new vars for my beta testers. Remove before merge.
-	useEffect(
-		() =>
-			calc.updateData({
-				baseIhr: calc.data.baseIhr || '7440',
-				hatcheryCalm: calc.data.hatcheryCalm || '20',
-				colleggtibleIhr: calc.data.colleggtibleIhr || '5',
-			}),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[],
-	);
-
 	const resetExtras = useCallback(
 		() =>
 			calc.updateData({
 				doubleDuration: false,
 				baseIhr: '7440',
 				hatcheryCalm: '20',
+				colleggtibleIhr: '5',
 			}),
 		[calc],
 	);
