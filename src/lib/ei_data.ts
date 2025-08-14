@@ -105,8 +105,8 @@ export namespace ArtifactSpec {
 }
 
 export type ArtifactIntensity = {
-	level: ArtifactSpec.Level;
-	rarity: ArtifactSpec.Rarity;
+	level: ArtifactSpec.Level | typeof Number.NaN;
+	rarity: ArtifactSpec.Rarity | typeof Number.NaN;
 };
 
 export type Artifact = ArtifactIntensity & {

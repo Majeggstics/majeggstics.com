@@ -84,28 +84,6 @@ test('locks bonus input open when not default', async ({ page }) => {
 });
 
 test('calcs an 8-tok', async ({ page }) => {
-	await page.getByLabel(/monocle/i).selectOption('None');
-	await page.getByLabel(/chalice/i).selectOption('None');
-	await page.getByLabel(/gusset/i).selectOption('None');
-
-	const ihrInputs = page.getByRole('group', { name: /ihr set/i });
-	await ihrInputs.getByLabel(/t2/i).fill('0');
-	await ihrInputs.getByLabel(/t3/i).fill('0');
-	await ihrInputs.getByLabel(/t4/i).fill('0');
-
-	const diliInputs = page.getByRole('group', { name: /dili set/i });
-	await diliInputs.getByLabel(/t2/i).fill('0');
-	await diliInputs.getByLabel(/t3/i).fill('0');
-	await diliInputs.getByLabel(/t4/i).fill('0');
-
-	if (await page.getByLabel(/boost duration/).isVisible()) {
-		await page.getByRole('button', { name: /reset bonus/i }).click();
-	} else {
-		await page.getByRole('button', { name: /show bonus/i }).click();
-	}
-
-	await page.getByRole('radio', { name: /8-tok/i }).click();
-
 	// prettier-ignore
 	let outputs = [
 		[/runs out after/i, /10min/ ],
@@ -123,13 +101,21 @@ test('calcs an 8-tok', async ({ page }) => {
 	await page.getByLabel(/chalice/i).selectOption('T4');
 	await page.getByLabel(/gusset/i).selectOption('T2E');
 
+	const ihrInputs = page.getByRole('group', { name: /ihr set/i });
 	await ihrInputs.getByLabel(/t2/i).fill('4');
 	await ihrInputs.getByLabel(/t3/i).fill('4');
 	await ihrInputs.getByLabel(/t4/i).fill('4');
 
+	const diliInputs = page.getByRole('group', { name: /dili set/i });
 	await diliInputs.getByLabel(/t2/i).fill('4');
 	await diliInputs.getByLabel(/t3/i).fill('4');
 	await diliInputs.getByLabel(/t4/i).fill('4');
+
+	if (await page.getByLabel(/boost duration/).isVisible()) {
+		await page.getByRole('button', { name: /reset bonus/i }).click();
+	} else {
+		await page.getByRole('button', { name: /show bonus/i }).click();
+	}
 
 	await page.getByLabel(/boost duration/i).check();
 	await page.getByLabel(/^IHR/).fill('2000');
@@ -144,6 +130,38 @@ test('calcs an 8-tok', async ({ page }) => {
 		[/offline/i       , /15.198B/    ],
 		[/hab space/i     , /12.701B/    ],
 		[/time to fill/i  , /32min 19sec/],
+	];
+
+	for (const match of outputs) await expect(out).toContainText(match);
+	await page.getByLabel(/monocle/i).selectOption('None');
+	await page.getByLabel(/chalice/i).selectOption('None');
+	await page.getByLabel(/gusset/i).selectOption('None');
+
+	await ihrInputs.getByLabel(/t2/i).fill('0');
+	await ihrInputs.getByLabel(/t3/i).fill('0');
+	await ihrInputs.getByLabel(/t4/i).fill('0');
+
+	await diliInputs.getByLabel(/t2/i).fill('0');
+	await diliInputs.getByLabel(/t3/i).fill('0');
+	await diliInputs.getByLabel(/t4/i).fill('0');
+
+	if (await page.getByLabel(/boost duration/).isVisible()) {
+		await page.getByRole('button', { name: /reset bonus/i }).click();
+	} else {
+		await page.getByRole('button', { name: /show bonus/i }).click();
+		await page.getByRole('button', { name: /reset bonus/i }).click();
+	}
+
+	await page.getByRole('radio', { name: /8-tok/i }).click();
+
+	// prettier-ignore
+	outputs = [
+		[/runs out after/i, /10min/ ],
+		[/ge cost/i       , /16,000/],
+		[/online/i        , /3.125B/],
+		[/offline/i       , /9.374B/],
+		[/hab space/i     , /11.34B/],
+		[/time to fill/i  , /∞/     ],
 	];
 
 	for (const match of outputs) await expect(out).toContainText(match);
