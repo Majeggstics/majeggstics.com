@@ -79,6 +79,7 @@ type CalcData = {
 	baseIhr: string;
 	hatcheryCalm: string;
 	colleggtibleIhr: string;
+	truthEggCount: string;
 };
 
 const nullArtifact = { level: Number.NaN, rarity: Number.NaN };
@@ -97,6 +98,7 @@ const defaultCalcData = () => ({
 	baseIhr: '7440',
 	hatcheryCalm: '20',
 	colleggtibleIhr: '5',
+	truthEggCount: '0',
 	monocle: nullArtifact,
 	gusset: nullArtifact,
 	chalice: nullArtifact,
@@ -458,6 +460,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 				const time = diliBonus * (boost.durationMins - elapsed);
 				const ihr =
 					Number.parseInt(calc.data.baseIhr || '0', 10) *
+					(1.01**(Number.parseInt(calc.data.truthEggCount || '0', 10))) *
 					(1 + Number.parseInt(calc.data.colleggtibleIhr || '0', 10) / 100) *
 					lifeBonus *
 					Math.max(1, tachMult * Math.max(1, beaconMult)) *
@@ -500,6 +503,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	}, [
 		boosts,
 		calc.data.baseIhr,
+		calc.data.truthEggCount,
 		calc.data.colleggtibleIhr,
 		calc.data.chalice,
 		diliBonus,
@@ -574,6 +578,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 				baseIhr: '7440',
 				hatcheryCalm: '20',
 				colleggtibleIhr: '5',
+				truthEggCount: '0',
 			}),
 		[calc],
 	);
@@ -665,6 +670,17 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 							<div>
 								<Input datakey="colleggtibleIhr" label="CIHR:" max="5" min="0" type="number" />
 								<span>(Current egg → Contracts → Colleggtibles → Easter)</span>
+							</div>
+							<div>
+								<Input
+									datakey="truthEggCount"
+									label="TE:"
+									max="430"
+									min="0"
+									size={4}
+									type="number"
+								/>
+								<span>(Menu → Prestige → TE Count)</span>
 							</div>
 							<button onClick={resetExtras}>Reset bonus inputs to default</button>
 						</fieldset>
