@@ -244,6 +244,9 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			0,
 		);
 
+		const sumTE = (backupVirtue: EIBackupResponse['virtue']) =>
+			backupVirtue?.eovEarnedList?.reduce((x, y) => x + y) ?? 0;
+
 		updateData({
 			fetchState: FetchState.SUCCESS,
 			lifeT2: String(ihrSet?.ihr.stones[0] ?? 0),
@@ -254,6 +257,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			diliT4: String(diliSet?.dili.stones[2] ?? 0),
 			hatcheryCalm: String(ihcResearch?.level ?? 0),
 			colleggtibleIhr: String(Colleggtible.easterBonus(maxEaster ?? 0)),
+			truthEggCount: String(sumTE(eiResponse?.virtue)),
 			chalice,
 			monocle,
 			gusset,
@@ -458,17 +462,17 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 		for (const boost of timeOrdered) {
 			if (boost.durationMins > elapsed) {
 				const time = diliBonus * (boost.durationMins - elapsed);
+					mMult = monocleMultiplier(calc.data.monocle ?? nullArtifact);
+				}
 				const ihr =
 					Number.parseInt(calc.data.baseIhr || '0', 10) *
-					(1.01**(Number.parseInt(calc.data.truthEggCount || '0', 10))) *
+					1.01 ** Number.parseInt(calc.data.truthEggCount || '0', 10) *
 					(1 + Number.parseInt(calc.data.colleggtibleIhr || '0', 10) / 100) *
 					lifeBonus *
 					Math.max(1, tachMult * Math.max(1, beaconMult)) *
 					chaliceMultiplier(calc.data.chalice ?? nullArtifact) *
-					monocleMultiplier(calc.data.monocle ?? nullArtifact);
-
+					mMult;
 				const chickens = time * ihr * 4;
-
 				if (timeToMaxHabs === 0 && maxHabSpace <= (population + chickens) * ihcMult) {
 					const missing = maxHabSpace - population * ihcMult;
 					const percentOfBoostUsed = missing / (chickens * ihcMult);

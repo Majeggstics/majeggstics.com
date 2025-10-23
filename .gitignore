@@ -38,3 +38,6 @@ node_modules/
 /playwright/.cache/
 .astro
 src/env.d.ts
+
+# Playwright
+/playwright/.auth/
