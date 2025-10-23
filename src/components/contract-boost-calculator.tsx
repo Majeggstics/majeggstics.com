@@ -16,40 +16,17 @@ import { useToggleState } from '/lib/hooks';
 import { groupBy } from '/lib/utils';
 import { generateCalculator, type WithSetter } from '/components/calculator.tsx';
 
-type SlottedArtifact = {
-	spec: Artifact;
-	stonesList: Stone[];
-};
-type Coop = {
-	contract: {
-		customEggId?: string;
-	};
-	maxFarmSizeReached: number;
-};
+type SlottedArtifact = { spec: Artifact; stonesList: Stone[] };
+type Coop = { contract: { customEggId?: string }; maxFarmSizeReached: number };
 type EIBackupResponse = {
 	userName: string;
 	artifactsDb: {
-		savedArtifactSetsList: Array<{
-			slotsList: Array<{
-				occupied: boolean;
-				itemId: number;
-			}>;
-		}>;
-		inventoryItemsList: Array<{
-			itemId: number;
-			artifact: SlottedArtifact;
-		}>;
+		savedArtifactSetsList: Array<{ slotsList: Array<{ occupied: boolean; itemId: number }> }>;
+		inventoryItemsList: Array<{ itemId: number; artifact: SlottedArtifact }>;
 	};
-	game: {
-		epicResearchList: Array<{
-			id: string;
-			level: number;
-		}>;
-	};
-	contracts: {
-		archiveList: Coop[];
-		contractsList: Coop[];
-	};
+	game: { epicResearchList: Array<{ id: string; level: number }> };
+	contracts: { archiveList: Coop[]; contractsList: Coop[] };
+	virtue: { eovEarnedList: Array<number> };
 };
 const ApiUriContext = createContext<string>('missing api uri');
 
@@ -176,10 +153,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 			const [t1, t2, t3] = life;
 
-			return {
-				stones: life,
-				effect: chalice * 1.02 ** t1! * 1.03 ** t2! * 1.04 ** t3!,
-			};
+			return { stones: life, effect: chalice * 1.02 ** t1! * 1.03 ** t2! * 1.04 ** t3! };
 		};
 
 		const diliForSet = (set: SlottedArtifact[]) => {
@@ -194,10 +168,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 			const [t1, t2, t3] = dili;
 
-			return {
-				stones: dili,
-				effect: 1.03 ** t1! * 1.06 ** t2! * 1.08 ** t3!,
-			};
+			return { stones: dili, effect: 1.03 ** t1! * 1.06 ** t2! * 1.08 ** t3! };
 		};
 
 		const sets = eiResponse.artifactsDb.savedArtifactSetsList
@@ -301,21 +272,14 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 	);
 };
 
-type ArtifactSelectorProps = {
-	readonly kind: 'monocle' | 'gusset' | 'chalice';
-};
+type ArtifactSelectorProps = { readonly kind: 'monocle' | 'gusset' | 'chalice' };
 const ArtifactSelector = ({ kind }: ArtifactSelectorProps) => {
 	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
 
 	const handleChange = useCallback(
 		(event: ChangeEvent<HTMLSelectElement>) => {
 			const [level, rarity] = event.target.value.split('-').map((val) => Number.parseInt(val, 10));
-			updateData({
-				[kind]: {
-					level,
-					rarity,
-				},
-			});
+			updateData({ [kind]: { level, rarity } });
 		},
 		[updateData, kind],
 	);
@@ -462,6 +426,8 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 		for (const boost of timeOrdered) {
 			if (boost.durationMins > elapsed) {
 				const time = diliBonus * (boost.durationMins - elapsed);
+				let mMult = 1;
+				if (!(boost.name.includes('Beacon') && elapsed > 0)) {
 					mMult = monocleMultiplier(calc.data.monocle ?? nullArtifact);
 				}
 				const ihr =
