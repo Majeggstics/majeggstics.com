@@ -168,15 +168,16 @@ test('calcs an 8-tok', async ({ page }) => {
 });
 
 test('calcs a 5-tok', async ({ page }) => {
-	// prettier-ignore
 	await page.getByRole('radio', { name: '-token (Benson)' }).click();
+
+	// prettier-ignore
 	let outputs = [
-		[/runs out after/i, /10min/],
-		[/ge cost/i, /10,400/],
-		[/online/i, /625.585M/],
-		[/offline/i, /1.877B/],
-		[/hab space/i, /11.34B/],
-		[/time to fill/i, /∞/],
+		[/runs out after/i, /10min/   ],
+		[/ge cost/i,        /10,400/  ],
+		[/online/i,         /625.585M/],
+		[/offline/i,        /1.877B/  ],
+		[/hab space/i,      /11.34B/  ],
+		[/time to fill/i,   /∞/       ],
 	];
 
 	const out = page.locator('#output span');
