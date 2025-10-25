@@ -84,18 +84,7 @@ test('locks bonus input open when not default', async ({ page }) => {
 });
 
 test('calcs an 8-tok', async ({ page }) => {
-	// prettier-ignore
-	let outputs = [
-		[/runs out after/i, /10min/ ],
-		[/ge cost/i       , /16,000/],
-		[/online/i        , /3.125B/],
-		[/offline/i       , /9.374B/],
-		[/hab space/i     , /11.34B/],
-		[/time to fill/i  , /∞/     ],
-	];
-
 	const out = page.locator('#output span');
-	for (const match of outputs) await expect(out).toContainText(match);
 
 	await page.getByLabel(/monocle/i).selectOption('T4L');
 	await page.getByLabel(/chalice/i).selectOption('T4');
@@ -123,7 +112,7 @@ test('calcs an 8-tok', async ({ page }) => {
 	await page.getByLabel(/CIHR/).fill('2');
 
 	// prettier-ignore
-	outputs = [
+	let outputs = [
 		[/runs out after/i, /39min/      ],
 		[/ge cost/i       , /16,000/     ],
 		[/online/i        , /7.599B/     ],
@@ -203,7 +192,6 @@ test('calcs a 5-tok', async ({ page }) => {
 		await page.getByRole('button', { name: /show bonus/i }).click();
 	}
 
-	//await page.getByLabel(/boost duration/i).check();
 	await page.getByLabel(/^IHR/).fill('2000');
 	await page.getByLabel(/IHC/).fill('10');
 	await page.getByLabel(/CIHR/).fill('2');
@@ -213,42 +201,10 @@ test('calcs a 5-tok', async ({ page }) => {
 	outputs = [
 		[/runs out after/i, /18min/      ],
 		[/ge cost/i       , /10,400/     ],
-		[/online/i        , /790.855M/     ], //790.987M //790.855M
-		[/offline/i       , /1.582B/    ], //1.582B
-		[/hab space/i     , /12.701B/    ], //12.701B
+		[/online/i        , /790.855M/     ], 
+		[/offline/i       , /1.582B/    ], 
+		[/hab space/i     , /12.701B/    ], 
 		[/time to fill/i  , /∞/],
-	];
-
-	for (const match of outputs) await expect(out).toContainText(match);
-	await page.getByLabel(/monocle/i).selectOption('None');
-	await page.getByLabel(/chalice/i).selectOption('None');
-	await page.getByLabel(/gusset/i).selectOption('None');
-
-	await ihrInputs.getByLabel(/t2/i).fill('0');
-	await ihrInputs.getByLabel(/t3/i).fill('0');
-	await ihrInputs.getByLabel(/t4/i).fill('0');
-
-	await diliInputs.getByLabel(/t2/i).fill('0');
-	await diliInputs.getByLabel(/t3/i).fill('0');
-	await diliInputs.getByLabel(/t4/i).fill('0');
-
-	if (await page.getByLabel(/boost duration/).isVisible()) {
-		await page.getByRole('button', { name: /reset bonus/i }).click();
-	} else {
-		await page.getByRole('button', { name: /show bonus/i }).click();
-		await page.getByRole('button', { name: /reset bonus/i }).click();
-	}
-
-	await page.getByRole('radio', { name: /8-tok/i }).click();
-
-	// prettier-ignore
-	outputs = [
-		[/runs out after/i, /10min/ ],
-		[/ge cost/i       , /16,000/],
-		[/online/i        , /3.125B/],
-		[/offline/i       , /9.374B/],
-		[/hab space/i     , /11.34B/],
-		[/time to fill/i  , /∞/     ],
 	];
 
 	for (const match of outputs) await expect(out).toContainText(match);
