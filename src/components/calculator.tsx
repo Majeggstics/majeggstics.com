@@ -84,11 +84,11 @@ export function generateCalculator<Data extends NonCallableObject>(initial: Data
 		return (
 			<div className="calculatorCheckbox">
 				<input
+					checked={checked}
 					id={`input-${String(datakey)}`}
-					type="checkbox"
 					name={String(datakey)}
 					onChange={handleChange}
-					checked={checked}
+					type="checkbox"
 					{...rest}
 				/>
 				<label htmlFor={`input-${String(datakey)}`}>{label}</label>

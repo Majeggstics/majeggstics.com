@@ -26,7 +26,7 @@ type EIBackupResponse = {
 	};
 	game: { epicResearchList: Array<{ id: string; level: number }> };
 	contracts: { archiveList: Coop[]; contractsList: Coop[] };
-	virtue: { eovEarnedList: Array<number> };
+	virtue: { eovEarnedList: number[] };
 };
 const ApiUriContext = createContext<string>('missing api uri');
 
@@ -107,7 +107,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 				for (let remaining = backoff; remaining > 0; remaining--) {
 					updateData({ fetchRetryIn: remaining });
 					// no-loop-func is worried about `setTimeout` here ಠ_ಠ
-					// eslint-disable-next-line @typescript-eslint/no-loop-func
+
 					await new Promise((resolve) => void setTimeout(resolve, 1_000));
 				}
 			}
@@ -238,10 +238,10 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 	return (
 		<>
 			<button
+				className={`fetch-state-${data.fetchState}`}
+				disabled={[FetchState.RETRY, FetchState.PENDING].includes(data.fetchState)}
 				id="fetch-data"
 				onClick={fetchData}
-				disabled={[FetchState.RETRY, FetchState.PENDING].includes(data.fetchState)}
-				className={`fetch-state-${data.fetchState}`}
 			>
 				{children}
 			</button>
@@ -333,12 +333,12 @@ const BoostPresetButtons = () => {
 				{boostRadios.map(({ id, label }) => (
 					<div key={id}>
 						<input
-							type="radio"
-							name="boostSet"
-							id={id}
-							value={id}
 							checked={data.boost === id}
+							id={id}
+							name="boostSet"
 							onChange={handleChange}
+							type="radio"
+							value={id}
 						/>
 						<label htmlFor={id}>{label}</label>
 					</div>
@@ -430,6 +430,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 				if (!(boost.name.includes('Beacon') && elapsed > 0)) {
 					mMult = monocleMultiplier(calc.data.monocle ?? nullArtifact);
 				}
+
 				const ihr =
 					Number.parseInt(calc.data.baseIhr || '0', 10) *
 					1.01 ** Number.parseInt(calc.data.truthEggCount || '0', 10) *
@@ -609,9 +610,9 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 						</fieldset>
 						<div>
 							<button
-								onClick={toggleShowExtra}
-								id="show-extra"
 								disabled={showExtra && !canHideExtra}
+								id="show-extra"
+								onClick={toggleShowExtra}
 							>
 								{showExtra ? '- Hide' : '+ Show'} bonus inputs
 							</button>
@@ -663,7 +664,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 					<section id="output">
 						<Output label="Boosts">
 							{boosts.map((boost: Boost, id: number) => (
-								<Boost.Image key={id} boost={boost} />
+								<Boost.Image boost={boost} key={id} />
 							))}
 						</Output>
 						<Output label="First boost runs out after" value={boostDuration} />

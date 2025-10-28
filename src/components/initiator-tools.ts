@@ -36,6 +36,8 @@ export class Timeslot {
 	}
 
 	static fromEmoji(emoji: string | undefined): Timeslot | null {
+		// Lint doesn't like switch case without undefined, though default handles that just fine...
+		// eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
 		switch (emoji) {
 			case ':one:':
 				return Timeslot.One;
@@ -49,6 +51,8 @@ export class Timeslot {
 	}
 
 	static fromNumeral(numeral: string | undefined): Timeslot | null {
+		// Lint doesn't like switch case without undefined, though default handles that just fine...
+		// eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
 		switch (numeral) {
 			case '1':
 				return Timeslot.One;

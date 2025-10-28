@@ -32,13 +32,13 @@ export default function NotInFailsGeneratorPage() {
 			<p style={{ display: 'flex', flexDirection: 'column' }}>
 				<label htmlFor="#notInMessage">Not in message from Wonky</label>
 				<textarea
+					autoFocus
 					id="notInMessage"
 					name="notInMessage"
 					onChange={(event) => setNotInMessage(event.target.value)}
 					rows={10}
 					style={{ margin: '1rem 0' }}
 					value={notInMessage}
-					autoFocus
 				/>
 			</p>
 
