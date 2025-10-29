@@ -193,19 +193,18 @@ test('calcs a 5-tok', async ({ page }) => {
 		await page.getByRole('button', { name: /show bonus/i }).click();
 	}
 
-	//await page.getByLabel(/boost duration/i).check();
 	await page.getByLabel(/^IHR/).fill('2000');
 	await page.getByLabel(/IHC/).fill('10');
 	await page.getByLabel(/CIHR/).fill('2');
 	await page.getByLabel(/TE/).fill('36');
 
 	// prettier-ignore
-	let outputs = [
+	const outputs = [
 		[/runs out after/i, /18min/   ],
 		[/ge cost/i       , /10,400/  ],
-		[/online/i        , /790.855M/], //790.987M //790.855M
-		[/offline/i       , /1.582B/  ], //1.582B
-		[/hab space/i     , /12.701B/ ], //12.701B
+		[/online/i        , /790.855M/],
+		[/offline/i       , /1.582B/  ], 
+		[/hab space/i     , /12.701B/ ], 
 		[/time to fill/i  , /∞/       ],
 	];
 
