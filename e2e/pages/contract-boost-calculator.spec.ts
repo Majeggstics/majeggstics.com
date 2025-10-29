@@ -168,9 +168,6 @@ test('calcs an 8-tok', async ({ page }) => {
 });
 
 test('calcs a 5-tok', async ({ page }) => {
-	// prettier-ignore
-	await page.getByRole('radio', { name: '-token (Benson)' }).click();
-
 	const out = page.locator('#output span');
 
 	await page.getByLabel(/monocle/i).selectOption('T4');
@@ -207,6 +204,8 @@ test('calcs a 5-tok', async ({ page }) => {
 		[/hab space/i     , /12.701B/ ], 
 		[/time to fill/i  , /∞/       ],
 	];
+
+	await page.getByRole('radio', { name: '-token (Benson)' }).click(); // Set boost method to 5-tok
 
 	for (const match of outputs) await expect(out).toContainText(match);
 });
