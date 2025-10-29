@@ -21,12 +21,10 @@ jobs:
           fetch-depth: 0
 
       - name: Install Node.js v20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20
-
-      - name: Install dependencies
-        uses: ./.github/actions/yarnCache
+          cache: yarn
 
       - name: Add TSC Problem Matcher
         run: echo "::add-matcher::.github/tsc.json"
