@@ -20,14 +20,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Enable Corepack
-        run: corepack enable
-
       - name: Install Node.js v20
         uses: actions/setup-node@v6
         with:
           node-version: 20
           cache: yarn
+
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Install deps
         run: yarn install --inline-builds
