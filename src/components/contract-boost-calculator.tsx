@@ -16,40 +16,17 @@ import { useToggleState } from '/lib/hooks';
 import { groupBy } from '/lib/utils';
 import { generateCalculator, type WithSetter } from '/components/calculator.tsx';
 
-type SlottedArtifact = {
-	spec: Artifact;
-	stonesList: Stone[];
-};
-type Coop = {
-	contract: {
-		customEggId?: string;
-	};
-	maxFarmSizeReached: number;
-};
+type SlottedArtifact = { spec: Artifact; stonesList: Stone[] };
+type Coop = { contract: { customEggId?: string }; maxFarmSizeReached: number };
 type EIBackupResponse = {
 	userName: string;
 	artifactsDb: {
-		savedArtifactSetsList: Array<{
-			slotsList: Array<{
-				occupied: boolean;
-				itemId: number;
-			}>;
-		}>;
-		inventoryItemsList: Array<{
-			itemId: number;
-			artifact: SlottedArtifact;
-		}>;
+		savedArtifactSetsList: Array<{ slotsList: Array<{ occupied: boolean; itemId: number }> }>;
+		inventoryItemsList: Array<{ itemId: number; artifact: SlottedArtifact }>;
 	};
-	game: {
-		epicResearchList: Array<{
-			id: string;
-			level: number;
-		}>;
-	};
-	contracts: {
-		archiveList: Coop[];
-		contractsList: Coop[];
-	};
+	game: { epicResearchList: Array<{ id: string; level: number }> };
+	contracts: { archiveList: Coop[]; contractsList: Coop[] };
+	virtue: { eovEarnedList: number[] };
 };
 const ApiUriContext = createContext<string>('missing api uri');
 
@@ -79,6 +56,7 @@ type CalcData = {
 	baseIhr: string;
 	hatcheryCalm: string;
 	colleggtibleIhr: string;
+	truthEggCount: string;
 };
 
 const nullArtifact = { level: Number.NaN, rarity: Number.NaN };
@@ -97,6 +75,7 @@ const defaultCalcData = () => ({
 	baseIhr: '7440',
 	hatcheryCalm: '20',
 	colleggtibleIhr: '5',
+	truthEggCount: '0',
 	monocle: nullArtifact,
 	gusset: nullArtifact,
 	chalice: nullArtifact,
@@ -128,7 +107,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 				for (let remaining = backoff; remaining > 0; remaining--) {
 					updateData({ fetchRetryIn: remaining });
 					// no-loop-func is worried about `setTimeout` here ಠ_ಠ
-					// eslint-disable-next-line @typescript-eslint/no-loop-func
+
 					await new Promise((resolve) => void setTimeout(resolve, 1_000));
 				}
 			}
@@ -174,10 +153,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 			const [t1, t2, t3] = life;
 
-			return {
-				stones: life,
-				effect: chalice * 1.02 ** t1! * 1.03 ** t2! * 1.04 ** t3!,
-			};
+			return { stones: life, effect: chalice * 1.02 ** t1! * 1.03 ** t2! * 1.04 ** t3! };
 		};
 
 		const diliForSet = (set: SlottedArtifact[]) => {
@@ -192,10 +168,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 			const [t1, t2, t3] = dili;
 
-			return {
-				stones: dili,
-				effect: 1.03 ** t1! * 1.06 ** t2! * 1.08 ** t3!,
-			};
+			return { stones: dili, effect: 1.03 ** t1! * 1.06 ** t2! * 1.08 ** t3! };
 		};
 
 		const sets = eiResponse.artifactsDb.savedArtifactSetsList
@@ -242,6 +215,9 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			0,
 		);
 
+		const sumTE = (backupVirtue: EIBackupResponse['virtue']) =>
+			backupVirtue?.eovEarnedList?.reduce((x, y) => x + y) ?? 0;
+
 		updateData({
 			fetchState: FetchState.SUCCESS,
 			lifeT2: String(ihrSet?.ihr.stones[0] ?? 0),
@@ -252,6 +228,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			diliT4: String(diliSet?.dili.stones[2] ?? 0),
 			hatcheryCalm: String(ihcResearch?.level ?? 0),
 			colleggtibleIhr: String(Colleggtible.easterBonus(maxEaster ?? 0)),
+			truthEggCount: String(sumTE(eiResponse?.virtue)),
 			chalice,
 			monocle,
 			gusset,
@@ -261,10 +238,10 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 	return (
 		<>
 			<button
+				className={`fetch-state-${data.fetchState}`}
+				disabled={[FetchState.RETRY, FetchState.PENDING].includes(data.fetchState)}
 				id="fetch-data"
 				onClick={fetchData}
-				disabled={[FetchState.RETRY, FetchState.PENDING].includes(data.fetchState)}
-				className={`fetch-state-${data.fetchState}`}
 			>
 				{children}
 			</button>
@@ -295,21 +272,14 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 	);
 };
 
-type ArtifactSelectorProps = {
-	readonly kind: 'monocle' | 'gusset' | 'chalice';
-};
+type ArtifactSelectorProps = { readonly kind: 'monocle' | 'gusset' | 'chalice' };
 const ArtifactSelector = ({ kind }: ArtifactSelectorProps) => {
 	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
 
 	const handleChange = useCallback(
 		(event: ChangeEvent<HTMLSelectElement>) => {
 			const [level, rarity] = event.target.value.split('-').map((val) => Number.parseInt(val, 10));
-			updateData({
-				[kind]: {
-					level,
-					rarity,
-				},
-			});
+			updateData({ [kind]: { level, rarity } });
 		},
 		[updateData, kind],
 	);
@@ -363,12 +333,12 @@ const BoostPresetButtons = () => {
 				{boostRadios.map(({ id, label }) => (
 					<div key={id}>
 						<input
-							type="radio"
-							name="boostSet"
-							id={id}
-							value={id}
 							checked={data.boost === id}
+							id={id}
+							name="boostSet"
 							onChange={handleChange}
+							type="radio"
+							value={id}
 						/>
 						<label htmlFor={id}>{label}</label>
 					</div>
@@ -456,16 +426,20 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 		for (const boost of timeOrdered) {
 			if (boost.durationMins > elapsed) {
 				const time = diliBonus * (boost.durationMins - elapsed);
+				let mMult = 1;
+				if (!(boost.name.includes('Beacon') && elapsed > 0)) {
+					mMult = monocleMultiplier(calc.data.monocle ?? nullArtifact);
+				}
+
 				const ihr =
 					Number.parseInt(calc.data.baseIhr || '0', 10) *
+					1.01 ** Number.parseInt(calc.data.truthEggCount || '0', 10) *
 					(1 + Number.parseInt(calc.data.colleggtibleIhr || '0', 10) / 100) *
 					lifeBonus *
 					Math.max(1, tachMult * Math.max(1, beaconMult)) *
 					chaliceMultiplier(calc.data.chalice ?? nullArtifact) *
-					monocleMultiplier(calc.data.monocle ?? nullArtifact);
-
+					mMult;
 				const chickens = time * ihr * 4;
-
 				if (timeToMaxHabs === 0 && maxHabSpace <= (population + chickens) * ihcMult) {
 					const missing = maxHabSpace - population * ihcMult;
 					const percentOfBoostUsed = missing / (chickens * ihcMult);
@@ -500,6 +474,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	}, [
 		boosts,
 		calc.data.baseIhr,
+		calc.data.truthEggCount,
 		calc.data.colleggtibleIhr,
 		calc.data.chalice,
 		diliBonus,
@@ -574,6 +549,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 				baseIhr: '7440',
 				hatcheryCalm: '20',
 				colleggtibleIhr: '5',
+				truthEggCount: '0',
 			}),
 		[calc],
 	);
@@ -634,9 +610,9 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 						</fieldset>
 						<div>
 							<button
-								onClick={toggleShowExtra}
-								id="show-extra"
 								disabled={showExtra && !canHideExtra}
+								id="show-extra"
+								onClick={toggleShowExtra}
 							>
 								{showExtra ? '- Hide' : '+ Show'} bonus inputs
 							</button>
@@ -666,6 +642,17 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 								<Input datakey="colleggtibleIhr" label="CIHR:" max="5" min="0" type="number" />
 								<span>(Current egg → Contracts → Colleggtibles → Easter)</span>
 							</div>
+							<div>
+								<Input
+									datakey="truthEggCount"
+									label="TE:"
+									max="430"
+									min="0"
+									size={4}
+									type="number"
+								/>
+								<span>(Menu → Prestige → TE Count)</span>
+							</div>
 							<button onClick={resetExtras}>Reset bonus inputs to default</button>
 						</fieldset>
 					)}
@@ -677,7 +664,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 					<section id="output">
 						<Output label="Boosts">
 							{boosts.map((boost: Boost, id: number) => (
-								<Boost.Image key={id} boost={boost} />
+								<Boost.Image boost={boost} key={id} />
 							))}
 						</Output>
 						<Output label="First boost runs out after" value={boostDuration} />

@@ -166,3 +166,45 @@ test('calcs an 8-tok', async ({ page }) => {
 
 	for (const match of outputs) await expect(out).toContainText(match);
 });
+
+test('calcs a 5-tok', async ({ page }) => {
+	await page.getByRole('radio', { name: '-token (Benson)' }).click(); // Set boost method to 5-tok
+
+	await page.getByLabel(/monocle/i).selectOption('T4');
+	await page.getByLabel(/chalice/i).selectOption('T3E');
+	await page.getByLabel(/gusset/i).selectOption('T2E');
+
+	const ihrInputs = page.getByRole('group', { name: /ihr set/i });
+	await ihrInputs.getByLabel(/t2/i).fill('0');
+	await ihrInputs.getByLabel(/t3/i).fill('0');
+	await ihrInputs.getByLabel(/t4/i).fill('6');
+
+	const diliInputs = page.getByRole('group', { name: /dili set/i });
+	await diliInputs.getByLabel(/t2/i).fill('0');
+	await diliInputs.getByLabel(/t3/i).fill('2');
+	await diliInputs.getByLabel(/t4/i).fill('6');
+
+	if (await page.getByLabel(/boost duration/).isVisible()) {
+		await page.getByRole('button', { name: /reset bonus/i }).click();
+	} else {
+		await page.getByRole('button', { name: /show bonus/i }).click();
+	}
+
+	await page.getByLabel(/^IHR/).fill('2000');
+	await page.getByLabel(/IHC/).fill('10');
+	await page.getByLabel(/CIHR/).fill('2');
+	await page.getByLabel(/TE/).fill('36');
+
+	// prettier-ignore
+	const outputs = [
+		[/runs out after/i, /18min/   ],
+		[/ge cost/i       , /10,400/  ],
+		[/online/i        , /790.855M/],
+		[/offline/i       , /1.582B/  ], 
+		[/hab space/i     , /12.701B/ ], 
+		[/time to fill/i  , /∞/       ],
+	];
+
+	const out = page.locator('#output span');
+	for (const match of outputs) await expect(out).toContainText(match);
+});
