@@ -21,7 +21,6 @@
 		"markdown-to-jsx": "^7.7.17",
 		"moment-timezone": "^0.6.0",
 		"normalize.css": "^8.0.1",
-		"prettier": "^3.6.2",
 		"prop-types": "^15.8.1",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1"
@@ -52,6 +51,7 @@
 		"lint-staged": "^15.5.2",
 		"lodash.merge": "^4.6.2",
 		"mocha": "^10.8.2",
+		"prettier": "^3.6.2",
 		"prettier-plugin-astro": "^0.14.1",
 		"tsx": "^4.20.6",
 		"typescript": "^5.9.3"
