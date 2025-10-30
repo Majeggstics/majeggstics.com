@@ -65,5 +65,6 @@
 			"import=tsx",
 			"import=ignore-styles"
 		]
-	}
+	},
+	"packageManager": "yarn@4.10.3"
 }
