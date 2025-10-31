@@ -458,11 +458,17 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 			}
 		}
 
-		let sec = timeToMaxHabs * 60;
-		const hr = Math.floor(sec / 3_600);
-		sec -= hr * 3_600;
-		const min = Math.floor(sec / 60);
-		sec = Math.round(sec - min * 60);
+		const hr = Math.floor(timeToMaxHabs / 60);
+		let min = Math.floor(timeToMaxHabs % 60);
+		let sec = Math.round((timeToMaxHabs - min) * 60);
+
+		if (sec === 60) {
+			// If 60 seconds are left, add to minute instead
+
+			min += 1;
+			sec = 0;
+		}
+
 		const formattedTime = [
 			hr > 0 ? hr + 'hr' : '',
 			min > 0 ? min + 'min' : '',
