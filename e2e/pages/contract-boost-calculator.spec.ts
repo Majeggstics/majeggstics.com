@@ -208,3 +208,34 @@ test('calcs a 5-tok', async ({ page }) => {
 	const out = page.locator('#output span');
 	for (const match of outputs) await expect(out).toContainText(match);
 });
+
+test('checks rounding', async ({ page }) => {
+	await page.getByRole('radio', { name: '-token (Dubson)' }).click(); // Set to 6tok
+
+	await page.getByLabel(/monocle/i).selectOption('T4E');
+	await page.getByLabel(/chalice/i).selectOption('T3E');
+	await page.getByLabel(/gusset/i).selectOption('T4L');
+
+	const ihrInputs = page.getByRole('group', { name: /ihr set/i }); // Set conditions where rounding wants to say 16m60s
+	await ihrInputs.getByLabel(/t2/i).fill('0');
+	await ihrInputs.getByLabel(/t3/i).fill('0');
+	await ihrInputs.getByLabel(/t4/i).fill('9');
+
+	const diliInputs = page.getByRole('group', { name: /dili set/i });
+	await diliInputs.getByLabel(/t2/i).fill('0');
+	await diliInputs.getByLabel(/t3/i).fill('4');
+	await diliInputs.getByLabel(/t4/i).fill('4');
+
+	// prettier-ignore
+	const outputs = [
+		[/runs out after/i, /17min/   ],
+		[/ge cost/i       , /11,200/  ],
+		[/online/i        , /4.776B/  ],
+		[/offline/i       , /14.329B/ ], 
+		[/hab space/i     , /14.175B/ ], 
+		[/time to fill/i  , /17min/   ],
+	];
+
+	const out = page.locator('#output span');
+	for (const match of outputs) await expect(out).toContainText(match);
+});
