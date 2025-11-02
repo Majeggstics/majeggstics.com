@@ -65,7 +65,7 @@ test('keys copy-state from ign & thread url', async ({ page }) => {
 	await expect(timeslotOne).toContainText(/❌\s*<@11>/i);
 });
 
-test('tests for usernames with parentheses', async ({ page }) => {
+test('tests for usernames with special characters', async ({ page }) => {
 	/* Add in other special characters in this test if other 
 	characters in in game names are found to be problematic */
 
@@ -77,7 +77,7 @@ test('tests for usernames with parentheses', async ({ page }) => {
 		<:grade_aaa:11> [coop2](<carpet>) ([thread](<disc>)): <@22> (\`()bar)(?!<>\`)
 
 		Timeslot :two::
-		<:grade_aaa:11> [coop3](<carpet>) ([thread](<disc>)): <@33> (\`baz('<'*?)\`)
+		<:grade_aaa:11> [coop3](<carpet>) ([thread](<disc>)): <@33> (\`baz ('<'*?)\`)
 
 		(no pings were sent)
 	`);
@@ -88,6 +88,6 @@ test('tests for usernames with parentheses', async ({ page }) => {
 	await expect(timeslotOne).toContainText('you don’t join by +6');
 
 	const timeslotTwo = page.locator('section').filter({ hasText: /Timeslot 2/ });
-	await expect(timeslotTwo).toContainText("(`baz('<'*?)`)");
+	await expect(timeslotTwo).toContainText("(`baz ('<'*?)`)");
 	await expect(timeslotTwo).toContainText('you don’t join by +11');
 });
