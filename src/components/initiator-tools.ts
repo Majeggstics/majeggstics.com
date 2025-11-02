@@ -119,7 +119,7 @@ export const parseNotInMessage = (input: string): NotInsPerTimeslot => {
 				const threadUrl = httpUrl?.trim() ?? '';
 				const userMatches = [
 					...line.matchAll(
-						/<@(?<discordId>\d+)> \(`(?<ign>[^)]+)`\)(?: \(from timeslot (?<fromTimeslot>\d)\))?/g,
+						/<@(?<discordId>\d+)> \(`(?<ign>.+)`\)(?: \(from timeslot (?<fromTimeslot>\d)\))?/g,
 					),
 				];
 
