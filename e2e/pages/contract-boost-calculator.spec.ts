@@ -267,12 +267,12 @@ test('checks rounding (hours)', async ({ page }) => {
 
 	// prettier-ignore
 	const outputs = [
-		[/runs out after/i, /6hr45min/],
-		[/ge cost/i       , /2,000/   ],
-		[/online/i        , /4.27B/  ],
-		[/offline/i       , /12.81B/ ], 
-		[/hab space/i     , /12.701B/], 
-		[/time to fill/i  , /6hr 42min 1sec/  ], // ...
+		[/runs out after/i, /6hr45min/      ],
+		[/ge cost/i       , /2,000/         ],
+		[/online/i        , /4.27B/         ],
+		[/offline/i       , /12.81B/        ], 
+		[/hab space/i     , /12.701B/       ], 
+		[/time to fill/i  , /6hr 42min 1sec/],
 	];
 
 	const out = page.locator('#output span');
