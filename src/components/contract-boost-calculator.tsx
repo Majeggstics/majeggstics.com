@@ -572,11 +572,20 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	const eggFormat = (num: number) =>
 		Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 3 }).format(num);
 
+	const plug =
+		'discord://discord.com/channels/455380663013736479/1349136920839454720/1349136920839454720';
+
 	return (
 		<ApiUriContext.Provider value={api}>
 			<Calculator.Context.Provider value={calc}>
 				<section>
 					<h1>Contract Boost Calculator</h1>
+					<p>
+						Not in Majeggstics? Request to join by dming one of our recruiters!{' '}
+						<a href={plug} rel="noreferrer" target="_blank">
+							Link to Discord
+						</a>
+					</p>
 				</section>
 				<section id="inputs" ref={listenerRef}>
 					<section id="input-eid-artifacts">
