@@ -78,6 +78,7 @@ test('tests for usernames with special characters', async ({ page }) => {
 
 		Timeslot :two::
 		<:grade_aaa:11> [coop3](<carpet>) ([thread](<disc>)): <@33> (\`baz ('<'*?)\`)
+		<:grade_aaa:11> [coop3](<carpet>) ([thread](<disc>)): <@44> (\`a\`)
 
 		(no pings were sent)
 	`);
@@ -89,5 +90,6 @@ test('tests for usernames with special characters', async ({ page }) => {
 
 	const timeslotTwo = page.locator('section').filter({ hasText: /Timeslot 2/ });
 	await expect(timeslotTwo).toContainText("(`baz ('<'*?)`)");
+	await expect(timeslotTwo).toContainText('(`a`)');
 	await expect(timeslotTwo).toContainText('you don’t join by +11');
 });
