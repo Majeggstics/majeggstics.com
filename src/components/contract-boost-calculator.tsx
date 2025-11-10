@@ -460,7 +460,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 
 		const hr = Math.floor(timeToMaxHabs / 60);
 		let min = Math.floor(timeToMaxHabs % 60);
-		let sec = Math.round((timeToMaxHabs - min) * 60);
+		let sec = Math.round((timeToMaxHabs - hr * 60 - min) * 60);
 
 		if (sec === 60) {
 			// If 60 seconds are left, add to minute instead
