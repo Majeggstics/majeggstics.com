@@ -166,3 +166,115 @@ test('calcs an 8-tok', async ({ page }) => {
 
 	for (const match of outputs) await expect(out).toContainText(match);
 });
+
+test('calcs a 5-tok', async ({ page }) => {
+	await page.getByRole('radio', { name: '-token (Benson)' }).click(); // Set boost method to 5-tok
+
+	await page.getByLabel(/monocle/i).selectOption('T4');
+	await page.getByLabel(/chalice/i).selectOption('T3E');
+	await page.getByLabel(/gusset/i).selectOption('T2E');
+
+	const ihrInputs = page.getByRole('group', { name: /ihr set/i });
+	await ihrInputs.getByLabel(/t2/i).fill('0');
+	await ihrInputs.getByLabel(/t3/i).fill('0');
+	await ihrInputs.getByLabel(/t4/i).fill('6');
+
+	const diliInputs = page.getByRole('group', { name: /dili set/i });
+	await diliInputs.getByLabel(/t2/i).fill('0');
+	await diliInputs.getByLabel(/t3/i).fill('2');
+	await diliInputs.getByLabel(/t4/i).fill('6');
+
+	if (await page.getByLabel(/boost duration/).isVisible()) {
+		await page.getByRole('button', { name: /reset bonus/i }).click();
+	} else {
+		await page.getByRole('button', { name: /show bonus/i }).click();
+	}
+
+	await page.getByLabel(/^IHR/).fill('2000');
+	await page.getByLabel(/IHC/).fill('10');
+	await page.getByLabel(/CIHR/).fill('2');
+	await page.getByLabel(/TE/).fill('36');
+
+	// prettier-ignore
+	const outputs = [
+		[/runs out after/i, /18min/   ],
+		[/ge cost/i       , /10,400/  ],
+		[/online/i        , /790.855M/],
+		[/offline/i       , /1.582B/  ], 
+		[/hab space/i     , /12.701B/ ], 
+		[/time to fill/i  , /∞/       ],
+	];
+
+	const out = page.locator('#output span');
+	for (const match of outputs) await expect(out).toContainText(match);
+});
+
+test('checks rounding (minutes)', async ({ page }) => {
+	await page.getByRole('radio', { name: '-token (Dubson)' }).click(); // Set to 6tok
+
+	await page.getByLabel(/monocle/i).selectOption('T4E');
+	await page.getByLabel(/chalice/i).selectOption('T3E');
+	await page.getByLabel(/gusset/i).selectOption('T4L');
+
+	const ihrInputs = page.getByRole('group', { name: /ihr set/i }); // Set conditions where rounding wants to say 16m60s
+	await ihrInputs.getByLabel(/t2/i).fill('0');
+	await ihrInputs.getByLabel(/t3/i).fill('0');
+	await ihrInputs.getByLabel(/t4/i).fill('9');
+
+	const diliInputs = page.getByRole('group', { name: /dili set/i });
+	await diliInputs.getByLabel(/t2/i).fill('0');
+	await diliInputs.getByLabel(/t3/i).fill('4');
+	await diliInputs.getByLabel(/t4/i).fill('4');
+
+	// prettier-ignore
+	const outputs = [
+		[/runs out after/i, /17min/   ],
+		[/ge cost/i       , /11,200/  ],
+		[/online/i        , /4.776B/  ],
+		[/offline/i       , /14.329B/ ], 
+		[/hab space/i     , /14.175B/ ], 
+		[/time to fill/i  , /17min/   ],
+	];
+
+	const out = page.locator('#output span');
+	for (const match of outputs) await expect(out).toContainText(match);
+});
+
+test('checks rounding (hours)', async ({ page }) => {
+	await page.getByRole('radio', { name: '-token (five large)' }).click(); // Set to 0-tok
+
+	await page.getByLabel(/monocle/i).selectOption('T3');
+	await page.getByLabel(/chalice/i).selectOption('T3R');
+	await page.getByLabel(/gusset/i).selectOption('T2E');
+
+	if (await page.getByLabel(/boost duration/).isVisible()) {
+		await page.getByRole('button', { name: /reset bonus/i }).click();
+	} else {
+		await page.getByRole('button', { name: /show bonus/i }).click();
+	}
+
+	await page.getByLabel(/TE/).fill('148');
+
+	const ihrInputs = page.getByRole('group', { name: /ihr set/i }); // Set conditions where rounding wants to say 6hr 42min 21601sec
+	await ihrInputs.getByLabel(/t2/i).fill('0');
+	await ihrInputs.getByLabel(/t3/i).fill('3');
+	await ihrInputs.getByLabel(/t4/i).fill('0');
+
+	const diliInputs = page.getByRole('group', { name: /dili set/i });
+	await diliInputs.getByLabel(/t2/i).fill('0');
+	await diliInputs.getByLabel(/t3/i).fill('9');
+	await diliInputs.getByLabel(/t4/i).fill('0');
+
+	// prettier-ignore
+	const outputs = [
+		[/runs out after/i, /6hr45min/      ],
+		[/ge cost/i       , /2,000/         ],
+		[/online/i        , /4.27B/         ],
+		[/offline/i       , /12.81B/        ], 
+		[/hab space/i     , /12.701B/       ], 
+		[/time to fill/i  , /6hr 42min 1sec/],
+	];
+
+	const out = page.locator('#output span');
+	for (const match of outputs) await expect(out).toContainText(match);
+});

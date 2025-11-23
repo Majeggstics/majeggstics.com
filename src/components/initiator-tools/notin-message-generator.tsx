@@ -1,6 +1,6 @@
+import { css } from '@acab/ecsstatic';
 import copy from 'copy-to-clipboard';
 import { useState, useCallback, useMemo } from 'react';
-import { css } from '@acab/ecsstatic';
 import { Timeslot, useExtractNotins } from '/components/initiator-tools';
 import { useEventSetState } from '/lib/hooks';
 
@@ -11,7 +11,7 @@ type NotInProps = {
 };
 const NotIn = ({ timeslotEmoji, user, threadUrl }: NotInProps) => {
 	const timeslot = useMemo(() => Timeslot.fromEmoji(timeslotEmoji)!, [timeslotEmoji]);
-	const [copied, setCopied] = useState<Boolean>(false);
+	const [copied, setCopied] = useState<boolean>(false);
 	const text = useMemo(
 		() =>
 			`${user}. Courtesy reminder to join your coop ASAP! You will receive a strike if you don’t join by ${timeslot.format('join_deadline_eggst')} (${timeslot.format('join_deadline')} in your time zone).`,
@@ -55,12 +55,12 @@ export default function NotInMessageGeneratorPage() {
 		<>
 			<label htmlFor="notInMessage">Not in message from Wonky:</label>
 			<textarea
+				autoFocus
 				id="notInMessage"
 				name="notInMessage"
 				onChange={handleNotInMessageChange}
 				rows={10}
 				value={notInMessage}
-				autoFocus
 			/>
 
 			{Object.entries(notins).map(([timeslotEmoji, slotNotins]) => (

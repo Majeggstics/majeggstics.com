@@ -1,6 +1,6 @@
+import { css } from '@acab/ecsstatic';
 import copy from 'copy-to-clipboard';
 import Markdown from 'markdown-to-jsx';
-import { css } from '@acab/ecsstatic';
 import { useState, useCallback, useMemo, type ReactNode } from 'react';
 import { Timeslot, parseMinsMessage } from '/components/initiator-tools';
 import { useEventSetState, useToggleState } from '/lib/hooks';
@@ -179,13 +179,13 @@ export default function MinFailsGeneratorPage() {
 			<div>
 				<label htmlFor="minsMessage">Minimum check message from Wonky:</label>
 				<textarea
+					autoFocus
 					className={fullWidth}
 					id="minsMessage"
 					name="minsMessage"
 					onChange={handleMinsMessageChange}
 					rows={10}
 					value={minsMessage}
-					autoFocus
 				/>
 			</div>
 

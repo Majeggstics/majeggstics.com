@@ -69,7 +69,6 @@ const typeScriptRuleset = merge(...typescript, {
 	},
 });
 
-/** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
 	{
 		ignores: ['**/node_modules/', '.git/', 'out/'],

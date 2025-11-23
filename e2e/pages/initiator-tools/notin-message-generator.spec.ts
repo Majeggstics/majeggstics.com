@@ -64,3 +64,32 @@ test('keys copy-state from ign & thread url', async ({ page }) => {
 	// we _should_ reset copied state
 	await expect(timeslotOne).toContainText(/❌\s*<@11>/i);
 });
+
+test('tests for usernames with special characters', async ({ page }) => {
+	/* Add in other special characters in this test if other 
+	characters in in game names are found to be problematic */
+
+	await page.getByRole('textbox').fill(stripIndent`
+		Not in :egg_supermaterial: **Federal Reggserve** :egg_supermaterial: - \`federal-reggserve\`:
+
+		Timeslot :one::
+		<:grade_aaa:11> [coop1](<carpet>) ([thread](<disc>)): <@11> (\`(foo<>?!-3)\`)
+		<:grade_aaa:11> [coop2](<carpet>) ([thread](<disc>)): <@22> (\`()bar)(?!<>\`)
+
+		Timeslot :two::
+		<:grade_aaa:11> [coop3](<carpet>) ([thread](<disc>)): <@33> (\`baz ('<'*?)\`)
+		<:grade_aaa:11> [coop3](<carpet>) ([thread](<disc>)): <@44> (\`a\`)
+
+		(no pings were sent)
+	`);
+
+	const timeslotOne = page.locator('section').filter({ hasText: /Timeslot 1/ });
+	await expect(timeslotOne).toContainText('(`(foo<>?!-3)`)');
+	await expect(timeslotOne).toContainText('(`()bar)(?!<>`)');
+	await expect(timeslotOne).toContainText('you don’t join by +6');
+
+	const timeslotTwo = page.locator('section').filter({ hasText: /Timeslot 2/ });
+	await expect(timeslotTwo).toContainText("(`baz ('<'*?)`)");
+	await expect(timeslotTwo).toContainText('(`a`)');
+	await expect(timeslotTwo).toContainText('you don’t join by +11');
+});
