@@ -320,6 +320,8 @@ const boostRadios = [
 	{ id: 'boost4', label: '4-token (Epic)' },
 	{ id: 'boost4s', label: '4-token (Supreme)' },
 	{ id: 'boost2', label: '2-token (Single Epic)' },
+	{ id: 'bost1bb', label: 'LBB' },
+	{ id: 'bostebb', label: 'TBB' },
 	{ id: 'boost0', label: '0-token (five large)' },
 ] as const;
 const BoostPresetButtons = () => {
@@ -371,6 +373,8 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 				boost4: [Boost.EpicTach, Boost.EpicTach],
 				boost4s: [Boost.SupremeTach],
 				boost2: [Boost.EpicTach],
+				bost1bb: [Boost.LargeTach, Boost.LargeTach, Boost.LargeTach, Boost.LargeTach, Boost.LargeBeacon],
+				bostebb: [Boost.LargeTach, Boost.LargeTach, Boost.LargeTach, Boost.EpicTach, Boost.Beacon],
 			})[calc.data.boost] ?? [
 				Boost.LargeTach,
 				Boost.LargeTach,
