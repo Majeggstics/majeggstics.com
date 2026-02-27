@@ -3192,15 +3192,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"baseline-browser-mapping@npm:^2.9.11":
-  version: 2.9.11
-  resolution: "baseline-browser-mapping@npm:2.9.11"
-  bin:
-    baseline-browser-mapping: dist/cli.js
-  checksum: 10/d71fe6693f999ee0bf1fcd72b31c01390f2bfac40d179175817f24cdb11b19d14a102227a8fa28e0a4733a17c780458c17384c75f2227e45b0e8a0080caf6532
-  languageName: node
-  linkType: hard
-
 "bent@npm:~7.3.6":
   version: 7.3.12
   resolution: "bent@npm:7.3.12"
@@ -7318,7 +7309,6 @@ __metadata:
     "@typescript-eslint/parser": "npm:^8.46.2"
     astro: "npm:^4.16.19"
     astro-eslint-parser: "npm:^1.2.2"
-    baseline-browser-mapping: "npm:^2.9.11"
     chai: "npm:^5.3.3"
     common-tags: "npm:^1.8.2"
     copy-to-clipboard: "npm:^3.3.3"

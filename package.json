@@ -40,7 +40,6 @@
 		"@types/react-dom": "^18.3.7",
 		"@typescript-eslint/parser": "^8.46.2",
 		"astro-eslint-parser": "^1.2.2",
-		"baseline-browser-mapping": "^2.9.11",
 		"chai": "^5.3.3",
 		"common-tags": "^1.8.2",
 		"eslint": "^9.38.0",

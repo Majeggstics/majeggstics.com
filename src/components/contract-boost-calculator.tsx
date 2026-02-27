@@ -56,7 +56,6 @@ type CalcData = {
 	baseIhr: string;
 	hatcheryCalm: string;
 	colleggtibleIhr: string;
-	colleggtibleHabSize: string;
 	truthEggCount: string;
 };
 
@@ -218,9 +217,8 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 		);
 
 		const maxPegg = byCustomEgg.pegg?.reduce(
-			/* Max is the accumulator, which is passed into next iteration */
 			(max, each) => Math.max(max, each.maxFarmSizeReached),
-			0, // Intilize value of accumulator to start with
+			0,
 		);
 
 		const sumTE = (backupVirtue: EIBackupResponse['virtue']) =>
