@@ -680,7 +680,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 								<Input
 									datakey="truthEggCount"
 									label="TE:"
-									max="430"
+									max="490"
 									min="0"
 									size={4}
 									type="number"
