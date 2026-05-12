@@ -109,7 +109,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 				for (let remaining = backoff; remaining > 0; remaining--) {
 					updateData({ fetchRetryIn: remaining });
 					// no-loop-func is worried about `setTimeout` here ಠ_ಠ
-
+					// eslint-disable-next-line @typescript-eslint/no-loop-func
 					await new Promise((resolve) => void setTimeout(resolve, 1_000));
 				}
 			}
@@ -320,8 +320,6 @@ const boostRadios = [
 	{ id: 'boost4', label: '4-token (Epic)' },
 	{ id: 'boost4s', label: '4-token (Supreme)' },
 	{ id: 'boost2', label: '2-token (Single Epic)' },
-	{ id: 'bost1bb', label: 'LBB' },
-	{ id: 'bostebb', label: 'TBB' },
 	{ id: 'boost0', label: '0-token (five large)' },
 ] as const;
 const BoostPresetButtons = () => {
@@ -334,6 +332,16 @@ const BoostPresetButtons = () => {
 		[updateData],
 	);
 
+	const radios = [
+		...boostRadios,
+		...(Number.parseInt(data.truthEggCount, 10) > 0 ?
+			[
+				{ id: 'boost3te', label: '3-token (high TE viable only)' },
+				{ id: 'boost3tel', label: '3-token w/ larges (high TE viable only)' },
+			]
+		:	[]),
+	];
+
 	// we should be able to have the `fieldset` be `#boostSets` to receive
 	// `display: grid`, but then it appears that having the `legend` there
 	// screws up the first render for iOS safari specifically ಠ_ಠ
@@ -341,7 +349,7 @@ const BoostPresetButtons = () => {
 		<fieldset>
 			<legend>Boost Set</legend>
 			<div id="boostSets">
-				{boostRadios.map(({ id, label }) => (
+				{radios.map(({ id, label }) => (
 					<div key={id}>
 						<input
 							checked={data.boost === id}
@@ -373,8 +381,14 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 				boost4: [Boost.EpicTach, Boost.EpicTach],
 				boost4s: [Boost.SupremeTach],
 				boost2: [Boost.EpicTach],
-				bost1bb: [Boost.LargeTach, Boost.LargeTach, Boost.LargeTach, Boost.LargeTach, Boost.LargeBeacon],
-				bostebb: [Boost.LargeTach, Boost.LargeTach, Boost.LargeTach, Boost.EpicTach, Boost.Beacon],
+				boost3tel: [
+					Boost.LargeTach,
+					Boost.LargeTach,
+					Boost.LargeTach,
+					Boost.EpicTach,
+					Boost.Beacon,
+				],
+				boost3te: [Boost.EpicTach, Boost.Beacon],
 			})[calc.data.boost] ?? [
 				Boost.LargeTach,
 				Boost.LargeTach,

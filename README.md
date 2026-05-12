@@ -5,8 +5,10 @@
 If you run into any issues or are not confident that something is working, ping
 @DukeCephalopod in discord for help.
 
-1. Install [volta][]. Ensure it's working: in this directory, `which yarn` should print
-   `$HOME/.volta/bin/yarn`, not `/usr/bin/yarn` or a similar system directory.
+1. Install [mise][].
+1. Run `mise install` and ensure it's working: in this directory, `which yarn` should be
+   somewhere in `$HOME/.local/share/mise/`, not `/usr/bin/yarn` or a similar system
+   directory.
 1. Install dependencies with `yarn install`
 1. Compile source with `yarn build`
 1. (optional) Install git hooks with `./Taskfile install-git-hooks`
@@ -100,6 +102,6 @@ The domain is registered with Namecheap; DNS goes to Cloudflare nameservers.
 
 [chai]: https://www.chaijs.com/
 [conventional commits]: https://www.conventionalcommits.org/en/v1.0.0/
+[mise]: https://mise.jdx.dev/
 [mocha]: https://mochajs.org/
 [playwright]: http://playwright.dev/
-[volta]: https://docs.volta.sh/guide/getting-started

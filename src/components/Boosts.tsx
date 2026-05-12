@@ -1,16 +1,22 @@
-/* eslint-disable @stylistic/ts/lines-between-class-members */
 // This whole class must be prettier-ignored to preserve the tabular shape of the static
 // boost types, so be careful with your hand-formatting in there.
 //
 // prettier-ignore
 export class Boost {
 	static LargeTach     = new Boost('Large Tachyon Prism',     10,    240, 500);
+
 	static EpicTach      = new Boost('Epic Tachyon Prism',      100,   120, 5_000);
+
 	static LegendaryTach = new Boost('Legendary Tachyon Prism', 1_000, 10,  12_000);
+
 	static SupremeTach   = new Boost('Supreme Tachyon Prism',   1_000, 60,  25_000);
+
 	static Beacon        = new Boost('Boost Beacon',            2,     30,  1_000);
+
 	static EpicBeacon    = new Boost('Epic Boost Beacon',       10,    10,  8_000);
+
 	static LargeBeacon   = new Boost('Large Boost Beacon',      5,     60,  8_000);
+
 	static Mirror        = new Boost('Soul Mirror',             1,     10,  100);
 	 
 
