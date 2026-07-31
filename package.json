@@ -53,12 +53,10 @@
 		"mocha": "^10.8.2",
 		"prettier": "^3.6.2",
 		"prettier-plugin-astro": "^0.14.1",
+		"protobufjs": "^8.7.1",
+		"protobufjs-cli": "^2.6.1",
 		"tsx": "^4.20.6",
 		"typescript": "^5.9.3"
-	},
-	"volta": {
-		"node": "20.17.0",
-		"yarn": "4.5.0"
 	},
 	"mocha": {
 		"node-option": [

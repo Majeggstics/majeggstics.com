@@ -15,9 +15,10 @@ import { Boost } from '/components/Boosts';
 import { useToggleState } from '/lib/hooks';
 import { groupBy } from '/lib/utils';
 import { generateCalculator, type WithSetter } from '/components/calculator.tsx';
+import colleggtibleContracts from '/lib/colleggtible_contracts.json';
 
 type SlottedArtifact = { spec: Artifact; stonesList: Stone[] };
-type Coop = { contract: { customEggId?: string }; maxFarmSizeReached: number };
+type Coop = { contract: { identifier: string }; maxFarmSizeReached: number };
 type EIBackupResponse = {
 	userName: string;
 	artifactsDb: {
@@ -25,8 +26,17 @@ type EIBackupResponse = {
 		inventoryItemsList: Array<{ itemId: number; artifact: SlottedArtifact }>;
 	};
 	game: { epicResearchList: Array<{ id: string; level: number }> };
-	contracts: { archiveList: Coop[]; contractsList: Coop[] };
+	contracts: { contractsList: Coop[] };
 	virtue: { eovEarnedList: number[] };
+};
+
+type EIArchiveResponse = {
+	archiveList: Array<{
+		maxFarmSizeReached: number;
+		evaluation: {
+			contractIdentifier: string;
+		};
+	}>;
 };
 const ApiUriContext = createContext<string>('missing api uri');
 
@@ -54,8 +64,10 @@ type CalcData = {
 	fetchRetryIn: number;
 	doubleDuration: boolean;
 	baseIhr: string;
+	epicHatchery: string;
 	hatcheryCalm: string;
 	colleggtibleIhr: string;
+	colleggtibleHabSize: string;
 	truthEggCount: string;
 };
 
@@ -72,7 +84,7 @@ const defaultCalcData = () => ({
 	fetchState: FetchState.IDLE,
 	fetchRetryIn: 0,
 	doubleDuration: false,
-	baseIhr: '7440',
+	baseIhr: '3720',
 	hatcheryCalm: '20',
 	colleggtibleIhr: '5',
 	colleggtibleHabSize: '5',
@@ -92,13 +104,14 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 	const fetchData = useCallback(async () => {
 		const backoffs = [1, 2, 5, 8, 13, 0] as const;
-		let eiResponse: EIBackupResponse | null = null;
+		let backup: EIBackupResponse | null = null;
+		let archive: EIArchiveResponse | null = null;
 		for (const backoff of backoffs) {
 			updateData({ fetchState: FetchState.PENDING });
 			const rawEIResponse = await fetch(`${apiUri}/backup?EID=${data.eid}`);
 
 			if (rawEIResponse.ok) {
-				eiResponse = await rawEIResponse.json();
+				backup = await rawEIResponse.json();
 				break;
 			} else if (backoff > 0) {
 				updateData({ fetchState: FetchState.RETRY, fetchRetryIn: backoff });
@@ -114,10 +127,32 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			}
 		}
 
-		if (!eiResponse) return void updateData({ fetchState: FetchState.FAILURE });
+		for (const backoff of backoffs) {
+			updateData({ fetchState: FetchState.PENDING });
+			const rawEIResponse = await fetch(`${apiUri}/archive?EID=${data.eid}`);
+
+			if (rawEIResponse.ok) {
+				archive = await rawEIResponse.json();
+				break;
+			} else if (backoff > 0) {
+				updateData({ fetchState: FetchState.RETRY, fetchRetryIn: backoff });
+				// we're doing this as a bunch of 1-second sleeps to get a countdown text
+				// this is technically not that accurate and it should be a setInterval
+				// but that was gnarly to write out
+				for (let remaining = backoff; remaining > 0; remaining--) {
+					updateData({ fetchRetryIn: remaining });
+					// no-loop-func is worried about `setTimeout` here ಠ_ಠ
+
+					await new Promise((resolve) => void setTimeout(resolve, 1_000));
+				}
+			}
+		}
+
+		if (!backup) return void updateData({ fetchState: FetchState.FAILURE });
+		if (!archive) return void updateData({ fetchState: FetchState.FAILURE });
 
 		const resolveItemId = (itemId: number): SlottedArtifact => {
-			const items = eiResponse.artifactsDb.inventoryItemsList;
+			const items = backup.artifactsDb.inventoryItemsList;
 			let lo = 0;
 			let hi = items.length;
 			while (lo <= hi) {
@@ -172,7 +207,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			return { stones: dili, effect: 1.03 ** t1! * 1.06 ** t2! * 1.08 ** t3! };
 		};
 
-		const sets = eiResponse.artifactsDb.savedArtifactSetsList
+		const sets = backup.artifactsDb.savedArtifactSetsList
 			.map(({ slotsList }) =>
 				slotsList.filter(({ occupied }) => occupied).map(({ itemId }) => resolveItemId(itemId)),
 			)
@@ -201,14 +236,19 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 		const chalice = ihrSet?.set.find(byName(ArtifactSpec.Name.THE_CHALICE))?.spec;
 		const gusset = ihrSet?.set.find(byName(ArtifactSpec.Name.ORNATE_GUSSET))?.spec;
 
-		const ihcResearch = eiResponse.game.epicResearchList[EpicResearch.INT_HATCH_CALM];
+		const epicHatcheryResearch = backup.game.epicResearchList[EpicResearch.EPIC_HATCHERY];
+		const ihcResearch = backup.game.epicResearchList[EpicResearch.INT_HATCH_CALM];
+
+		const activeContractsInArchiveShape = backup.contracts.contractsList.map((coop) => ({
+			maxFarmSizeReached: coop.maxFarmSizeReached,
+			evaluation: { contractIdentifier: coop.contract.identifier },
+		}));
 
 		const byCustomEgg = groupBy(
-			eiResponse.contracts.archiveList.concat(eiResponse.contracts.contractsList),
-
-			// || on purpose, so that empty string goes to undefined and is discarded by groupBy
-			// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-			(contract) => contract.contract.customEggId || undefined,
+			archive.archiveList.concat(activeContractsInArchiveShape),
+			(coop) =>
+				(colleggtibleContracts as { [k: string]: string })[coop.evaluation.contractIdentifier] ??
+				'',
 		);
 
 		const maxEaster = byCustomEgg.easter?.reduce(
@@ -232,10 +272,11 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			diliT2: String(diliSet?.dili.stones[0] ?? 0),
 			diliT3: String(diliSet?.dili.stones[1] ?? 0),
 			diliT4: String(diliSet?.dili.stones[2] ?? 0),
+			epicHatchery: String((epicHatcheryResearch?.level ?? 0) * 10),
 			hatcheryCalm: String(ihcResearch?.level ?? 0),
 			colleggtibleIhr: String(Colleggtible.bonus(maxEaster ?? 0)),
 			colleggtibleHabSize: String(Colleggtible.bonus(maxPegg ?? 0)),
-			truthEggCount: String(sumTE(eiResponse?.virtue)),
+			truthEggCount: String(sumTE(backup?.virtue)),
 			chalice,
 			monocle,
 			gusset,
@@ -443,6 +484,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 
 				const ihr =
 					Number.parseInt(calc.data.baseIhr || '0', 10) *
+					(1 + Number.parseInt(calc.data.epicHatchery || '0', 10) / 100) *
 					1.01 ** Number.parseInt(calc.data.truthEggCount || '0', 10) *
 					(1 + Number.parseInt(calc.data.colleggtibleIhr || '0', 10) / 100) *
 					lifeBonus *
@@ -490,6 +532,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	}, [
 		boosts,
 		calc.data.baseIhr,
+		calc.data.epicHatchery,
 		calc.data.truthEggCount,
 		calc.data.colleggtibleIhr,
 		calc.data.chalice,
@@ -536,22 +579,22 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	// eslint-disable-next-line no-warning-comments
 	// TODO: this section caused https://discord.com/channels/981390064644915251/1299574269872967752
 	/*
-	useEffect(() => {
-		const el = listenerRef.current;
-		if (!el) return;
+  useEffect(() => {
+    const el = listenerRef.current;
+    if (!el) return;
 
-		const resetFetchState = () => {
-			calc.updateData({ fetchState: FetchState.IDLE });
-			el.removeEventListener('change', resetFetchState);
-		};
+    const resetFetchState = () => {
+      calc.updateData({ fetchState: FetchState.IDLE });
+      el.removeEventListener('change', resetFetchState);
+    };
 
-		if (calc.data.fetchState !== FetchState.IDLE) {
-			el.addEventListener('change', resetFetchState);
-		}
+    if (calc.data.fetchState !== FetchState.IDLE) {
+      el.addEventListener('change', resetFetchState);
+    }
 
-		return () => el.removeEventListener('change', resetFetchState);
-	}, [listenerRef, calc, calc.data.fetchState]);
-	*/
+    return () => el.removeEventListener('change', resetFetchState);
+  }, [listenerRef, calc, calc.data.fetchState]);
+  */
 
 	// on reload, any active requests are canceled, so empty dependency array is on
 	// purpose: only set idle unconditionally on FIRST load
@@ -562,7 +605,8 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 		() =>
 			calc.updateData({
 				doubleDuration: false,
-				baseIhr: '7440',
+				baseIhr: '3720',
+				epicHatchery: '200',
 				hatcheryCalm: '20',
 				colleggtibleIhr: '5',
 				colleggtibleHabSize: '5',
@@ -573,7 +617,8 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 
 	const canHideExtra =
 		!calc.data.doubleDuration &&
-		calc.data.baseIhr === '7440' &&
+		calc.data.baseIhr === '3720' &&
+		calc.data.epicHatchery === '200' &&
 		calc.data.hatcheryCalm === '20' &&
 		calc.data.colleggtibleIhr + calc.data.colleggtibleHabSize === '55' &&
 		calc.data.truthEggCount === '0';
@@ -654,8 +699,12 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 							<legend>Bonus inputs</legend>
 							<Calculator.Checkbox datakey="doubleDuration" label="2× boost duration modifier?" />
 							<div>
-								<Input datakey="baseIhr" label="IHR:" max="7440" min="0" size={4} type="number" />
-								<span>(Menu → Stats → Int. Hatchery Rate)</span>
+								<Input datakey="baseIhr" label="IHR:" max="3720" min="0" size={4} type="number" />
+								<span>(Sum of all "Internal Hatchery" common researches)</span>
+							</div>
+							<div>
+								<Input datakey="epicHatchery" label="EH:" max="200" min="0" type="number" />
+								<span>(Research → Epic → Epic Hatchery)</span>
 							</div>
 							<div>
 								<Input
@@ -669,7 +718,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 								<span>(Research → Epic → Internal Hatchery Calm)</span>
 							</div>
 							<div>
-								<Input datakey="colleggtibleIhr" label="CIHR:" max="5" min="0" type="number" />
+								<Input datakey="colleggtibleIhr" label="Easter:" max="5" min="0" type="number" />
 								<span>(Current egg → Contracts → Colleggtibles → Easter)</span>
 							</div>
 							<div>

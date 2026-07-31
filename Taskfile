@@ -41,6 +41,23 @@ install-git-hooks() {
   chmod +x .git/hooks/pre-commit
 }
 
+parse-contract-proto() {
+  local txt
+  txt=$(echo "$1" | base64 -d | protoc --decode Contract contract.proto)
+  jq -n \
+    --arg kevid "$(echo "$txt" | grep '^identifier:' | cut -d'"' -f2)" \
+    --arg customEgg "$(echo "$txt" | grep '^custom_egg_id:' | cut -d'"' -f2)" \
+    '{($kevid): $customEgg}'
+}
+
+refresh-colleggtibles() {
+  curl -sSL "https://raw.githubusercontent.com/carpetsage/egg/refs/heads/main/periodicals/data/colleggtible-contracts.json" \
+    | jq --raw-output '.[].proto' \
+    | xargs -n1 ./Taskfile parse-contract-proto \
+    | jq --slurp 'reduce .[] as $item ({}; . * $item)' \
+    > src/lib/colleggtible_contracts.json
+}
+
 # as a general style guide, any package.json task that doesn't
 # fit in a hundred (ish) characters so should probably move to
 # a function here for improved readability and maintainability
