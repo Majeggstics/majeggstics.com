@@ -1,3 +1,5 @@
+// this is a web file, so
+/* eslint-disable no-restricted-globals */
 import { useCallback, createContext, useContext, useMemo, useEffect, useRef } from 'react';
 import type { ChangeEvent } from 'react';
 import type { Artifact, ArtifactIntensity, Stone } from '/lib/ei_data';
@@ -13,12 +15,13 @@ import {
 } from '/lib/ei_data';
 import { Boost } from '/components/Boosts';
 import { useToggleState } from '/lib/hooks';
-import { groupBy } from '/lib/utils';
+import { filterMap, groupBy } from '/lib/utils';
 import { generateCalculator, type WithSetter } from '/components/calculator.tsx';
-import colleggtibleContracts from '/lib/colleggtible_contracts.json';
+import colleggtibleContracts from '/lib/colleggtible_contracts';
 
 type SlottedArtifact = { spec: Artifact; stonesList: Stone[] };
 type Coop = { contract: { identifier: string }; maxFarmSizeReached: number };
+type ColleggtibleMaxFarmSizeReached = { eggId: string; maxFarmSizeReached: number };
 type EIBackupResponse = {
 	userName: string;
 	artifactsDb: {
@@ -26,8 +29,12 @@ type EIBackupResponse = {
 		inventoryItemsList: Array<{ itemId: number; artifact: SlottedArtifact }>;
 	};
 	game: { epicResearchList: Array<{ id: string; level: number }> };
-	contracts: { contractsList: Coop[] };
+	contracts: {
+		contractsList: Coop[];
+		colleggtibleMaxFarmSizedReachedList?: ColleggtibleMaxFarmSizeReached[];
+	};
 	virtue: { eovEarnedList: number[] };
+	version: number;
 };
 
 type EIArchiveResponse = {
@@ -86,6 +93,7 @@ const defaultCalcData = () => ({
 	doubleDuration: false,
 	baseIhr: '3720',
 	hatcheryCalm: '20',
+	epicHatchery: '200',
 	colleggtibleIhr: '5',
 	colleggtibleHabSize: '5',
 	truthEggCount: '0',
@@ -105,7 +113,6 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 	const fetchData = useCallback(async () => {
 		const backoffs = [1, 2, 5, 8, 13, 0] as const;
 		let backup: EIBackupResponse | null = null;
-		let archive: EIArchiveResponse | null = null;
 		for (const backoff of backoffs) {
 			updateData({ fetchState: FetchState.PENDING });
 			const rawEIResponse = await fetch(`${apiUri}/backup?EID=${data.eid}`);
@@ -127,29 +134,72 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			}
 		}
 
-		for (const backoff of backoffs) {
-			updateData({ fetchState: FetchState.PENDING });
-			const rawEIResponse = await fetch(`${apiUri}/archive?EID=${data.eid}`);
-
-			if (rawEIResponse.ok) {
-				archive = await rawEIResponse.json();
-				break;
-			} else if (backoff > 0) {
-				updateData({ fetchState: FetchState.RETRY, fetchRetryIn: backoff });
-				// we're doing this as a bunch of 1-second sleeps to get a countdown text
-				// this is technically not that accurate and it should be a setInterval
-				// but that was gnarly to write out
-				for (let remaining = backoff; remaining > 0; remaining--) {
-					updateData({ fetchRetryIn: remaining });
-					// no-loop-func is worried about `setTimeout` here ಠ_ಠ
-
-					await new Promise((resolve) => void setTimeout(resolve, 1_000));
-				}
-			}
-		}
-
 		if (!backup) return void updateData({ fetchState: FetchState.FAILURE });
-		if (!archive) return void updateData({ fetchState: FetchState.FAILURE });
+
+		const colleggtibleMaxFarmSizeReached: { [eggId: string]: number } | undefined =
+			await (async () => {
+				if (backup.contracts.colleggtibleMaxFarmSizedReachedList) {
+					return Object.fromEntries(
+						backup.contracts.colleggtibleMaxFarmSizedReachedList.map((each) => [
+							each.eggId,
+							each.maxFarmSizeReached,
+						]),
+					);
+				}
+
+				console.log(
+					`Backup does not have colleggtible_max_farm_sized_reached (version ${backup.version} may be < 73 or backup or worker may be broken); fetching contract archive for coop-correlation colleggtible detection.`,
+				);
+
+				let archive: EIArchiveResponse | null = null;
+				for (const backoff of backoffs) {
+					updateData({ fetchState: FetchState.PENDING });
+					const rawEIResponse = await fetch(`${apiUri}/archive?EID=${data.eid}`);
+
+					if (rawEIResponse.ok) {
+						archive = await rawEIResponse.json();
+						break;
+					} else if (backoff > 0) {
+						updateData({ fetchState: FetchState.RETRY, fetchRetryIn: backoff });
+						// we're doing this as a bunch of 1-second sleeps to get a countdown text
+						// this is technically not that accurate and it should be a setInterval
+						// but that was gnarly to write out
+						for (let remaining = backoff; remaining > 0; remaining--) {
+							updateData({ fetchRetryIn: remaining });
+							await new Promise((resolve) => void setTimeout(resolve, 1_000));
+						}
+					}
+				}
+
+				if (!archive) return void updateData({ fetchState: FetchState.FAILURE });
+
+				const activeContractsInArchiveShape = backup.contracts.contractsList.map((coop) => ({
+					maxFarmSizeReached: coop.maxFarmSizeReached,
+					evaluation: { contractIdentifier: coop.contract.identifier },
+				}));
+
+				const maxPerCoop: ColleggtibleMaxFarmSizeReached[] = filterMap(
+					archive.archiveList.concat(activeContractsInArchiveShape),
+					(coop) => {
+						const eggId = (colleggtibleContracts as { [k: string]: string })[
+							coop.evaluation.contractIdentifier
+						];
+						if (!eggId) return undefined;
+						if (!coop.maxFarmSizeReached) return undefined;
+						return { eggId, maxFarmSizeReached: coop.maxFarmSizeReached };
+					},
+				);
+
+				console.log({ maxPerCoop });
+
+				return Object.fromEntries(
+					Object.entries(groupBy(maxPerCoop, (coop) => coop.eggId)).map(([eggId, farmSizes]) => [
+						eggId,
+						farmSizes.reduce((max, each) => Math.max(max, each.maxFarmSizeReached), 0) ?? 0,
+					]),
+				);
+			})();
+		console.log({ colleggtibleMaxFarmSizeReached });
 
 		const resolveItemId = (itemId: number): SlottedArtifact => {
 			const items = backup.artifactsDb.inventoryItemsList;
@@ -239,27 +289,8 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 		const epicHatcheryResearch = backup.game.epicResearchList[EpicResearch.EPIC_HATCHERY];
 		const ihcResearch = backup.game.epicResearchList[EpicResearch.INT_HATCH_CALM];
 
-		const activeContractsInArchiveShape = backup.contracts.contractsList.map((coop) => ({
-			maxFarmSizeReached: coop.maxFarmSizeReached,
-			evaluation: { contractIdentifier: coop.contract.identifier },
-		}));
-
-		const byCustomEgg = groupBy(
-			archive.archiveList.concat(activeContractsInArchiveShape),
-			(coop) =>
-				(colleggtibleContracts as { [k: string]: string })[coop.evaluation.contractIdentifier] ??
-				'',
-		);
-
-		const maxEaster = byCustomEgg.easter?.reduce(
-			(max, each) => Math.max(max, each.maxFarmSizeReached),
-			0,
-		);
-
-		const maxPegg = byCustomEgg.pegg?.reduce(
-			(max, each) => Math.max(max, each.maxFarmSizeReached),
-			0,
-		);
+		const maxEaster = colleggtibleMaxFarmSizeReached?.easter ?? 0;
+		const maxPegg = colleggtibleMaxFarmSizeReached?.pegg ?? 0;
 
 		const sumTE = (backupVirtue: EIBackupResponse['virtue']) =>
 			backupVirtue?.eovEarnedList?.reduce((x, y) => x + y) ?? 0;
@@ -295,25 +326,25 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			</button>
 			{data.fetchState !== FetchState.IDLE && (
 				<div id="fetch-state">
-					{data.fetchState === FetchState.PENDING ?
+					{data.fetchState === FetchState.PENDING ? (
 						<>
 							<span className="spinner" />
 							Loading...
 						</>
-					: data.fetchState === FetchState.RETRY ?
+					) : data.fetchState === FetchState.RETRY ? (
 						<>
 							<span className="spinner" />
 							Retrying in {data.fetchRetryIn}s...
 						</>
-					: data.fetchState === FetchState.FAILURE ?
+					) : data.fetchState === FetchState.FAILURE ? (
 						<>
 							<span>❌</span>Failed.
 						</>
-					: data.fetchState === FetchState.SUCCESS ?
+					) : data.fetchState === FetchState.SUCCESS ? (
 						<>
 							<span>✔️</span>Loaded artifacts and stones from saved sets!
 						</>
-					:	null}
+					) : null}
 				</div>
 			)}
 		</>
@@ -395,6 +426,9 @@ const BoostPresetButtons = () => {
 		</fieldset>
 	);
 };
+
+const eggFormat = (num: number) =>
+	Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 3 }).format(num);
 
 export default function ContractBoostCalculator({ api }: { readonly api: string }) {
 	const calc = Calculator.useCreateState();
@@ -628,9 +662,6 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 			setShowExtra(true);
 		}
 	}, [canHideExtra, showExtra, setShowExtra]);
-
-	const eggFormat = (num: number) =>
-		Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 3 }).format(num);
 
 	const plug =
 		'discord://discord.com/channels/455380663013736479/1349136920839454720/1349136920839454720';

@@ -1,4 +1,4 @@
 [tools]
-node = "20.17.0"
+node = "22"
 protoc = "latest"
 yarn = "4.5.0"

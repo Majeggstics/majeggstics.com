@@ -1,4 +1,4 @@
-/* eslint-disable @stylistic/ts/lines-between-class-members */
+/* eslint-disable @stylistic/lines-between-class-members */
 // This whole class must be prettier-ignored to preserve the tabular shape of the static
 // boost types, so be careful with your hand-formatting in there.
 //
@@ -18,7 +18,7 @@ export class Boost {
 		public multiplier: number,
 		public durationMins: number,
 		public geCost: number,
-	) { }
+	) {}
 
 	static Image({ boost }: { boost: Boost }): React.ReactNode {
 		const name = boost.name.replace(/ /g, '_');

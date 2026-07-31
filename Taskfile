@@ -51,11 +51,12 @@ parse-contract-proto() {
 }
 
 refresh-colleggtibles() {
+  printf 'export default ' > src/lib/colleggtible_contracts.ts
   curl -sSL "https://raw.githubusercontent.com/carpetsage/egg/refs/heads/main/periodicals/data/colleggtible-contracts.json" \
     | jq --raw-output '.[].proto' \
     | xargs -n1 ./Taskfile parse-contract-proto \
     | jq --slurp 'reduce .[] as $item ({}; . * $item)' \
-    > src/lib/colleggtible_contracts.json
+    >> src/lib/colleggtible_contracts.ts
 }
 
 # as a general style guide, any package.json task that doesn't

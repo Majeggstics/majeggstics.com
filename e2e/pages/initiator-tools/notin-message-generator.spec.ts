@@ -66,7 +66,7 @@ test('keys copy-state from ign & thread url', async ({ page }) => {
 });
 
 test('tests for usernames with special characters', async ({ page }) => {
-	/* Add in other special characters in this test if other 
+	/* Add in other special characters in this test if other
 	characters in in game names are found to be problematic */
 
 	await page.getByRole('textbox').fill(stripIndent`

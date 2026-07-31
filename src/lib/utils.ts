@@ -14,3 +14,10 @@ export const groupBy = <T, K extends DefinedAndStringable>(
 
 		return acc;
 	}, {});
+
+export const filterMap = <T, U>(arr: T[], fn: (t: T) => U | undefined): U[] =>
+	arr.reduce<U[]>((acc: U[], each: T) => {
+		const res = fn(each);
+		if (res !== undefined) acc.push(res);
+		return acc;
+	}, []);

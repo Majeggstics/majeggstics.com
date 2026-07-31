@@ -1,3 +1,4 @@
+import process from 'node:process';
 import { defineConfig, devices } from '@playwright/test';
 
 // purposefully not using ??: we want to replace empty empty string with default
@@ -27,7 +28,7 @@ export default defineConfig({
 	fullyParallel: true,
 	workers: 1,
 	/* Fail the build on CI if you accidentally left test.only in the source code. */
-	forbidOnly: !!process.env.CI,
+	forbidOnly: Boolean(process.env.CI),
 	/* Reporter to use. See https://playwright.dev/docs/test-reporters */
 	reporter: 'html',
 	/* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
