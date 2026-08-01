@@ -84,6 +84,7 @@ test('locks bonus input open when not default', async ({ page }) => {
 });
 
 test('calcs an 8-tok', async ({ page }) => {
+	// start with all default values...
 	// prettier-ignore
 	let outputs = [
 		[/runs out after/i, /10min/  ],
@@ -95,7 +96,7 @@ test('calcs an 8-tok', async ({ page }) => {
 	];
 
 	const out = page.locator('#output span');
-	for (const match of outputs) await expect(out).toContainText(match);
+	for (const match of outputs) await expect(out, '8tok for default settings').toContainText(match);
 
 	await page.getByLabel(/monocle/i).selectOption('T4L');
 	await page.getByLabel(/chalice/i).selectOption('T4');
@@ -118,9 +119,9 @@ test('calcs an 8-tok', async ({ page }) => {
 	}
 
 	await page.getByLabel(/boost duration/i).check();
-	await page.getByLabel(/^IHR/).fill('2000');
+	await page.getByLabel(/^IHR/).fill('1000');
 	await page.getByLabel(/IHC/).fill('10');
-	await page.getByLabel(/CIHR/).fill('2');
+	await page.getByLabel(/Easter/).fill('2');
 	await page.getByLabel(/PEGG/).fill('0');
 
 	// prettier-ignore
@@ -133,7 +134,8 @@ test('calcs an 8-tok', async ({ page }) => {
 		[/time to fill/i  , /32min 19sec/],
 	];
 
-	for (const match of outputs) await expect(out).toContainText(match);
+	for (const match of outputs) await expect(out, '8tok with fiddled inputs').toContainText(match);
+
 	await page.getByLabel(/monocle/i).selectOption('None');
 	await page.getByLabel(/chalice/i).selectOption('None');
 	await page.getByLabel(/gusset/i).selectOption('None');
@@ -165,7 +167,7 @@ test('calcs an 8-tok', async ({ page }) => {
 		[/time to fill/i  , /∞/      ],
 	];
 
-	for (const match of outputs) await expect(out).toContainText(match);
+	for (const match of outputs) await expect(out, '8tok back to defaults').toContainText(match);
 });
 
 test('calcs a 5-tok', async ({ page }) => {
@@ -191,9 +193,9 @@ test('calcs a 5-tok', async ({ page }) => {
 		await page.getByRole('button', { name: /show bonus/i }).click();
 	}
 
-	await page.getByLabel(/^IHR/).fill('2000');
+	await page.getByLabel(/^IHR/).fill('1000');
 	await page.getByLabel(/IHC/).fill('10');
-	await page.getByLabel(/CIHR/).fill('2');
+	await page.getByLabel(/Easter/).fill('2');
 	await page.getByLabel(/PEGG/).fill('3');
 	await page.getByLabel(/TE/).fill('36');
 
@@ -202,8 +204,8 @@ test('calcs a 5-tok', async ({ page }) => {
 		[/runs out after/i, /18min/   ],
 		[/ge cost/i       , /10,400/  ],
 		[/online/i        , /790.855M/],
-		[/offline/i       , /1.582B/  ], 
-		[/hab space/i     , /13.082B/ ], 
+		[/offline/i       , /1.582B/  ],
+		[/hab space/i     , /13.082B/ ],
 		[/time to fill/i  , /∞/       ],
 	];
 
@@ -241,8 +243,8 @@ test('checks rounding (minutes)', async ({ page }) => {
 		[/runs out after/i, /17min/   ],
 		[/ge cost/i       , /11,200/  ],
 		[/online/i        , /4.776B/  ],
-		[/offline/i       , /14.329B/ ], 
-		[/hab space/i     , /14.175B/ ], 
+		[/offline/i       , /14.329B/ ],
+		[/hab space/i     , /14.175B/ ],
 		[/time to fill/i  , /17min/   ],
 	];
 
@@ -281,8 +283,8 @@ test('checks rounding (hours)', async ({ page }) => {
 		[/runs out after/i, /6hr45min/      ],
 		[/ge cost/i       , /2,000/         ],
 		[/online/i        , /4.27B/         ],
-		[/offline/i       , /12.81B/        ], 
-		[/hab space/i     , /12.701B/       ], 
+		[/offline/i       , /12.81B/        ],
+		[/hab space/i     , /12.701B/       ],
 		[/time to fill/i  , /6hr 42min 1sec/],
 	];
 

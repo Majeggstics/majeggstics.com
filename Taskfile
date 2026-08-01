@@ -36,11 +36,6 @@ lint:fix() {
   eslint --fix --format=pretty src
 }
 
-install-git-hooks() {
-  echo 'yarn lint-staged' > .git/hooks/pre-commit
-  chmod +x .git/hooks/pre-commit
-}
-
 parse-contract-proto() {
   local txt
   txt=$(echo "$1" | base64 -d | protoc --decode Contract contract.proto)

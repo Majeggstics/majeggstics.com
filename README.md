@@ -12,7 +12,6 @@ ping @DukeCephalopod in discord for help.
    system directory.
 1. Install dependencies with `yarn install`
 1. Compile source with `yarn build`
-1. (optional) Install git hooks with `./Taskfile install-git-hooks`
 
 ### dev server
 

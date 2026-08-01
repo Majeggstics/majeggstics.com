@@ -71,7 +71,7 @@ type CalcData = {
 	fetchRetryIn: number;
 	doubleDuration: boolean;
 	baseIhr: string;
-	epicHatchery: string;
+	epicIntHatchery: string;
 	hatcheryCalm: string;
 	colleggtibleIhr: string;
 	colleggtibleHabSize: string;
@@ -93,7 +93,7 @@ const defaultCalcData = () => ({
 	doubleDuration: false,
 	baseIhr: '3720',
 	hatcheryCalm: '20',
-	epicHatchery: '200',
+	epicIntHatchery: '100',
 	colleggtibleIhr: '5',
 	colleggtibleHabSize: '5',
 	truthEggCount: '0',
@@ -286,7 +286,8 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 		const chalice = ihrSet?.set.find(byName(ArtifactSpec.Name.THE_CHALICE))?.spec;
 		const gusset = ihrSet?.set.find(byName(ArtifactSpec.Name.ORNATE_GUSSET))?.spec;
 
-		const epicHatcheryResearch = backup.game.epicResearchList[EpicResearch.EPIC_HATCHERY];
+		const epicIntHatcheryResearch =
+			backup.game.epicResearchList[EpicResearch.EPIC_INTERNAL_INCUBATORS];
 		const ihcResearch = backup.game.epicResearchList[EpicResearch.INT_HATCH_CALM];
 
 		const maxEaster = colleggtibleMaxFarmSizeReached?.easter ?? 0;
@@ -303,7 +304,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			diliT2: String(diliSet?.dili.stones[0] ?? 0),
 			diliT3: String(diliSet?.dili.stones[1] ?? 0),
 			diliT4: String(diliSet?.dili.stones[2] ?? 0),
-			epicHatchery: String((epicHatcheryResearch?.level ?? 0) * 10),
+			epicIntHatchery: String((epicIntHatcheryResearch?.level ?? 0) * 5),
 			hatcheryCalm: String(ihcResearch?.level ?? 0),
 			colleggtibleIhr: String(Colleggtible.bonus(maxEaster ?? 0)),
 			colleggtibleHabSize: String(Colleggtible.bonus(maxPegg ?? 0)),
@@ -518,7 +519,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 
 				const ihr =
 					Number.parseInt(calc.data.baseIhr || '0', 10) *
-					(1 + Number.parseInt(calc.data.epicHatchery || '0', 10) / 100) *
+					(1 + Number.parseInt(calc.data.epicIntHatchery || '0', 10) / 100) *
 					1.01 ** Number.parseInt(calc.data.truthEggCount || '0', 10) *
 					(1 + Number.parseInt(calc.data.colleggtibleIhr || '0', 10) / 100) *
 					lifeBonus *
@@ -566,7 +567,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	}, [
 		boosts,
 		calc.data.baseIhr,
-		calc.data.epicHatchery,
+		calc.data.epicIntHatchery,
 		calc.data.truthEggCount,
 		calc.data.colleggtibleIhr,
 		calc.data.chalice,
@@ -640,7 +641,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 			calc.updateData({
 				doubleDuration: false,
 				baseIhr: '3720',
-				epicHatchery: '200',
+				epicIntHatchery: '100',
 				hatcheryCalm: '20',
 				colleggtibleIhr: '5',
 				colleggtibleHabSize: '5',
@@ -652,7 +653,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	const canHideExtra =
 		!calc.data.doubleDuration &&
 		calc.data.baseIhr === '3720' &&
-		calc.data.epicHatchery === '200' &&
+		calc.data.epicIntHatchery === '100' &&
 		calc.data.hatcheryCalm === '20' &&
 		calc.data.colleggtibleIhr + calc.data.colleggtibleHabSize === '55' &&
 		calc.data.truthEggCount === '0';
@@ -734,8 +735,8 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 								<span>(Sum of all "Internal Hatchery" common researches)</span>
 							</div>
 							<div>
-								<Input datakey="epicHatchery" label="EH:" max="200" min="0" type="number" />
-								<span>(Research → Epic → Epic Hatchery)</span>
+								<Input datakey="epicIntHatchery" label="EIH:" max="100" min="0" type="number" />
+								<span>(Research → Epic → Epic Int. Hatcheries)</span>
 							</div>
 							<div>
 								<Input
