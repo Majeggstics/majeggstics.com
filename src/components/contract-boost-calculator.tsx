@@ -664,7 +664,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 	const canHideExtra =
 		!calc.data.doubleDuration &&
 		calc.data.baseIhr === '3720' &&
-		calc.data.epicIntHatchery === '100' &&
+		calc.data.epicIntHatchery === '20' &&
 		calc.data.hatcheryCalm === '20' &&
 		calc.data.colleggtibleIhr + calc.data.colleggtibleHabSize === '55' &&
 		calc.data.truthEggCount === '0';
