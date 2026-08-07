@@ -143,7 +143,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 		const colleggtibleMaxFarmSizeReached: { [eggId: string]: number } | undefined =
 			await (async () => {
-				if (backup.contracts.colleggtibleMaxFarmSizeReachedList) {
+				if (backup.contracts.colleggtibleMaxFarmSizeReachedList?.length) {
 					return Object.fromEntries(
 						backup.contracts.colleggtibleMaxFarmSizeReachedList.map((each) => [
 							each.eggId,
@@ -153,8 +153,9 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 				}
 
 				console.log(
-					`Backup does not have colleggtible_max_farm_sized_reached (version ${backup.version} may be < 73 or backup or worker may be broken); fetching contract archive for coop-correlation colleggtible detection.`,
+					`Backup does not have populated colleggtible_max_farm_sized_reached (version ${backup.version} may be < 73 or backup or worker may be broken); fetching contract archive for coop-correlation colleggtible detection.`,
 				);
+				console.log({ 'backup.contracts': backup.contracts });
 
 				let archive: EIArchiveResponse | null = null;
 				for (const backoff of backoffs) {
@@ -195,8 +196,6 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 					},
 				);
 
-				console.log({ maxPerCoop });
-
 				return Object.fromEntries(
 					Object.entries(groupBy(maxPerCoop, (coop) => coop.eggId)).map(([eggId, farmSizes]) => [
 						eggId,
@@ -204,7 +203,6 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 					]),
 				);
 			})();
-		console.log({ colleggtibleMaxFarmSizeReached });
 
 		const resolveItemId = (itemId: number): SlottedArtifact => {
 			const items = backup.artifactsDb.inventoryItemsList;
