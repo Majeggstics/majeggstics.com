@@ -5,7 +5,7 @@ on:
       - main
 
 env:
-  NEXT_PUBLIC_API_URL: 'https://ei_worker.fyko.workers.dev'
+  NEXT_PUBLIC_API_URL: 'https://ei_worker.tylertms.workers.dev'
 
 jobs:
   build:
