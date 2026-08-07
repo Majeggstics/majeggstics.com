@@ -20,18 +20,23 @@ import { generateCalculator, type WithSetter } from '/components/calculator.tsx'
 import colleggtibleContracts from '/lib/colleggtible_contracts';
 
 type SlottedArtifact = { spec: Artifact; stonesList: Stone[] };
-type Coop = { contract: { identifier: string }; maxFarmSizeReached: number };
-type ColleggtibleMaxFarmSizeReached = { eggId: string; maxFarmSizeReached: number };
+type Coop = { contractIdentifier: string; maxFarmSizeReached: number };
+type ColleggtibleMaxFarmSizeReached = {
+	eggId: string;
+	maxFarmSizeReached: number;
+};
 type EIBackupResponse = {
 	userName: string;
 	artifactsDb: {
-		savedArtifactSetsList: Array<{ slotsList: Array<{ occupied: boolean; itemId: number }> }>;
+		savedArtifactSetsList: Array<{
+			slotsList: Array<{ occupied: boolean; itemId: number }>;
+		}>;
 		inventoryItemsList: Array<{ itemId: number; artifact: SlottedArtifact }>;
 	};
 	game: { epicResearchList: Array<{ id: string; level: number }> };
 	contracts: {
 		contractsList: Coop[];
-		colleggtibleMaxFarmSizedReachedList?: ColleggtibleMaxFarmSizeReached[];
+		colleggtibleMaxFarmSizeReachedList?: ColleggtibleMaxFarmSizeReached[];
 	};
 	virtue: { eovEarnedList: number[] };
 	version: number;
@@ -138,9 +143,9 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 		const colleggtibleMaxFarmSizeReached: { [eggId: string]: number } | undefined =
 			await (async () => {
-				if (backup.contracts.colleggtibleMaxFarmSizedReachedList) {
+				if (backup.contracts.colleggtibleMaxFarmSizeReachedList) {
 					return Object.fromEntries(
-						backup.contracts.colleggtibleMaxFarmSizedReachedList.map((each) => [
+						backup.contracts.colleggtibleMaxFarmSizeReachedList.map((each) => [
 							each.eggId,
 							each.maxFarmSizeReached,
 						]),
@@ -175,7 +180,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 				const activeContractsInArchiveShape = backup.contracts.contractsList.map((coop) => ({
 					maxFarmSizeReached: coop.maxFarmSizeReached,
-					evaluation: { contractIdentifier: coop.contract.identifier },
+					evaluation: { contractIdentifier: coop.contractIdentifier },
 				}));
 
 				const maxPerCoop: ColleggtibleMaxFarmSizeReached[] = filterMap(
@@ -239,7 +244,10 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 
 			const [t1, t2, t3] = life;
 
-			return { stones: life, effect: chalice * 1.02 ** t1! * 1.03 ** t2! * 1.04 ** t3! };
+			return {
+				stones: life,
+				effect: chalice * 1.02 ** t1! * 1.03 ** t2! * 1.04 ** t3!,
+			};
 		};
 
 		const diliForSet = (set: SlottedArtifact[]) => {
@@ -352,7 +360,9 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 	);
 };
 
-type ArtifactSelectorProps = { readonly kind: 'monocle' | 'gusset' | 'chalice' };
+type ArtifactSelectorProps = {
+	readonly kind: 'monocle' | 'gusset' | 'chalice';
+};
 const ArtifactSelector = ({ kind }: ArtifactSelectorProps) => {
 	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
 
@@ -429,7 +439,10 @@ const BoostPresetButtons = () => {
 };
 
 const eggFormat = (num: number) =>
-	Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 3 }).format(num);
+	Intl.NumberFormat('en', {
+		notation: 'compact',
+		maximumFractionDigits: 3,
+	}).format(num);
 
 export default function ContractBoostCalculator({ api }: { readonly api: string }) {
 	const calc = Calculator.useCreateState();
