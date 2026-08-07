@@ -98,7 +98,7 @@ const defaultCalcData = () => ({
 	doubleDuration: false,
 	baseIhr: '3720',
 	hatcheryCalm: '20',
-	epicIntHatchery: '100',
+	epicIntHatchery: '20',
 	colleggtibleIhr: '5',
 	colleggtibleHabSize: '5',
 	truthEggCount: '0',
@@ -310,7 +310,7 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 			diliT2: String(diliSet?.dili.stones[0] ?? 0),
 			diliT3: String(diliSet?.dili.stones[1] ?? 0),
 			diliT4: String(diliSet?.dili.stones[2] ?? 0),
-			epicIntHatchery: String((epicIntHatcheryResearch?.level ?? 0) * 5),
+			epicIntHatchery: String(epicIntHatcheryResearch?.level ?? 0),
 			hatcheryCalm: String(ihcResearch?.level ?? 0),
 			colleggtibleIhr: String(Colleggtible.bonus(maxEaster ?? 0)),
 			colleggtibleHabSize: String(Colleggtible.bonus(maxPegg ?? 0)),
@@ -530,7 +530,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 
 				const ihr =
 					Number.parseInt(calc.data.baseIhr || '0', 10) *
-					(1 + Number.parseInt(calc.data.epicIntHatchery || '0', 10) / 100) *
+					(1 + Number.parseInt(calc.data.epicIntHatchery || '0', 10) * 5 / 100) *
 					1.01 ** Number.parseInt(calc.data.truthEggCount || '0', 10) *
 					(1 + Number.parseInt(calc.data.colleggtibleIhr || '0', 10) / 100) *
 					lifeBonus *
@@ -652,7 +652,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 			calc.updateData({
 				doubleDuration: false,
 				baseIhr: '3720',
-				epicIntHatchery: '100',
+				epicIntHatchery: '20',
 				hatcheryCalm: '20',
 				colleggtibleIhr: '5',
 				colleggtibleHabSize: '5',
@@ -746,7 +746,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 								<span>(Sum of all "Internal Hatchery" common researches)</span>
 							</div>
 							<div>
-								<Input datakey="epicIntHatchery" label="EIH:" max="100" min="0" type="number" />
+								<Input datakey="epicIntHatchery" label="EIH:" max="20" min="0" type="number" />
 								<span>(Research → Epic → Epic Int. Hatcheries)</span>
 							</div>
 							<div>
