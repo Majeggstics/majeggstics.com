@@ -530,7 +530,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 
 				const ihr =
 					Number.parseInt(calc.data.baseIhr || '0', 10) *
-					(1 + Number.parseInt(calc.data.epicIntHatchery || '0', 10) * 5 / 100) *
+					(1 + (Number.parseInt(calc.data.epicIntHatchery || '0', 10) * 5) / 100) *
 					1.01 ** Number.parseInt(calc.data.truthEggCount || '0', 10) *
 					(1 + Number.parseInt(calc.data.colleggtibleIhr || '0', 10) / 100) *
 					lifeBonus *
