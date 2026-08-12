@@ -81,6 +81,12 @@ type CalcData = {
 	colleggtibleIhr: string;
 	colleggtibleHabSize: string;
 	truthEggCount: string;
+
+	customBoost1: string;
+	customBoost2: string;
+	customBoost3: string;
+	customBoost4: string;
+	customBoost5: string;
 };
 
 const nullArtifact = { level: Number.NaN, rarity: Number.NaN };
@@ -105,6 +111,11 @@ const defaultCalcData = () => ({
 	monocle: nullArtifact,
 	gusset: nullArtifact,
 	chalice: nullArtifact,
+	customBoost1: 'null',
+	customBoost2: 'null',
+	customBoost3: 'null',
+	customBoost4: 'null',
+	customBoost5: 'null',
 });
 
 const Calculator = generateCalculator<CalcData>(defaultCalcData());
@@ -389,6 +400,39 @@ const ArtifactSelector = ({ kind }: ArtifactSelectorProps) => {
 	);
 };
 
+const boostSelectorOptions = [
+	Boost.Null.id,
+	Boost.LargeTach.id,
+	Boost.EpicTach.id,
+	Boost.LegendaryTach.id,
+	Boost.SupremeTach.id,
+	Boost.Beacon.id,
+	Boost.EpicBeacon.id,
+] as const;
+
+const BoostSelector = ({ datakey }: { datakey: string }) => {
+	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
+
+	const handleChange = useCallback(
+		(event: ChangeEvent<HTMLSelectElement>) => {
+			updateData({ [datakey]: event.target.value });
+		},
+		[updateData, datakey],
+	);
+
+	const current = data[datakey] ?? 'null';
+
+	return (
+		<select id={`select-${datakey}`} onChange={handleChange} value={current}>
+			{boostSelectorOptions.map((key) => (
+				<option key={key} value={key}>
+					{Boost.from(key).name}
+				</option>
+			))}
+		</select>
+	);
+};
+
 const boostRadios = [
 	{ id: 'boost8', label: '8-token' },
 	{ id: 'boost6', label: '6-token (Dubson)' },
@@ -399,6 +443,7 @@ const boostRadios = [
 	{ id: 'boost4s', label: '4-token (Supreme)' },
 	{ id: 'boost2', label: '2-token (Single Epic)' },
 	{ id: 'boost0', label: '0-token (five large)' },
+	{ id: 'custom', label: 'Custom' },
 ] as const;
 const BoostPresetButtons = () => {
 	const { data, updateData } = useContext<WithSetter<CalcData>>(Calculator.Context);
@@ -431,6 +476,13 @@ const BoostPresetButtons = () => {
 					</div>
 				))}
 			</div>
+			{data.boost === 'custom' && (
+				<div id="customBoosts">
+					{[1, 2, 3, 4, 5].map((num) => (
+						<BoostSelector key={num} datakey={'customBoost' + num} />
+					))}
+				</div>
+			)}
 		</fieldset>
 	);
 };
@@ -455,6 +507,15 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 				boost4: [Boost.EpicTach, Boost.EpicTach],
 				boost4s: [Boost.SupremeTach],
 				boost2: [Boost.EpicTach],
+				custom: [
+					calc.data.customBoost1,
+					calc.data.customBoost2,
+					calc.data.customBoost3,
+					calc.data.customBoost4,
+					calc.data.customBoost5,
+				]
+					.map((key) => Boost.from(key))
+					.filter((boost) => boost.id !== Boost.Null.id),
 			})[calc.data.boost] ?? [
 				Boost.LargeTach,
 				Boost.LargeTach,
@@ -462,7 +523,14 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 				Boost.LargeTach,
 				Boost.LargeTach,
 			],
-		[calc.data.boost],
+		[
+			calc.data.boost,
+			calc.data.customBoost1,
+			calc.data.customBoost2,
+			calc.data.customBoost3,
+			calc.data.customBoost4,
+			calc.data.customBoost5,
+		],
 	);
 
 	const parseInts = useCallback(
@@ -665,8 +733,8 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 		calc.data.baseIhr === '3720' &&
 		calc.data.epicIntHatchery === '20' &&
 		calc.data.hatcheryCalm === '20' &&
-		calc.data.colleggtibleIhr + calc.data.colleggtibleHabSize === '55' &&
-		calc.data.truthEggCount === '0';
+		calc.data.colleggtibleIhr === '5' &&
+		calc.data.colleggtibleHabSize === '5';
 	const [showExtra, toggleShowExtra, setShowExtra] = useToggleState(!canHideExtra);
 	useEffect(() => {
 		if (!canHideExtra && !showExtra) {
@@ -697,6 +765,15 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 						<ArtifactSelector kind="monocle" />
 						<ArtifactSelector kind="chalice" />
 						<ArtifactSelector kind="gusset" />
+						<Input
+							datakey="truthEggCount"
+							label="TE"
+							description="Menu → Prestige → TE Count"
+							max="490"
+							min="0"
+							size={4}
+							type="number"
+						/>
 					</section>
 					<section id="input-right">
 						<fieldset className="stones">
@@ -740,44 +817,56 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 						<fieldset id="extra-inputs">
 							<legend>Bonus inputs</legend>
 							<Calculator.Checkbox datakey="doubleDuration" label="2× boost duration modifier?" />
-							<div>
-								<Input datakey="baseIhr" label="IHR:" max="3720" min="0" size={4} type="number" />
-								<span>(Sum of all "Internal Hatchery" common researches)</span>
-							</div>
-							<div>
-								<Input datakey="epicIntHatchery" label="EIH:" max="20" min="0" type="number" />
-								<span>(Research → Epic → Epic Int. Hatcheries)</span>
-							</div>
-							<div>
+							<div className="grid">
+								<Input
+									datakey="baseIhr"
+									label="IHR:"
+									max="3720"
+									min="0"
+									size={4}
+									type="number"
+									description={'(Sum of all "Internal Hatchery" common researches)'}
+								/>
+
+								<Input
+									datakey="epicIntHatchery"
+									label="EIH:"
+									max="20"
+									min="0"
+									type="number"
+									description="(Research → Epic → Epic Int. Hatcheries)"
+								/>
+
 								<Input
 									datakey="hatcheryCalm"
 									label="IHC:"
 									max="20"
 									min="0"
-									size={4}
 									type="number"
+									description="(Research → Epic → Internal Hatchery Calm)"
 								/>
-								<span>(Research → Epic → Internal Hatchery Calm)</span>
-							</div>
-							<div>
-								<Input datakey="colleggtibleIhr" label="Easter:" max="5" min="0" type="number" />
-								<span>(Current egg → Contracts → Colleggtibles → Easter)</span>
-							</div>
-							<div>
-								<Input datakey="colleggtibleHabSize" label="PEGG:" max="5" min="0" type="number" />
-								<span>(Current egg → Contracts → Colleggtibles → P.E.G.G.)</span>
-							</div>
-							<div>
+
 								<Input
-									datakey="truthEggCount"
-									label="TE:"
-									max="490"
+									datakey="colleggtibleIhr"
+									label="Easter:"
+									max="5"
 									min="0"
-									size={4}
 									type="number"
+									units="%"
+									description="(Current egg → Contracts → Colleggtibles → Easter)"
 								/>
-								<span>(Menu → Prestige → TE Count)</span>
+
+								<Input
+									datakey="colleggtibleHabSize"
+									label="PEGG:"
+									max="5"
+									min="0"
+									type="number"
+									units="%"
+									description="(Current egg → Contracts → Colleggtibles → P.E.G.G.)"
+								/>
 							</div>
+
 							<button onClick={resetExtras}>Reset bonus inputs to default</button>
 						</fieldset>
 					)}
