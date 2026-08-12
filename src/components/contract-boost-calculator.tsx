@@ -127,13 +127,12 @@ const FetchCoopDataButton = ({ children }: FetchCoopDataProps) => {
 				break;
 			} else if (backoff > 0) {
 				updateData({ fetchState: FetchState.RETRY, fetchRetryIn: backoff });
-				// we're doing this as a bunch of 1-second sleeps to get a countdown text
-				// this is technically not that accurate and it should be a setInterval
-				// but that was gnarly to write out
+
+				// technically this is less accurate than a setInterval but backoff is
+				// never bigger than 13 so we're never off by a meaningful amount and
+				// this is way more readable
 				for (let remaining = backoff; remaining > 0; remaining--) {
 					updateData({ fetchRetryIn: remaining });
-					// no-loop-func is worried about `setTimeout` here ಠ_ಠ
-
 					await new Promise((resolve) => void setTimeout(resolve, 1_000));
 				}
 			}

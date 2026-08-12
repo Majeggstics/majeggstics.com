@@ -7,7 +7,7 @@
 		"dev": "astro dev",
 		"build": "astro build",
 		"lint": "oxfmt --check; oxlint",
-		"lint:fix": "oxfmt; oxlint --fix; sed -i 's/  /\t/g' **/*.astro",
+		"lint:fix": "oxfmt; oxlint --fix; fd -0 astro | xargs -0 sed -i 's/  /\t/g'",
 		"format": "./Taskfile lint:fix",
 		"test": "mocha src/**/*.spec.ts",
 		"typecheck": "tsc --noEmit",
