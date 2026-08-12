@@ -22,10 +22,17 @@ export function generateCalculator<Data extends NonCallableObject>(initial: Data
 
 	const Context = createContext<WithSetter<Data>>({ data: initial, updateData: () => {} });
 
-	type InputProps = Readonly<{ datakey: keyof Data; label: string }>;
+	type InputProps = Readonly<{
+		datakey: keyof Data;
+		label: string;
+		description?: string;
+		units?: string;
+	}>;
 	const Input = ({
 		datakey,
 		label,
+		description,
+		units,
 		...rest
 	}: InputProps & React.InputHTMLAttributes<HTMLInputElement>) => {
 		const { data, updateData } = useContext<WithSetter<Data>>(Context);
@@ -45,13 +52,17 @@ export function generateCalculator<Data extends NonCallableObject>(initial: Data
 		return (
 			<div className="calculatorInput" id={`container-${String(datakey)}`}>
 				<label htmlFor={`input-${String(datakey)}`}>{label}</label>
-				<input
-					id={`input-${String(datakey)}`}
-					name={String(datakey)}
-					onChange={handleInput}
-					value={value}
-					{...rest}
-				/>
+				<div className="input">
+					<input
+						id={`input-${String(datakey)}`}
+						name={String(datakey)}
+						onChange={handleInput}
+						value={value}
+						{...rest}
+					/>
+					{units ? <span className="units">{units}</span> : null}
+				</div>
+				{description ? <span className="description">{description}</span> : null}
 			</div>
 		);
 	};
