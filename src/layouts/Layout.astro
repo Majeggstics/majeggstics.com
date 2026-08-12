@@ -1,4 +1,6 @@
 ---
+import "normalize.css";
+
 export type Props = {
 	title: string;
 	frontmatter?: {
@@ -6,7 +8,6 @@ export type Props = {
 	};
 };
 const { title } = Astro.props.frontmatter ?? Astro.props;
-import 'normalize.css';
 
 // fonts:
 // https://fonts.google.com/specimen/Montserrat
@@ -27,7 +28,9 @@ import 'normalize.css';
 			href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
 			rel="stylesheet"
 		/>
-		<script src="https://kit.fontawesome.com/06ab336092.js" crossorigin="anonymous"></script>
+		<script
+			src="https://kit.fontawesome.com/06ab336092.js"
+			crossorigin="anonymous"></script>
 
 		<title>{title}</title>
 	</head>
@@ -102,7 +105,7 @@ import 'normalize.css';
 	}
 
 	code {
-		font-family: 'Courier Prime', monospace;
+		font-family: "Courier Prime", monospace;
 	}
 
 	img {

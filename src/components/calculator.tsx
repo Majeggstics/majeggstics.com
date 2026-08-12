@@ -38,9 +38,9 @@ export function generateCalculator<Data extends NonCallableObject>(initial: Data
 		);
 
 		const value =
-			typeof data[datakey] === 'string' || typeof data[datakey] === 'number' ?
-				data[datakey]
-			:	`${String(datakey)} has type ${typeof data[datakey]} and cannot be passed to Input`;
+			typeof data[datakey] === 'string' || typeof data[datakey] === 'number'
+				? data[datakey]
+				: `${String(datakey)} has type ${typeof data[datakey]} and cannot be passed to Input`;
 
 		return (
 			<div className="calculatorInput" id={`container-${String(datakey)}`}>
@@ -110,9 +110,9 @@ export function generateCalculator<Data extends NonCallableObject>(initial: Data
 		if ('datakey' in props) {
 			const datum = data[props.datakey];
 			value =
-				typeof datum === 'string' || typeof datum === 'number' ?
-					datum
-				:	`${String(props.datakey)} has type ${typeof data[props.datakey]} and cannot be passed to Output`;
+				typeof datum === 'string' || typeof datum === 'number'
+					? datum
+					: `${String(props.datakey)} has type ${typeof data[props.datakey]} and cannot be passed to Output`;
 		} else if ('value' in props) {
 			value = props.value;
 		} else {

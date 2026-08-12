@@ -33,7 +33,7 @@ const CoopsInDanger = ({ nitro, contract, inDangerLines }: CoopsInDangerProps) =
 	return (
 		<section>
 			<h2>{contract} Coops in danger ⚠️</h2>
-			{coopsInDanger.length > 0 ?
+			{coopsInDanger.length > 0 ? (
 				<ul>
 					{coopsInDanger.map(({ markdown }, index) => (
 						<li key={index}>
@@ -44,7 +44,9 @@ const CoopsInDanger = ({ nitro, contract, inDangerLines }: CoopsInDangerProps) =
 						</li>
 					))}
 				</ul>
-			:	<p>No coops in danger</p>}
+			) : (
+				<p>No coops in danger</p>
+			)}
 			<button onClick={copyText}> Copy to Clipboard </button>
 		</section>
 	);
@@ -67,13 +69,15 @@ const Notins = ({ contract, notinLines }: NotinsProps) => {
 	return (
 		<section>
 			<h2>{contract} 24 hour notins</h2>
-			{twentyFourHourNotins.length > 0 ?
+			{twentyFourHourNotins.length > 0 ? (
 				<ul>
 					{twentyFourHourNotins.map((user, index) => (
 						<li key={index}>{user}</li>
 					))}
 				</ul>
-			:	<p>No 24 hour notins</p>}
+			) : (
+				<p>No 24 hour notins</p>
+			)}
 			<button onClick={copyText}>Copy to Clipboard</button>
 		</section>
 	);
@@ -137,14 +141,15 @@ const MinimumFails = ({ contract, minFailLines }: MinFailsProps) => {
 				<Copy text={`## ${contract} Minimum fails`}>
 					<h2>{contract} Minimum fails</h2>
 				</Copy>
-				{fails.length === 0 ?
+				{fails.length === 0 ? (
 					<Copy text="No fails">No fails</Copy>
-				:	fails.map((fail, index) => (
+				) : (
+					fails.map((fail, index) => (
 						<Copy key={index} text={fail}>
 							<Markdown>{fail.replace(/^- /, '')}</Markdown>
 						</Copy>
 					))
-				}
+				)}
 			</div>
 		</section>
 	);
@@ -163,10 +168,9 @@ export default function MinFailsGeneratorPage() {
 	const headerRegex = /Minimum check for\s*<?(?<contractEgg>:.*:)(?:\d+>)?\s*(?<contractName>.*)/;
 	const { contractEgg, contractName } = headerRegex.exec(minsMessage)?.groups ?? {};
 
-	const contractNameWithTimeslot =
-		contractName ?
-			`${nitroMode ? contractEgg + ' ' : ''}${contractName} ${timeslot?.format('eggst')} `
-		:	'Unknown Contract';
+	const contractNameWithTimeslot = contractName
+		? `${nitroMode ? contractEgg + ' ' : ''}${contractName} ${timeslot?.format('eggst')} `
+		: 'Unknown Contract';
 
 	const { inDanger, notins, minFails } = parseMinsMessage(minsMessage);
 

@@ -36,9 +36,22 @@ lint:fix() {
   eslint --fix --format=pretty src
 }
 
-install-git-hooks() {
-  echo 'yarn lint-staged' > .git/hooks/pre-commit
-  chmod +x .git/hooks/pre-commit
+parse-contract-proto() {
+  local txt
+  txt=$(echo "$1" | base64 -d | protoc --decode Contract contract.proto)
+  jq -n \
+    --arg kevid "$(echo "$txt" | grep '^identifier:' | cut -d'"' -f2)" \
+    --arg customEgg "$(echo "$txt" | grep '^custom_egg_id:' | cut -d'"' -f2)" \
+    '{($kevid): $customEgg}'
+}
+
+refresh-colleggtibles() {
+  printf 'export default ' > src/lib/colleggtible_contracts.ts
+  curl -sSL "https://raw.githubusercontent.com/carpetsage/egg/refs/heads/main/periodicals/data/colleggtible-contracts.json" \
+    | jq --raw-output '.[].proto' \
+    | xargs -n1 ./Taskfile parse-contract-proto \
+    | jq --slurp 'reduce .[] as $item ({}; . * $item)' \
+    >> src/lib/colleggtible_contracts.ts
 }
 
 # as a general style guide, any package.json task that doesn't

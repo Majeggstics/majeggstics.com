@@ -1,6 +1,7 @@
 ---
-import Layout from '/layouts/Layout.astro';
-import ContractBoostCalculator from '/components/contract-boost-calculator';
+import Layout from "/layouts/Layout.astro";
+import ContractBoostCalculator from "/components/contract-boost-calculator";
+import process from "node:process";
 
 const api = process.env.NEXT_PUBLIC_API_URL;
 ---
@@ -185,8 +186,9 @@ const api = process.env.NEXT_PUBLIC_API_URL;
 		}
 	}
 
+	#container-colleggtibleHabSize::after,
 	#container-colleggtibleIhr::after {
-		content: '%';
+		content: "%";
 		margin-left: -0.5em;
 		color: #888;
 	}
