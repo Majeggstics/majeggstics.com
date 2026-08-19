@@ -75,7 +75,7 @@ type CalcData = {
 	fetchState: FetchState;
 	fetchRetryIn: number;
 	doubleDuration: boolean;
-	baseIhr: string;
+	baseIhrV2: string;
 	epicIntHatchery: string;
 	hatcheryCalm: string;
 	colleggtibleIhr: string;
@@ -96,7 +96,7 @@ const defaultCalcData = () => ({
 	fetchState: FetchState.IDLE,
 	fetchRetryIn: 0,
 	doubleDuration: false,
-	baseIhr: '3720',
+	baseIhrV2: '3720',
 	hatcheryCalm: '20',
 	epicIntHatchery: '20',
 	colleggtibleIhr: '5',
@@ -528,7 +528,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 				}
 
 				const ihr =
-					Number.parseInt(calc.data.baseIhr || '0', 10) *
+					Number.parseInt(calc.data.baseIhrV2 || '0', 10) *
 					(1 + (Number.parseInt(calc.data.epicIntHatchery || '0', 10) * 5) / 100) *
 					1.01 ** Number.parseInt(calc.data.truthEggCount || '0', 10) *
 					(1 + Number.parseInt(calc.data.colleggtibleIhr || '0', 10) / 100) *
@@ -576,7 +576,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 		return [Math.floor(population), formattedTime];
 	}, [
 		boosts,
-		calc.data.baseIhr,
+		calc.data.baseIhrV2,
 		calc.data.epicIntHatchery,
 		calc.data.truthEggCount,
 		calc.data.colleggtibleIhr,
@@ -650,7 +650,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 		() =>
 			calc.updateData({
 				doubleDuration: false,
-				baseIhr: '3720',
+				baseIhrV2: '3720',
 				epicIntHatchery: '20',
 				hatcheryCalm: '20',
 				colleggtibleIhr: '5',
@@ -662,7 +662,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 
 	const canHideExtra =
 		!calc.data.doubleDuration &&
-		calc.data.baseIhr === '3720' &&
+		calc.data.baseIhrV2 === '3720' &&
 		calc.data.epicIntHatchery === '20' &&
 		calc.data.hatcheryCalm === '20' &&
 		calc.data.colleggtibleIhr + calc.data.colleggtibleHabSize === '55' &&
@@ -741,7 +741,7 @@ export default function ContractBoostCalculator({ api }: { readonly api: string 
 							<legend>Bonus inputs</legend>
 							<Calculator.Checkbox datakey="doubleDuration" label="2× boost duration modifier?" />
 							<div>
-								<Input datakey="baseIhr" label="IHR:" max="3720" min="0" size={4} type="number" />
+								<Input datakey="baseIhrV2" label="IHR:" max="3720" min="0" size={4} type="number" />
 								<span>(Sum of all "Internal Hatchery" common researches)</span>
 							</div>
 							<div>
