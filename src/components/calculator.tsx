@@ -1,5 +1,5 @@
 import type { ChangeEvent } from 'react';
-import { createContext, useContext, useCallback } from 'react';
+import { createContext, useContext, useCallback, useEffect } from 'react';
 import { usePersistentState } from '/lib/hooks';
 
 type NonCallableObject = { [k: string]: unknown; apply?: never };
@@ -10,6 +10,10 @@ export type WithSetter<Data> = {
 export function generateCalculator<Data extends NonCallableObject>(initial: Data) {
 	const useCreateState = (): WithSetter<Data> => {
 		const [rawData, setRawData] = usePersistentState<Data>('calcData', initial);
+
+		// pick up default values of any new keys in 'initial'
+		useEffect(() => setRawData((data) => ({ ...initial, ...data })), [setRawData]);
+
 		const updateData = useCallback(
 			(newData: Partial<Data>) => {
 				setRawData((data) => ({ ...data, ...newData }));
